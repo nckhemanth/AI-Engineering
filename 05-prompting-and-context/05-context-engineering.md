@@ -1,11 +1,12 @@
 # Context Engineering
 
-Context engineering is the science of filling the LLM's finite "working memory" with the most valuable tokens. In 2025, with context windows reaching 2M+ tokens, the focus has shifted from "fitting data" to "ranking relevance."
+Context engineering is the science of filling the LLM's finite "working memory" with the most valuable tokens. In 2025-2026, with context windows reaching 1M+ tokens and models gaining Extended Thinking, the focus has shifted from "fitting data" to "ranking relevance" and "managing compute budget."
 
 ## Table of Contents
 
-- [The Long Context Paradigm (2M+ Tokens)](#long-context)
-- [Lost-in-the-Middle (2025 Update)](#lost-in-the-middle)
+- [The Long Context Paradigm (1M+ Tokens)](#long-context)
+- [Extended Thinking & Budget Tokens (2026)](#extended-thinking)
+- [Lost-in-the-Middle (2026 Update)](#lost-in-the-middle)
 - [Context Budgeting & Token Awareness](#budgeting)
 - [Prompt Caching Economics](#prompt-caching)
 - [Contextual Compression (RAD-L)](#compression)
@@ -14,20 +15,97 @@ Context engineering is the science of filling the LLM's finite "working memory" 
 
 ---
 
-## The Long Context Paradigm (2M+ Tokens)
+## The Long Context Paradigm (1M+ Tokens)
 
-Models like Gemini 1.5 Pro and Claude Sonnet 4.5 have multi-million token context windows. 
+Models like Gemini 2.0 Flash (1M) and Claude 3.7 Sonnet (200K) have massive context windows.
 
-**2025 Insight**: "Context is the new RAG." 
+**2026 Insight**: "Context is the new RAG."
 For datasets under 100,000 documents, it is often more accurate and faster to put the entire dataset in the context window than to use an external vector database. This is called **"In-Context RAG."**
 
 ---
 
-## Lost-in-the-Middle (2025 Update)
+## Extended Thinking & Budget Tokens (2026)
 
-In 2023, models lost accuracy for information in the middle of the prompt. 
-**The 2025 Status**: Frontier models are significantly better, but the **Attention Gradient** still exists.
-- **The Best Practice**: Place critical instructions and gold-standard examples at the **very beginning** and the **very end** of your prompt. The middle should contain the "raw" data or knowledge chunks.
+In 2026, two frontier models offer **controllable internal reasoning** before generating a response:
+
+### Claude 3.7 Sonnet — Extended Thinking
+
+```python
+response = client.messages.create(
+    model="claude-3-7-sonnet-20250219",
+    max_tokens=16000,
+    thinking={
+        "type": "enabled",
+        "budget_tokens": 10000  # max internal reasoning tokens
+    },
+    messages=[{"role": "user", "content": "Refactor this codebase to be async..."}]
+)
+
+# Response has two blocks:
+# 1. thinking block (visible for debug, not shown to user)
+# 2. text block (the actual answer)
+for block in response.content:
+    if block.type == "thinking":
+        print("[THINKING]", block.thinking)
+    elif block.type == "text":
+        print("[ANSWER]", block.text)
+```
+
+**Key parameters:**
+- `budget_tokens`: 1,024 → 100,000. Higher = better accuracy, higher cost.
+- Thinking tokens billed at standard rates. A 10K thinking budget = +$0.15 per request.
+- Streaming works — thinking blocks stream before text.
+
+### o3 (OpenAI) — Reasoning Effort
+
+```python
+response = client.chat.completions.create(
+    model="o3",
+    reasoning_effort="medium",  # "low" | "medium" | "high"
+    messages=[{"role": "user", "content": "Prove P=NP or disprove it."}]
+)
+# Reasoning tokens are invisible — o3 never exposes its internal chain
+```
+
+**Effort levels vs cost (approx.):**
+| Effort | Speed | Cost multiplier | Best for |
+|--------|-------|-----------------|----------|
+| low | Fast | 1x | Simple logic, quick lookups |
+| medium | Medium | 3-5x | Coding, analysis |
+| high | Slow | 8-20x | PhD-level problems, ARC-AGI |
+
+### When to Enable Thinking / Reasoning
+
+| Condition | Recommendation |
+|-----------|----------------|
+| Complex multi-step code refactoring | ✅ Enable (budget: 8K-20K) |
+| Simple Q&A / extraction | ❌ Disable — adds cost & latency |
+| STEM / math problems | ✅ Enable (o3-mini medium) |
+| High-volume chatbot | ❌ Disable — use standard mode |
+| Security-critical decision | ✅ Enable — extra reasoning catches edge cases |
+
+**Production pattern**: Use a complexity classifier to gate Extended Thinking. If query complexity score < 0.5, skip thinking mode entirely (saves 60-80% on reasoning-heavy workloads).
+
+```python
+def smart_generate(query: str) -> str:
+    complexity = classifier.predict(query)  # 0-1 score
+    
+    if complexity > 0.7:
+        # Enable Extended Thinking for hard problems
+        return claude_with_thinking(query, budget_tokens=8000)
+    else:
+        # Standard fast mode for simple tasks
+        return claude_standard(query)
+```
+
+---
+
+## Lost-in-the-Middle (2026 Update)
+
+In 2023, models lost accuracy for information in the middle of the prompt.
+**The 2026 Status**: Frontier models (Claude 3.7 Sonnet, Gemini 2.0 Flash) perform significantly better, but the **Attention Gradient** still exists.
+- **Best Practice**: Place critical instructions and gold-standard examples at the **very beginning** and **very end** of your prompt. Middle = raw data/knowledge chunks.
+- **Use chunk ordering**: Rerank retrieved documents so most relevant are first and last.
 
 ---
 
@@ -80,8 +158,9 @@ The primary solution is **Context Caching**. By caching the heavy document on th
 
 ## References
 - Liu et al. "Lost in the Middle" (2023/2024 update)
-- DeepSeek. "Prompt Caching in Production" (2025)
-- Google. "Gemini 1.5: Unlocking Multi-modal Context" (2024)
+- Anthropic. "Extended Thinking: Technical Guide" (2025) — https://docs.anthropic.com/
+- OpenAI. "o3 and o3-mini System Card" (2025)
+- Google. "Gemini 2.0 Flash: Technical Report" (2024)
 
 ---
 
