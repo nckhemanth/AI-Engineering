@@ -54,40 +54,53 @@ Committed (1-year): $2.00 / 1M input tokens (20% savings)
 
 ## Current API Pricing
 
-### December 2025 Pricing ⚠️
+### March 2026 Pricing ⚠️
 
-*Verify current values: Pricing in late 2025 has shifted toward 'Inference-time Scaling' (Thinking tokens).*
+*Prices verified March 2026. Always re-check: [OpenAI](https://openai.com/pricing), [Anthropic](https://anthropic.com/pricing), [Google](https://ai.google.dev/pricing)*
 
 #### OpenAI
-| Model | Input / 1M | Output / 1M | Thinking Tier |
-|-------|------------|-------------|---------------|
-| **GPT-5.2** | $5.00 | $20.00 | Included |
-| **o3** | $15.00 | $60.00 | High-compute |
-| **GPT-5.2-mini**| $0.10 | $0.40 | None |
-| **o4-mini** | $0.15 | $0.60 | Low-compute |
+| Model | Input / 1M | Output / 1M | Notes |
+|-------|------------|-------------|-------|
+| **GPT-4.5** | $75.00 | $150.00 | Highest EQ/creativity; costly |
+| **o3** | $10.00 | $40.00 | High-compute reasoning (effort: low/med/high) |
+| **o3-mini** | $1.10 | $4.40 | Best cost/reasoning tradeoff |
+| **GPT-4o** | $2.50 | $10.00 | Battle-tested production workhorse |
+| **GPT-4o-mini** | $0.15 | $0.60 | High-volume, cost-optimized |
 
-#### Anthropic (The "Claude 4" Generation)
-| Model | Input / 1M | Output / 1M | Reasoning |
-|-------|------------|-------------|-----------|
-| **Claude 4.5 Opus** | $15.00 | $75.00 | Native SoTA |
-| **Claude Sonnet 4.5**| $3.00 | $15.00 | Hybrid (CoT) |
-| **Claude 4.5 Haiku** | $0.20 | $1.00 | None |
+#### Anthropic (Claude 3.x Generation)
+| Model | Input / 1M | Output / 1M | Thinking Tokens |
+|-------|------------|-------------|----------------|
+| **Claude 3.7 Sonnet** | $3.00 | $15.00 | $3.00 input / $15.00 output (same rate) |
+| **Claude 3.5 Opus** | $15.00 | $75.00 | Standard only |
+| **Claude 3.5 Haiku** | $0.80 | $4.00 | Fastest Anthropic model |
 
-#### Google (The "Gemini 3" Generation)
+> [!NOTE]
+> Claude 3.7 Extended Thinking: thinking tokens are billed at standard rates but you pay for all internal reasoning tokens. A complex task using 20K thinking tokens adds ~$0.30 per request.
+
+#### Google (Gemini 2.0 Generation)
 | Model | Input / 1M | Output / 1M | Context |
 |-------|------------|-------------|---------|
-| **Gemini 3.0 Pro** | $1.25 | $5.00 | 2.5M tokens |
-| **Gemini 3 Flash** | $0.05 | $0.20 | 1M tokens |
+| **Gemini 2.0 Pro** | $3.50 | $10.50 | 1M tokens |
+| **Gemini 2.0 Flash** | $0.10 | $0.40 | 1M tokens |
+| **Gemini 2.0 Flash-Lite** | $0.075 | $0.30 | 1M tokens |
 
-#### Embedding Models (Dec 2025)
+#### Self-Hosted Open Models (March 2026)
+| Model | RunPod / A100 cost | Context | Notes |
+|-------|-------------------|---------|-------|
+| **Llama 3.3 70B** | ~$1.00–2.00/1M blended | 128K | Best open general |
+| **DeepSeek-V3** | ~$0.27/1M (via Together AI) | 128K | Frontier-level, open |
+| **Qwen2.5-Coder-32B** | ~$0.50/1M | 32K | Top open coding |
+
+#### Embedding Models (March 2026)
 | Model | Cost / 1M tokens | Dimension |
 |-------|------------------|-----------|
-| **text-embedding-4** | $0.10 | 4096 |
+| **text-embedding-3-large** | $0.13 | 3072 |
+| **text-embedding-3-small** | $0.02 | 1536 |
 | **Voyage-3** | $0.06 | 1024 |
-| **Cohere embed-v4** | $0.10 | 1024 |
+| **Cohere embed-v3** | $0.10 | 1024 |
 
 > [!IMPORTANT]
-> **Inference-time Compute Costs:** For models with "Thinking" or "Reasoning" modes (o1, o3, Claude Sonnet 4.5), you are often charged for **internal thinking tokens** even if they are not shown to the user. This can increase total request cost by 3x-10x for logic-heavy tasks.
+> **Inference-time Compute Costs:** For models with "Extended Thinking" or reasoning modes (o3, Claude 3.7), you are charged for **internal thinking tokens** even if not shown to the user. This can increase total request cost by 2x–10x for logic-heavy tasks. Always set a `budget_tokens` cap in production.
 
 ---
 
