@@ -86,4 +86,4 @@ Scaling to 1 billion vectors with standard `float32` 1536-dim embeddings require
 
 ---
 
-*Next: [Vector Databases Comparison](04-vector-databases-comparison.md)*
+*Next: [Vector Databases](04-vector-databases.md)*

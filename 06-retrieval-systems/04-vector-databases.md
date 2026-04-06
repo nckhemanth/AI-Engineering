@@ -1,16 +1,18 @@
-# Vector Databases
+# Vector Databases (Dec 2025)
 
-Vector databases are purpose-built systems for storing, indexing, and searching high-dimensional embeddings. This chapter covers the options, tradeoffs, and production considerations for choosing and operating vector databases.
+Vector databases are purpose-built systems for storing, indexing, and searching high-dimensional embeddings. In late 2025, the market has split into **Managed Serverless** and **Specialized High-Performance** engines. We no longer ask "Does it support vector search?" (Postgres, Redis, and Mongo all do). We ask **"Does it scale to 100M+ vectors with sub-100ms P99 and full metadata filtering?"**
 
 ## Table of Contents
 
 - [What Is a Vector Database](#what-is-a-vector-database)
 - [Vector Search Fundamentals](#vector-search-fundamentals)
 - [Indexing Algorithms](#indexing-algorithms)
-- [Vector Database Comparison](#vector-database-comparison)
+- [The 2025 Competitive Landscape](#the-2025-competitive-landscape)
+- [Detailed Database Comparison](#detailed-database-comparison)
+- [Metadata Filtering](#metadata-filtering)
 - [Query Patterns](#query-patterns)
 - [Production Operations](#production-operations)
-- [Cost Analysis](#cost-analysis)
+- [Managed vs Self-Hosted (TCO Analysis)](#managed-vs-self-hosted-tco-analysis)
 - [Selection Framework](#selection-framework)
 - [Interview Questions](#interview-questions)
 - [References](#references)
@@ -74,15 +76,15 @@ Traditional databases can store vectors but lack optimized search:
 ### Recall vs Latency Tradeoff
 
 ```
-                    ▲ Recall
-                    │
-               100% ┤ ────────────────── Brute force
-                    │         ●          Well-tuned ANN
-                    │      ●
-                    │   ●
-                95% ┤●                   Fast ANN
-                    │
-                    └─────┬───────┬──────► Latency
+                    ^ Recall
+                    |
+               100% | ------------------ Brute force
+                    |         *          Well-tuned ANN
+                    |      *
+                    |   *
+                95% |*                   Fast ANN
+                    |
+                    +-----+-------+------> Latency
                        1ms      10ms
 ```
 
@@ -94,7 +96,7 @@ ANN indices trade some accuracy for speed. Tune for your requirements.
 
 ### HNSW (Hierarchical Navigable Small World)
 
-The most popular algorithm for production vector search.
+The most popular algorithm for production **in-memory** vector search.
 
 **How it works:**
 1. Build a graph where nodes are vectors
@@ -103,11 +105,11 @@ The most popular algorithm for production vector search.
 4. Search: navigate from top layer down, greedy nearest neighbor
 
 ```
-Layer 2:   ●────────●────────●
-           │        │        │
-Layer 1:   ●──●──●──●──●──●──●
-           │  │  │  │  │  │  │
-Layer 0:   ●●●●●●●●●●●●●●●●●●●●  (all vectors)
+Layer 2:   *--------*--------*
+           |        |        |
+Layer 1:   *--*--*--*--*--*--*
+           |  |  |  |  |  |  |
+Layer 0:   ********************  (all vectors)
 ```
 
 **Pros:**
@@ -118,11 +120,30 @@ Layer 0:   ●●●●●●●●●●●●●●●●●●●●  (all ve
 **Cons:**
 - Memory-intensive (graph structure)
 - Index size: ~1.5-2x vector data
+- 10M vectors at 1536 dims require ~80GB of RAM
 
 **Key parameters:**
 - `M`: Max connections per node (16-64)
 - `ef_construction`: Build-time exploration (100-500)
 - `ef_search`: Query-time exploration (50-200)
+
+### DiskANN (SSD-based)
+
+The industry standard for **petabyte-scale** search.
+
+**How it works:**
+- Keeps the graph on SSD (NVMe) and only a tiny index in RAM
+- Uses the Vamana algorithm for efficient disk-based graph traversal
+
+**Pros:**
+- 10x cheaper than HNSW for billion-scale datasets with <5ms latency penalty
+- 90-95% reduction in RAM requirements vs HNSW
+
+**Cons:**
+- Slightly higher latency than pure in-memory HNSW
+- Best suited for non-real-time search applications
+
+**Example:** A 100-million-vector index with 1536 dimensions would require nearly 1TB of RAM for HNSW. Using DiskANN, the RAM requirement drops by 90-95% while maintaining sub-10ms query times.
 
 ### IVF (Inverted File Index)
 
@@ -172,39 +193,55 @@ No approximation, exact search.
 | Algorithm | Memory | Build Time | Query Speed | Recall | Updates |
 |-----------|--------|------------|-------------|--------|---------|
 | HNSW | High | Medium | Very fast | 95-99% | Good |
+| DiskANN | Low (SSD) | Medium | Fast | 95-99% | Fair |
 | IVF | Medium | Fast | Fast | 90-98% | Fair |
 | IVF-PQ | Low | Fast | Fast | 85-95% | Fair |
 | Flat | Low | None | Slow | 100% | Instant |
 
 ---
 
-## Vector Database Comparison
+## The 2025 Competitive Landscape
 
-### Major Options (December 2025)
+### Vector-Native (Dedicated)
 
 | Database | Type | Best For | Pricing Model |
 |----------|------|----------|---------------|
-| **Pinecone** | Managed cloud | Easy start, scale | Per vector-hour |
-| **Qdrant** | Open source / Cloud | Self-hosted control | Per GB (cloud) or free |
-| **Weaviate** | Open source / Cloud | Multimodal, ML integration | Per dimension-hour |
-| **Chroma** | Open source | Prototyping, local | Free |
-| **Milvus** | Open source / Cloud | On-prem enterprise | Free (self-host) |
-| **pgvector** | PostgreSQL extension | Small scale, existing PG | Compute only |
+| **Pinecone** | Managed cloud (serverless standard) | Easy start, scale | Per vector-hour |
+| **Qdrant** | Open source / Cloud (Rust, high-perf) | Self-hosted control, excellent filtering | Per GB (cloud) or free |
+| **Weaviate** | Open source / Cloud | Multimodal, graph-like relationships, ML integration | Per dimension-hour |
+| **Milvus** | Open source / Cloud | On-prem enterprise (K8s heavy-lifter) | Free (self-host) or Zilliz Cloud |
+| **Chroma** | Open source | Prototyping, local dev | Free |
 
-### Feature Comparison
+### General-Purpose (Plugin/Extension)
+
+| Database | Type | Best For | Pricing Model |
+|----------|------|----------|---------------|
+| **pgvector (v0.8+)** | PostgreSQL extension | Small scale, existing PG (now supports HNSW + IVFFlat) | Compute only |
+| **Elasticsearch (v9.0)** | Search engine | Hybrid Search with cross-entropy fusion | License-based |
+
+---
+
+## Detailed Database Comparison
+
+### Feature Matrix
 
 | Feature | Pinecone | Qdrant | Weaviate | Milvus | pgvector |
 |---------|----------|--------|----------|--------|----------|
+| **Language** | Proprietary | Rust | Go | Go/C++ | C |
 | Hosted option | Yes | Yes | Yes | Yes (Zilliz) | Via cloud PG |
 | Self-hosted | No | Yes | Yes | Yes | Yes |
+| **Serverless** | Yes (Best) | Yes | Yes | Yes (Zilliz) | No |
+| **Cloud-Native** | Any | Any | Any | K8s Only | Any |
 | Metadata filtering | Good | Excellent | Good | Good | Via SQL |
-| Hybrid search | Yes | Yes | Yes | Yes | Limited |
+| **Hybrid search** | Native | Native | Native | Native | Multi-stage (limited) |
 | Max vectors | Billions | Billions | Billions | Billions | ~10M |
 | HNSW index | Yes | Yes | Yes | Yes | Yes |
 
-### Metadata Filtering
+---
 
-Critical for multi-tenant and filtering use cases:
+## Metadata Filtering
+
+Critical for multi-tenant and filtering use cases.
 
 ```python
 # Pinecone
@@ -229,6 +266,10 @@ results = client.search(
 ```
 
 **Performance impact:** Filtering happens during search, not after. Pre-filtered indices are faster but less flexible.
+
+**Why metadata filtering is often the bottleneck:** In naive vector search, we find the "Top K" nearest neighbors and THEN filter by metadata. If the filter is very restrictive, we might find 0 results after filtering. In 2025, specialized databases use **Pre-Filtering with HNSW** -- they traverse the graph but only consider nodes that satisfy the boolean metadata constraint. This requires specialized bitmasks or hardware acceleration (SIMD) to keep latencies low.
+
+**Disk-Native Metadata (2025):** Modern DBs like **Qdrant** offload metadata to disk-mapped segments, allowing for complex filters (e.g., full-text + geo + vector) without saturating RAM.
 
 ---
 
@@ -263,16 +304,16 @@ def hybrid_search(query: str, alpha: float = 0.5, top_k: int = 5) -> list[Docume
     # Dense (semantic)
     dense_embedding = embed(query)
     dense_results = vector_db.search(dense_embedding, top_k=top_k * 2)
-    
+
     # Sparse (keyword)
     sparse_results = bm25_search(query, top_k=top_k * 2)
-    
+
     # Combine with reciprocal rank fusion
     combined = reciprocal_rank_fusion(
         [dense_results, sparse_results],
         weights=[alpha, 1 - alpha]
     )
-    
+
     return combined[:top_k]
 ```
 
@@ -293,16 +334,16 @@ For parent-child or multi-aspect retrieval:
 ```python
 def multi_vector_search(queries: list[str], top_k: int = 5) -> list[Document]:
     all_results = []
-    
+
     for query in queries:
         embedding = embed(query)
         results = vector_db.search(embedding, top_k=top_k)
         all_results.extend(results)
-    
+
     # Dedupe and rerank
     unique = dedupe_by_id(all_results)
     reranked = rerank(queries[0], unique)  # Use primary query for reranking
-    
+
     return reranked[:top_k]
 ```
 
@@ -321,20 +362,20 @@ def estimate_resources(
     # Vector storage
     vector_size = dimensions * 4  # float32
     total_vector_storage = num_vectors * vector_size
-    
+
     # Index overhead (HNSW ~1.5x)
     index_overhead = total_vector_storage * 1.5
-    
+
     # Metadata
     metadata_storage = num_vectors * metadata_size_bytes
-    
+
     # Total
     total_gb = (total_vector_storage + index_overhead + metadata_storage) / 1e9
-    
+
     # QPS estimate (rough)
     qps_per_gb = 50  # depends heavily on config
     estimated_qps = total_gb * qps_per_gb
-    
+
     return {
         "storage_gb": total_gb,
         "estimated_qps": estimated_qps,
@@ -348,14 +389,14 @@ def estimate_resources(
 class VectorDBMaintenance:
     def __init__(self, client):
         self.client = client
-    
+
     def add_documents(self, documents: list[Document]):
         """Upsert documents with batching."""
         batch_size = 100
         for i in range(0, len(documents), batch_size):
             batch = documents[i:i + batch_size]
             embeddings = embed_batch([d.text for d in batch])
-            
+
             self.client.upsert([
                 {
                     "id": doc.id,
@@ -364,11 +405,11 @@ class VectorDBMaintenance:
                 }
                 for doc, embedding in zip(batch, embeddings)
             ])
-    
+
     def delete_documents(self, doc_ids: list[str]):
         """Delete by document ID."""
         self.client.delete(ids=doc_ids)
-    
+
     def update_metadata(self, doc_id: str, metadata: dict):
         """Update metadata without re-embedding."""
         self.client.set_payload(
@@ -381,22 +422,22 @@ class VectorDBMaintenance:
 ### High Availability
 
 ```
-┌─────────────────────────────────────────────────────────────────┐
-│                    Load Balancer                                │
-└───────────────────────────┬─────────────────────────────────────┘
-                            │
-           ┌────────────────┼────────────────┐
-           ▼                ▼                ▼
-    ┌──────────────┐ ┌──────────────┐ ┌──────────────┐
-    │  Replica 1   │ │  Replica 2   │ │  Replica 3   │
-    │   (Read)     │ │   (Read)     │ │   (Primary)  │
-    └──────────────┘ └──────────────┘ └──────────────┘
-                                            │
-                                      (Replication)
-                                            │
-                                      ┌─────▼─────┐
-                                      │  Storage  │
-                                      └───────────┘
++-------------------------------------------------------------+
+|                    Load Balancer                              |
++----------------------------+--------------------------------+
+                             |
+            +----------------+----------------+
+            v                v                v
+     +--------------+ +--------------+ +--------------+
+     |  Replica 1   | |  Replica 2   | |  Replica 3   |
+     |   (Read)     | |   (Read)     | |   (Primary)  |
+     +--------------+ +--------------+ +--------------+
+                                             |
+                                       (Replication)
+                                             |
+                                       +-----v-----+
+                                       |  Storage   |
+                                       +-----------+
 ```
 
 **Key patterns:**
@@ -437,7 +478,16 @@ def alert_rules():
 
 ---
 
-## Cost Analysis
+## Managed vs Self-Hosted (TCO Analysis)
+
+### Cost Comparison
+
+| Aspect | Pinecone (Serverless) | Self-Hosted (Qdrant/Milvus) |
+|--------|-----------------------|-----------------------------|
+| **Ops Overhead** | Zero | High (Requires K8s + SRE) |
+| **Scaling** | Instant (Scale to zero) | Manual (Node provisioning) |
+| **Cost (Small)** | $0 - $100/mo | $50/mo (Minimum instance) |
+| **Cost (Scale)** | High per token/vector | Low unit cost |
 
 ### Managed Service Pricing (December 2025, verify current)
 
@@ -457,7 +507,7 @@ def estimate_self_hosted_cost(
     cloud: str = "aws"
 ) -> dict:
     storage_gb = (vectors * dimensions * 4 * 2.5) / 1e9  # 2.5x for index
-    
+
     # Instance sizing
     if storage_gb < 50:
         instance = "r6g.large"  # 16 GB RAM, ~$60/month
@@ -465,7 +515,7 @@ def estimate_self_hosted_cost(
         instance = "r6g.xlarge"  # 32 GB RAM, ~$120/month
     else:
         instance = "r6g.2xlarge"  # 64 GB RAM, ~$240/month
-    
+
     return {
         "storage_gb": storage_gb,
         "instance": instance,
@@ -486,6 +536,8 @@ def estimate_self_hosted_cost(
 | Compliance | Depends | Full control |
 | Vendor lock-in | Yes | No (if open source) |
 
+**2025 Verdict**: Start with Serverless. Only self-host if you have >500M vectors or strict **On-Prem/GPU-Local** requirements.
+
 ---
 
 ## Selection Framework
@@ -494,17 +546,17 @@ def estimate_self_hosted_cost(
 
 ```
 Need < 100K vectors?
-├── Yes → pgvector (if already using PostgreSQL)
-│         └── Chroma (for prototyping)
-│
-└── No → Need managed service?
-         ├── Yes → Cloud-first?
-         │         ├── Yes → Pinecone (easiest)
-         │         └── No → Qdrant Cloud or Zilliz
-         │
-         └── No → Need enterprise features?
-                  ├── Yes → Milvus on Kubernetes
-                  └── No → Qdrant or Weaviate self-hosted
++-- Yes -> pgvector (if already using PostgreSQL)
+|          +-- Chroma (for prototyping)
+|
++-- No -> Need managed service?
+          +-- Yes -> Cloud-first?
+          |          +-- Yes -> Pinecone (easiest)
+          |          +-- No -> Qdrant Cloud or Zilliz
+          |
+          +-- No -> Need enterprise features?
+                    +-- Yes -> Milvus on Kubernetes
+                    +-- No -> Qdrant or Weaviate self-hosted
 ```
 
 ### Evaluation Criteria
@@ -580,8 +632,19 @@ HNSW builds a hierarchical graph of vectors:
 
 Alternatives:
 - IVF-PQ for memory constraints
+- DiskANN for billion-scale with cost efficiency
 - Flat index for exact search
 - LSH for very high-dimensional sparse vectors
+
+### Q: When would you use a Disk-based index (like DiskANN) over a RAM-based index (HNSW)?
+
+**Strong answer:**
+I would use a Disk-based index when the memory cost of the index exceeds the budget or the capacity of a single high-memory node. For example, a 100-million-vector index with 1536 dimensions would require nearly 1TB of RAM for HNSW. Using DiskANN, I can store the majority of that 1TB on NVMe SSDs, reducing the RAM requirement by 90-95% while maintaining sub-10ms query times. This represents a massive TCO (Total Cost of Ownership) reduction for non-real-time search applications.
+
+### Q: Why is metadata filtering often the bottleneck in vector databases?
+
+**Strong answer:**
+In naive vector search, we find the "Top K" nearest neighbors and THEN filter them by metadata (e.g., "only documents from 2024"). If the filter is very restrictive, we might find 0 results after filtering. In 2025, specialized databases use **Pre-Filtering with HNSW**. They traverse the graph but only consider nodes that satisfy the boolean metadata constraint. This is computationally expensive because it breaks the "short-circuit" logic of HNSW, requiring specialized bitmasks or hardware acceleration (SIMD) to keep latencies low.
 
 ### Q: How do you handle multi-tenancy in a vector database?
 
@@ -622,7 +685,9 @@ results = index.query(vector=query, namespace=tenant_id)
 ## References
 
 - Malkov and Yashunin. "Efficient and robust approximate nearest neighbor search using Hierarchical Navigable Small World graphs" (HNSW, 2018)
+- Microsoft Research. "Vamana/DiskANN: A Disk-based Index for ANN Search" (2019/2023)
 - Pinecone Documentation: https://docs.pinecone.io/
+- Pinecone. "The Managed Architecture of Serverless Vector DBs" (2024)
 - Qdrant Documentation: https://qdrant.tech/documentation/
 - Weaviate Documentation: https://weaviate.io/developers/weaviate
 - Milvus Documentation: https://milvus.io/docs
@@ -630,4 +695,4 @@ results = index.query(vector=query, namespace=tenant_id)
 
 ---
 
-*Previous: [Chunking Strategies](02-chunking-strategies.md) | Next: [Hybrid Search](04-hybrid-search.md)*
+*Previous: [Embedding Models](03-embedding-models.md) | Next: [Hybrid Search](05-hybrid-search.md)*
