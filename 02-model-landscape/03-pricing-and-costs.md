@@ -54,44 +54,59 @@ Committed (1-year): $2.00 / 1M input tokens (20% savings)
 
 ## Current API Pricing
 
-### March 2026 Pricing ⚠️
+### April 2026 Pricing
 
-*Prices verified March 2026. Always re-check: [OpenAI](https://openai.com/pricing), [Anthropic](https://anthropic.com/pricing), [Google](https://ai.google.dev/pricing)*
+> **Last verified: April 2026.** Prices change frequently. Always re-check: [OpenAI](https://developers.openai.com/api/docs/pricing), [Anthropic](https://platform.claude.com/docs/en/about-claude/pricing), [Google](https://ai.google.dev/gemini-api/docs/pricing), [xAI](https://docs.x.ai/developers/models)
 
-#### OpenAI
+#### OpenAI (GPT-5.x Generation)
 | Model | Input / 1M | Output / 1M | Notes |
 |-------|------------|-------------|-------|
-| **GPT-4.5** | $75.00 | $150.00 | Highest EQ/creativity; costly |
-| **o3** | $10.00 | $40.00 | High-compute reasoning (effort: low/med/high) |
-| **o3-mini** | $1.10 | $4.40 | Best cost/reasoning tradeoff |
-| **GPT-4o** | $2.50 | $10.00 | Battle-tested production workhorse |
-| **GPT-4o-mini** | $0.15 | $0.60 | High-volume, cost-optimized |
+| **GPT-5.4 Pro** | $30.00 | $180.00 | Maximum reasoning; long-context doubles to $60/$270 |
+| **GPT-5.4** | $2.50 | $15.00 | Flagship; native computer use; cached input $1.25 |
+| **GPT-5.4-mini** | $0.75 | $4.50 | Best cost/performance in GPT-5 tier |
+| **GPT-5.4-nano** | check latest | check latest | Smallest GPT-5.4 variant; released March 2026 |
+| **GPT-4o** | $2.50 | $10.00 | Previous gen; still widely deployed |
+| **GPT-4o-mini** | $0.15 | $0.60 | Previous gen; high-volume legacy |
 
-#### Anthropic (Claude 3.x Generation)
-| Model | Input / 1M | Output / 1M | Thinking Tokens |
-|-------|------------|-------------|----------------|
-| **Claude 3.7 Sonnet** | $3.00 | $15.00 | $3.00 input / $15.00 output (same rate) |
-| **Claude 3.5 Opus** | $15.00 | $75.00 | Standard only |
-| **Claude 3.5 Haiku** | $0.80 | $4.00 | Fastest Anthropic model |
+#### Anthropic (Claude 4.x Generation)
+| Model | Input / 1M | Output / 1M | Context | Notes |
+|-------|------------|-------------|---------|-------|
+| **Claude Opus 4.6** | $5.00 | $25.00 | 1M | 128K max output; adaptive thinking at standard rates |
+| **Claude Sonnet 4.6** | $3.00 | $15.00 | 1M | Covers most Opus-level tasks at lower cost |
+| **Claude Haiku 4.5** | $1.00 | $5.00 | 200K | Fastest Anthropic model; check latest for exact price |
 
 > [!NOTE]
-> Claude 3.7 Extended Thinking: thinking tokens are billed at standard rates but you pay for all internal reasoning tokens. A complex task using 20K thinking tokens adds ~$0.30 per request.
+> **Claude 1M context at standard pricing**: Opus 4.6 and Sonnet 4.6 include the full 1M token context window at standard rates -- no premium tier for long context. Batch API offers 50% discount. Cache hits cost 10% of standard input price.
 
-#### Google (Gemini 2.0 Generation)
-| Model | Input / 1M | Output / 1M | Context |
-|-------|------------|-------------|---------|
-| **Gemini 2.0 Pro** | $3.50 | $10.50 | 1M tokens |
-| **Gemini 2.0 Flash** | $0.10 | $0.40 | 1M tokens |
-| **Gemini 2.0 Flash-Lite** | $0.075 | $0.30 | 1M tokens |
+#### Google (Gemini 3.x Generation)
+| Model | Input / 1M | Output / 1M | Context | Notes |
+|-------|------------|-------------|---------|-------|
+| **Gemini 3.1 Pro** | $2.00 | $12.00 | 1M | 200K+ context: $4.00/$18.00 |
+| **Gemini 3.1 Flash** | $0.10 | $3.00 | 1M | Best price/performance; high-volume |
+| **Gemini 2.5 Flash-Lite** | $0.10 | $0.40 | 1M | Deprecated June 2026 |
 
-#### Self-Hosted Open Models (March 2026)
-| Model | RunPod / A100 cost | Context | Notes |
-|-------|-------------------|---------|-------|
-| **Llama 3.3 70B** | ~$1.00–2.00/1M blended | 128K | Best open general |
-| **DeepSeek-V3** | ~$0.27/1M (via Together AI) | 128K | Frontier-level, open |
-| **Qwen2.5-Coder-32B** | ~$0.50/1M | 32K | Top open coding |
+> [!WARNING]
+> **Gemini 2.5 deprecation**: Gemini 2.5 Pro and 2.5 Flash are scheduled for deprecation on June 17, 2026. Migrate to Gemini 3.x models.
 
-#### Embedding Models (March 2026)
+#### xAI (Grok)
+| Model | Input / 1M | Output / 1M | Context | Notes |
+|-------|------------|-------------|---------|-------|
+| **Grok 4** | $3.00 | $15.00 | 256K | Native tool use; real-time search |
+| **Grok 4.1 Fast** | $0.20 | $0.50 | 2M | High-volume, low-cost |
+| **Grok 3 mini** | check latest | check latest | — | Faster, less accurate |
+
+#### Open-Weight Models via API (April 2026)
+| Model | Input / 1M | Output / 1M | Context | Provider Examples |
+|-------|------------|-------------|---------|-------------------|
+| **Llama 4 Scout** | $0.11 | $0.34 | 10M | Together AI, Groq, Fireworks |
+| **Llama 4 Maverick** | $0.27 | $0.85 | 1M | Together AI, Groq, Fireworks |
+| **DeepSeek-V3** | $0.25 | $1.10 | 128K | DeepSeek API, Together AI |
+| **DeepSeek-R1** | $0.55 | $2.19 | 128K | DeepSeek API |
+| **Mistral Large 3** | $0.50 | $1.50 | 256K | Mistral API, AWS Bedrock |
+| **Llama 3.3 70B** | ~$0.10–0.20 | ~$0.30–0.60 | 128K | Groq, Together AI |
+| **Qwen2.5-Coder-32B** | ~$0.50 | ~$1.00 | 32K | Together AI |
+
+#### Embedding Models (April 2026)
 | Model | Cost / 1M tokens | Dimension |
 |-------|------------------|-----------|
 | **text-embedding-3-large** | $0.13 | 3072 |
@@ -100,7 +115,7 @@ Committed (1-year): $2.00 / 1M input tokens (20% savings)
 | **Cohere embed-v3** | $0.10 | 1024 |
 
 > [!IMPORTANT]
-> **Inference-time Compute Costs:** For models with "Extended Thinking" or reasoning modes (o3, Claude 3.7), you are charged for **internal thinking tokens** even if not shown to the user. This can increase total request cost by 2x–10x for logic-heavy tasks. Always set a `budget_tokens` cap in production.
+> **Inference-time Compute Costs:** For models with "Extended Thinking" or reasoning modes (GPT-5.4 Pro, Claude Opus 4.6), you are charged for **internal thinking tokens** even if not shown to the user. This can increase total request cost by 2x-10x for logic-heavy tasks. Always set a `budget_tokens` cap in production.
 
 ---
 
@@ -115,10 +130,11 @@ def calculate_request_cost(
     model: str
 ) -> float:
     pricing = {
-        "gpt-4o": {"input": 2.50, "output": 10.00},
-        "gpt-4o-mini": {"input": 0.15, "output": 0.60},
-        "claude-3.5-sonnet": {"input": 3.00, "output": 15.00},
-        "claude-3.5-haiku": {"input": 0.25, "output": 1.25},
+        "gpt-5.4": {"input": 2.50, "output": 15.00},
+        "gpt-5.4-mini": {"input": 0.75, "output": 4.50},
+        "claude-sonnet-4.6": {"input": 3.00, "output": 15.00},
+        "claude-opus-4.6": {"input": 5.00, "output": 25.00},
+        "gemini-3.1-flash": {"input": 0.10, "output": 3.00},
     }
     
     rates = pricing[model]
@@ -141,7 +157,7 @@ Per request:
 
 Input: 2,600 tokens, Output: 300 tokens
 
-GPT-4o cost: (2600 × $2.50 + 300 × $10) / 1M = $0.0095 per request
+GPT-5.4 cost: (2600 × $2.50 + 300 × $15) / 1M = $0.0110 per request
 
 At 10,000 requests/day:
 Daily: $95
@@ -154,10 +170,10 @@ Per document:
 - Document: 8,000 tokens
 - Summary: 500 tokens
 
-GPT-4o cost: (8000 × $2.50 + 500 × $10) / 1M = $0.025
+GPT-5.4 cost: (8000 × $2.50 + 500 × $15) / 1M = $0.0275
 
-1,000 documents: $25
-10,000 documents: $250
+1,000 documents: $27.50
+10,000 documents: $275
 ```
 
 ### Monthly Cost Projection
@@ -189,9 +205,9 @@ costs = project_monthly_cost(
     requests_per_day=50000,
     avg_input_tokens=2000,
     avg_output_tokens=400,
-    model="gpt-4o"
+    model="gpt-5.4"
 )
-# Output: ~$12,500/month
+# Output: ~$18,750/month
 ```
 
 ---
@@ -211,21 +227,21 @@ class ModelRouter:
         complexity = self.classifier.predict(query)
         
         if complexity < 0.3:
-            return "gpt-4o-mini"  # Simple queries
+            return "gpt-5.4-mini"  # Simple queries
         elif complexity < 0.7:
-            return "gpt-4o-mini"  # Medium, try cheap first
+            return "gpt-5.4-mini"  # Medium, try cheap first
         else:
-            return "gpt-4o"  # Complex queries
-    
+            return "gpt-5.4"  # Complex queries
+
     def route_with_fallback(self, query: str, context: str) -> str:
         # Try cheap model first
-        response = self.try_model("gpt-4o-mini", query, context)
-        
+        response = self.try_model("gpt-5.4-mini", query, context)
+
         if self.is_quality_sufficient(response):
             return response
-        
+
         # Fallback to expensive model
-        return self.try_model("gpt-4o", query, context)
+        return self.try_model("gpt-5.4", query, context)
 ```
 
 **Potential savings:** 50-70% with minimal quality impact
@@ -320,8 +336,8 @@ response = model.generate(
 )
 
 # Cost impact:
-# Before: avg 500 output tokens = $0.005 per request (GPT-4o)
-# After: avg 250 output tokens = $0.0025 per request
+# Before: avg 500 output tokens = $0.0075 per request (GPT-5.4)
+# After: avg 250 output tokens = $0.00375 per request
 # Savings: 50% on output costs
 ```
 
@@ -339,17 +355,17 @@ response = model.generate(
 
 ## Context Caching Economics
 
-**The 2025 "Golden Rule" for RAG.**
+**The "Golden Rule" for RAG (still true in 2026).**
 If you have a fixed system prompt or a shared knowledge base (prefix) larger than 10,000 tokens, **Context Caching** is mandatory.
 
-**Break-even Analysis:**
-- **Standard Input**: $3.00 / 1M tokens (Claude Sonnet 4.5)
+**Break-even Analysis (Claude Sonnet 4.6):**
+- **Standard Input**: $3.00 / 1M tokens
 - **Cached Input**: $0.30 / 1M tokens (90% discount)
-- **Cache Write Fee**: $3.75 / 1M tokens (one-time)
+- **Cache Write Fee**: $3.75 / 1M tokens (5-min TTL at 1.25x); $6.00 (1-hour TTL at 2x)
 
-`Break-even = (Write Fee) / (Standard Rate - Cached Rate) ≈ 1.4 requests`
+`Break-even = (Write Fee) / (Standard Rate - Cached Rate) ≈ 1.4 requests (5-min) or 2.2 requests (1-hour)`
 
-If your long prefix is used by **more than 2 users**, caching it is strictly cheaper than sending it raw every time.
+If your long prefix is used by **more than 2 users**, caching it is strictly cheaper than sending it raw every time. Both OpenAI and Anthropic now offer batch API discounts (50% off) that stack with caching.
 
 ---
 
@@ -364,7 +380,7 @@ If your long prefix is used by **more than 2 users**, caching it is strictly che
 | **TCO Break-even**| **Cost-effective < 40% util** | **Cost-effective > 40% util** |
 
 **Principal-level Nuance:**
-"GPU Cloud Arbitrage" involves moving production workloads between providers based on **Spot Instance availability**. In 2025, tools like **Skypilot** automate this, saving up to 60% on self-hosting costs by following "low-demand" regions globally.
+"GPU Cloud Arbitrage" involves moving production workloads between providers based on **Spot Instance availability**. In 2025-26, tools like **Skypilot** automate this, saving up to 60% on self-hosting costs by following "low-demand" regions globally. The rise of MoE models (Llama 4 Scout fits on a single H100, Maverick on ~2x H100) has further reduced self-hosting GPU requirements compared to dense models.
 
 ### When Self-Hosting Makes Sense
 
@@ -374,15 +390,17 @@ Break-even analysis:
 API cost at scale:
 - 1M requests/month
 - 2,500 tokens average
-- GPT-4o: ~$25,000/month
+- GPT-5.4: ~$37,500/month
+- Claude Sonnet 4.6: ~$30,000/month
 
-Self-hosted equivalent (Llama 70B):
-- 4x H100 80GB: ~$12/hour × 730 = $8,760/month
+Self-hosted equivalent (Llama 4 Maverick via MoE):
+- 2x H100 80GB: ~$6/hour × 730 = $4,380/month
 - Engineering time: $5,000/month (0.5 FTE)
 - Ops overhead: $2,000/month
-- Total: ~$15,760/month
+- Total: ~$11,380/month
 
-Savings: $9,240/month = 37%
+Savings vs GPT-5.4: $26,120/month = 70%
+Savings vs Claude Sonnet 4.6: $18,620/month = 62%
 ```
 
 ### Self-Hosting Cost Components
@@ -507,10 +525,10 @@ I would approach cost optimization in layers:
 
 **2. Model selection:**
 ```
-Simple queries (60%): GPT-4o-mini at $0.001/request
-Complex queries (40%): GPT-4o at $0.01/request
-Weighted avg: $0.0046/request (vs $0.01 all GPT-4o)
-Savings: 54%
+Simple queries (60%): GPT-5.4-mini at $0.003/request
+Complex queries (40%): GPT-5.4 at $0.011/request
+Weighted avg: $0.0062/request (vs $0.011 all GPT-5.4)
+Savings: 44%
 ```
 
 **3. Infrastructure:**
@@ -556,11 +574,14 @@ Decision depends on multiple factors:
 
 ## References
 
-- OpenAI Pricing: https://openai.com/pricing
-- Anthropic Pricing: https://www.anthropic.com/pricing
-- Google AI Pricing: https://ai.google.dev/pricing
+- OpenAI Pricing: https://developers.openai.com/api/docs/pricing
+- Anthropic Pricing: https://platform.claude.com/docs/en/about-claude/pricing
+- Google AI Pricing: https://ai.google.dev/gemini-api/docs/pricing
+- xAI Pricing: https://docs.x.ai/developers/models
+- Mistral Pricing: https://docs.mistral.ai/getting-started/changelog
 - Lambda Labs GPU Pricing: https://lambdalabs.com/service/gpu-cloud
 - RunPod Pricing: https://www.runpod.io/pricing
+- LLM Pricing Comparison: https://pricepertoken.com/
 
 ---
 

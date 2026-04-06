@@ -1,11 +1,12 @@
-# AutoGen and CrewAI (March 2026)
+# Microsoft Agent Framework, CrewAI, and the Agent SDK Landscape (April 2026)
 
-In 2025-2026, **AutoGen** and **CrewAI** have both undergone major rewrites. AutoGen 0.4 is a full async-first redesign (AgentChat API), while CrewAI added **Flows** — a state-machine orchestration layer alongside its classic Process model.
+In 2025-2026, the multi-agent framework landscape consolidated significantly. Microsoft **retired AutoGen** and merged it with Semantic Kernel into the unified **Microsoft Agent Framework** (RC 1.0, February 2026). CrewAI matured to v1.13 with enterprise-grade features and reported use by 60%+ of Fortune 500 companies. Meanwhile, every major AI lab shipped its own agent SDK: Anthropic's Claude Agent SDK, OpenAI's Agents SDK, and Google's ADK.
 
 ## Table of Contents
 
 - [CrewAI: The Manager Perspective](#crewai)
-- [AutoGen: The Developer Perspective](#autogen)
+- [Microsoft Agent Framework (AutoGen's Successor)](#microsoft-agent-framework)
+- [The Agent SDK Landscape (2026)](#agent-sdk-landscape)
 - [Swarms and Peer-to-Peer Communication](#swarms)
 - [Framework Comparison Matrix](#comparison)
 - [Interview Questions](#interview-questions)
@@ -44,48 +45,97 @@ class ContentFlow(Flow):
         return publisher.publish(article)
 ```
 
-**2026 Use Cases**: CrewAI + Flows is the best framework for **business process automation** (content pipelines, data analysis workflows) where the structure is well-defined.
+### CrewAI v1.13 (April 2026 Updates)
+
+CrewAI v1.13 marks a turning point toward enterprise production readiness:
+
+- **Enterprise SSO**: Single Sign-On fully documented for enterprise deployments
+- **RBAC Improvements**: Role-Based Access Control with a full permissions reference matrix
+- **GPT-5 Compatibility**: Fixes for OpenAI's GPT-5 and newer o-series models that dropped support for the `stop` parameter
+- **A2A Task Execution**: Agent-to-Agent dynamic task delegation in a structured, deterministic manner
+- **NVIDIA NemoClaw Integration**: Infrastructure-level policy enforcement for secure enterprise deployment
+- **RuntimeState RootModel**: Unified state serialization for complex workflows
+
+**2026 Use Cases**: CrewAI + Flows is the best framework for **business process automation** (content pipelines, data analysis workflows) where the structure is well-defined. CrewAI reports powering roughly 2 billion agentic executions.
+
+> *Verified April 2026. Source: docs.crewai.com/en/changelog*
 
 ---
 
-## AutoGen: The Developer Perspective
+## Microsoft Agent Framework (AutoGen's Successor)
 
-### AutoGen 0.4 (Complete Rewrite)
+### The Merger: AutoGen + Semantic Kernel = Agent Framework
 
-Microsoft released AutoGen 0.4 in late 2025 — a **complete rewrite** with a new async-first architecture.
+In late 2025, Microsoft **retired AutoGen as a standalone product** and merged it with Semantic Kernel into the unified **Microsoft Agent Framework**. Release Candidate 1.0 shipped in February 2026, with GA targeted for Q2 2026.
+
+**What the merger combines:**
+- **From AutoGen**: Simple abstractions for single- and multi-agent conversation patterns (group chat, round-robin, handoffs)
+- **From Semantic Kernel**: Enterprise-grade session management, type safety, filters, telemetry, and extensive model/embedding support
+
+### Migration Path
+
+AutoGen continues to receive bug fixes and security patches, but **new features go exclusively into the Agent Framework**. Microsoft provides an official migration guide. If starting a new project, use the Agent Framework directly.
+
+### Key Capabilities
 
 ```python
-# AutoGen 0.4: AgentChat API
-from autogen_agentchat.agents import AssistantAgent, UserProxyAgent
-from autogen_agentchat.teams import RoundRobinGroupChat
-from autogen_ext.models import OpenAIChatCompletionClient
+# Microsoft Agent Framework: Graph-based workflow
+from agent_framework import Agent, Workflow, HandoffStep
 
-model_client = OpenAIChatCompletionClient(model="gpt-4o")
+planner = Agent("Planner", model="gpt-4o", system_message="Decompose tasks.")
+executor = Agent("Executor", model="gpt-4o-mini", system_message="Execute sub-tasks.")
 
-coder = AssistantAgent(
-    "Coder",
-    model_client=model_client,
-    system_message="You write Python code."
+workflow = Workflow(
+    steps=[
+        HandoffStep(from_agent=planner, to_agent=executor),
+    ],
+    state_management="session",  # Built-in session persistence
 )
-reviewer = AssistantAgent(
-    "Reviewer",
-    model_client=model_client,
-    system_message="You review code for bugs and style."
-)
-
-team = RoundRobinGroupChat([coder, reviewer], max_turns=4)
-
-# Async-native
-async def run():
-    result = await team.run(task="Write a binary search function.")
-    print(result.messages[-1].content)
 ```
 
-**Key 0.4 changes:**
-- **Event-driven**: Agents communicate via typed events, not raw text messages
-- **Async-first**: Every API is async by default
-- **AgentChat** high-level API vs **Core** low-level API
-- **Magentic-One**: Microsoft's multi-agent system built on AutoGen 0.4 for complex web tasks
+**Framework highlights:**
+- **Unified .NET and Python**: Same programming model across both languages
+- **Graph-based Workflows**: Sequential, concurrent, handoff, and group chat patterns with explicit control
+- **State Management**: Robust session-based persistence for long-running and human-in-the-loop scenarios
+- **MCP Support**: Native Model Context Protocol integration for tool access
+- **Multi-provider**: Supports OpenAI, Azure OpenAI, Anthropic, Google, and local models
+
+> *Verified April 2026. Source: learn.microsoft.com/en-us/agent-framework*
+
+---
+
+## The Agent SDK Landscape (2026)
+
+Every major AI lab now ships its own agent framework. Here is the landscape as of April 2026:
+
+### Claude Agent SDK (Anthropic)
+
+The Claude Agent SDK (renamed from Claude Code SDK in late 2025) provides the same tools, agent loop, and context management that power Claude Code, available as a library in Python and TypeScript.
+
+- **Built-in tools**: File reading, command execution, code editing — agents work immediately without custom tool implementation
+- **Supervisor pattern**: Hierarchical agent trees with delegation
+- **Deployment**: Supports AWS Bedrock, Google Vertex AI, and Azure
+- **As of March 2026**: Python v0.1.48, TypeScript v0.2.71
+
+### OpenAI Agents SDK
+
+OpenAI's lightweight framework for multi-agent workflows using native Python/TypeScript constructs:
+
+- **Handoff-based**: Agents delegate to each other using `Handoff(TargetAgent)` — no central supervisor needed
+- **Guardrails**: Built-in input validation and safety checks
+- **MCP integration**: Native MCP server tool support
+- **Realtime agents**: Voice agent support with gpt-realtime-1.5
+
+### Google Agent Development Kit (ADK)
+
+Google's framework optimized for the Google ecosystem but model-agnostic:
+
+- **Multi-language**: Python, TypeScript, Java, Go (all at 1.0.0 as of early 2026)
+- **A2A native**: Built-in Agent-to-Agent protocol support for cross-vendor orchestration
+- **Vertex AI integration**: Deploy to Agent Engine Runtime for managed hosting
+- **Graph-based**: Agent workflows modeled as directed graphs
+
+> *Verified April 2026.*
 
 ---
 
@@ -99,14 +149,16 @@ In late 2025, both frameworks have adopted **Swarm Patterns**.
 
 ## Framework Comparison Matrix
 
-| Feature | CrewAI | AutoGen 0.4 | LangGraph |
-|---------|--------|--------------|-----------|
-| **Core Abstraction** | Task/Process/Flow | Event/Team | State/Graph |
-| **Architecture** | Declarative + State Machine | Async Event-Driven | Imperative DAG |
-| **Ease of Use** | High | Medium | Low |
-| **Control** | Low-Medium | Medium | High |
-| **Best For** | Business Automations | Collaborative Logic | Complex Tool-Use |
-| **API Style** | Python classes + YAML | Async Python | Python + JSON state |
+| Feature | CrewAI | MS Agent Framework | LangGraph | Claude Agent SDK | OpenAI Agents SDK | Google ADK |
+|---------|--------|-------------------|-----------|-----------------|-------------------|------------|
+| **Core Abstraction** | Task/Process/Flow | Workflow/Agent | State/Graph | Supervisor/Tools | Handoff/Agent | Agent Graph |
+| **Architecture** | Declarative + State Machine | Graph Workflows | Imperative DAG | Hierarchical Tree | Swarm Handoffs | Directed Graph |
+| **Ease of Use** | High | Medium | Low | Medium | High | Medium |
+| **Control** | Low-Medium | Medium-High | High | Medium | Low-Medium | Medium-High |
+| **Best For** | Business Automations | Enterprise .NET/Python | Complex Orchestration | Coding/Tool Agents | Quick Multi-Agent | Google Cloud AI |
+| **Multi-Language** | Python | .NET + Python | Python | Python + TS | Python + TS | Python, TS, Java, Go |
+| **MCP Support** | Yes | Yes | Via tools | Native | Yes | Yes |
+| **A2A Support** | Via extension | Planned | Via tools | No (direct) | No (direct) | Native |
 
 ---
 
@@ -117,16 +169,25 @@ In late 2025, both frameworks have adopted **Swarm Patterns**.
 **Strong answer:**
 **Speed vs. Precision**. I use **CrewAI** when I need to stand up a team of agents for a standard process (like content generation or data analysis) very quickly. It provides high-level abstractions for "Planning" and "Cooperation" out of the box. I switch to **LangGraph** when I need **Granular Control** over every state transition, multi-turn human-in-the-loop triggers, or complex error-recovery logic that doesn't fit into the "Role-playing team" metaphor.
 
-### Q: How does AutoGen handle "Infinite Loops" where agents keep talking to each other without solving the task?
+### Q: Microsoft retired AutoGen in favor of the Agent Framework. How does this affect existing AutoGen deployments?
 
 **Strong answer:**
-We use **Termination Conditions** and **Max Conversational Turns**. In 2025, we also implement a \"Critic Agent\" whose only job is to detect if the conversation is stagnant. If the Critic detects circularity, it triggers a `UserProxy` to interrupt or force-switches the `GroupChatManager` to a different reasoning path. We also monitor **Token Velocity**: if an agent pair uses 100K tokens in 2 minutes without progress, we kill the session automatically.
+AutoGen continues to receive bug fixes and security patches, so existing deployments are not immediately broken. However, **all new feature development** is in the Agent Framework. The migration path is well-documented: AutoGen's `AssistantAgent` maps to the Agent Framework's `Agent` class, `GroupChat` maps to the new `Workflow` patterns, and Semantic Kernel's enterprise features (session management, telemetry, filters) are now available natively. The key benefit of migrating is **unified .NET and Python support** and **graph-based workflows** that give explicit control over multi-agent execution paths. For new projects, start with the Agent Framework directly.
+
+### Q: How do you prevent "Infinite Loops" where agents keep talking to each other without solving the task?
+
+**Strong answer:**
+We use **Termination Conditions** and **Max Conversational Turns**. We also implement a "Critic Agent" whose only job is to detect if the conversation is stagnant. If the Critic detects circularity, it triggers a user proxy to interrupt or force-switches the group chat manager to a different reasoning path. We also monitor **Token Velocity**: if an agent pair uses 100K tokens in 2 minutes without progress, we kill the session automatically. In 2026, frameworks like the Microsoft Agent Framework and LangGraph provide built-in workflow timeouts and state checkpointing that make loop detection more systematic.
 
 ---
 
 ## References
-- CrewAI. "The Multi-Agent Process Engine" (2025)
-- Microsoft Research. "AutoGen: Enabling Next-Gen LLM Applications" (2025)
+- CrewAI. "The Multi-Agent Process Engine" (2025/2026, v1.13)
+- Microsoft. "Agent Framework Overview" (2026) — learn.microsoft.com/en-us/agent-framework
+- Microsoft. "AutoGen to Agent Framework Migration Guide" (2026)
+- Anthropic. "Claude Agent SDK" (2026) — platform.claude.com/docs/en/agent-sdk
+- OpenAI. "Agents SDK Documentation" (2026)
+- Google. "Agent Development Kit" (2026) — google.github.io/adk-docs
 - OpenAI Swarm. "Lightweight Multi-Agent Orchestration" (2024 tech report)
 
 ---

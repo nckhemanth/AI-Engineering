@@ -8,7 +8,7 @@
 </p>
 
 <p align="center">
-  <a href="#"><img src="https://img.shields.io/badge/Updated-March%202026-blue.svg" alt="Last Updated"></a>
+  <a href="#"><img src="https://img.shields.io/badge/Updated-April%202026-blue.svg" alt="Last Updated"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-green.svg" alt="License"></a>
   <a href="#-contributing"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome"></a>
   <a href="https://github.com/ombharatiya/ai-system-design-guide"><img src="https://img.shields.io/github/stars/ombharatiya/ai-system-design-guide?style=social" alt="Stars"></a>
@@ -24,9 +24,11 @@
 |--------------|------------|
 | **Prepare for interviews** | [Question Bank](00-interview-prep/01-question-bank.md) → [Answer Frameworks](00-interview-prep/02-answer-frameworks.md) |
 | **Learn AI systems fast** | [LLM Internals](01-foundations/01-llm-internals.md) → [RAG Fundamentals](06-retrieval-systems/01-rag-fundamentals.md) |
-| **Build production RAG** | [Chunking](06-retrieval-systems/02-chunking-strategies.md) → [Vector DBs](06-retrieval-systems/04-vector-databases-comparison.md) → [Reranking](06-retrieval-systems/06-reranking-strategies.md) |
+| **Build production RAG** | [Chunking](06-retrieval-systems/02-chunking-strategies.md) → [Vector DBs](06-retrieval-systems/04-vector-databases.md) → [Reranking](06-retrieval-systems/06-reranking-strategies.md) → [Production RAG](06-retrieval-systems/14-production-rag-at-scale.md) |
+| **Advanced retrieval** | [Contextual Retrieval](06-retrieval-systems/10-contextual-retrieval.md) → [ColBERT](06-retrieval-systems/11-late-interaction-colbert.md) → [Multi-modal RAG](06-retrieval-systems/12-multimodal-rag.md) |
 | **Design multi-tenant AI** | [Isolation Patterns](12-security-and-access/04-multi-tenant-rag-isolation.md) → [Case Study](16-case-studies/08-multi-tenant-saas.md) |
-| **Build agents** | [Agent Fundamentals](07-agentic-systems/01-agent-fundamentals.md) → [MCP](07-agentic-systems/03-tool-use-and-mcp.md) → [LangGraph](09-frameworks-and-tools/02-langgraph-orchestration.md) |
+| **Build agents** | [Agent Fundamentals](07-agentic-systems/01-agent-fundamentals.md) → [MCP & A2A](07-agentic-systems/03-tool-use-and-mcp.md) → [LangGraph](09-frameworks-and-tools/02-langgraph-orchestration.md) |
+| **Tool-use & computer agents** | [Landscape](17-tool-use-and-computer-agents/01-tool-use-landscape.md) → [OpenClaw](17-tool-use-and-computer-agents/03-openclaw-deep-dive.md) → [Safety](17-tool-use-and-computer-agents/07-safety-and-governance.md) |
 | **Autonomous coding agents** | [Claude Code](09-frameworks-and-tools/09-claude-code.md) → [OpenCoder Landscape](09-frameworks-and-tools/10-opencoderguide.md) |
 | **Pick the right model (2026)** | [Model Taxonomy](02-model-landscape/01-model-taxonomy.md) → [Pricing](02-model-landscape/03-pricing-and-costs.md) |
 | **Evaluate AI in production** | [AI Evals Guide (Phoenix/Langfuse)](ai_evals_comprehensive_study_guide.md) → [AI Evals Guide (LangWatch/Langfuse)](ai_evals_complete_guide_langwatch_langfuse.md) |
@@ -41,8 +43,8 @@
 
 | This Guide | Printed Books |
 |------------|---------------|
-| March 2026 models (Claude 3.7 Sonnet, GPT-4.5, o3, Gemini 2.0 Flash, Grok 3) | Stuck on GPT-4 |
-| MCP, Claude Code, Agentic RAG, OpenCoder landscape | Does not exist |
+| April 2026 models (Claude Opus 4.6, GPT-5.4, Gemini 3.1, Llama 4, Grok 4) | Stuck on GPT-4 |
+| MCP 2.0, A2A protocol, OpenClaw, Computer Use, Agentic RAG, ColBERT | Does not exist |
 | Real pricing with verification dates | Already wrong |
 | Staff-level interview Q&A | Generic questions |
 
@@ -53,12 +55,12 @@
 ```
 ├── 00-interview-prep/           # Questions, frameworks, exercises
 ├── 01-foundations/              # Transformers, attention, embeddings
-├── 02-model-landscape/          # Claude 3.7, GPT-4.5, o3, Gemini 2.0, DeepSeek
+├── 02-model-landscape/          # Claude Opus 4.6, GPT-5.4, Gemini 3.1, Llama 4, Grok 4
 ├── 03-training-and-adaptation/  # Fine-tuning, LoRA, DPO, distillation
 ├── 04-inference-optimization/   # KV cache, PagedAttention, vLLM
 ├── 05-prompting-and-context/    # CoT, Extended Thinking, DSPy, prompt injection
-├── 06-retrieval-systems/        # RAG, chunking, GraphRAG, Agentic RAG
-├── 07-agentic-systems/          # MCP 2.0, multi-agent, swarms, computer-use
+├── 06-retrieval-systems/        # RAG, chunking, GraphRAG, Agentic RAG, ColBERT, Contextual Retrieval
+├── 07-agentic-systems/          # MCP 2.0, A2A protocol, multi-agent, computer-use
 ├── 08-memory-and-state/         # L1-L3 memory tiers, Mem0, caching
 ├── 09-frameworks-and-tools/     # LangGraph, DSPy, LlamaIndex, Claude Code, OpenCoder
 ├── 10-document-processing/      # Vision-LLM OCR, multimodal parsing
@@ -67,6 +69,7 @@
 ├── 13-reliability-and-safety/   # Guardrails, red-teaming
 ├── 14-evaluation-and-observability/ # RAGAS, LangSmith, drift detection
 ├── 15-ai-design-patterns/       # Pattern catalog, anti-patterns
+├── 17-tool-use-and-computer-agents/ # OpenClaw, Computer Use, tool agents, safety
 ├── 16-case-studies/             # Real-world architectures with diagrams
 ├── GLOSSARY.md                  # Every term defined
 │
@@ -166,4 +169,4 @@ MIT License. See [LICENSE](LICENSE).
   <a href="https://linkedin.com/in/ombharatiya"><img src="https://img.shields.io/badge/LinkedIn-Connect-0A66C2?logo=linkedin" alt="LinkedIn"></a>
 </p>
 
-<p align="center"><i>Last updated: March 2026</i></p>
+<p align="center"><i>Last updated: April 2026</i></p>

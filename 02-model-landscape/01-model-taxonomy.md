@@ -1,11 +1,13 @@
 # Model Taxonomy
 
-This chapter provides a comprehensive guide to the model landscape as of **March 2026**, covering model families, capabilities, and selection criteria for production systems.
+This chapter provides a comprehensive guide to the model landscape as of **April 2026**, covering model families, capabilities, and selection criteria for production systems.
+
+> **Last verified: April 2026.** The model landscape evolves rapidly. Always cross-check with provider pricing pages and release notes.
 
 ## Table of Contents
 
 - [Model Categories](#model-categories)
-- [Frontier Models (March 2026)](#frontier-models)
+- [Frontier Models (April 2026)](#frontier-models)
 - [Reasoning Models](#reasoning-models)
 - [Open Source Models](#open-source-models)
 - [Specialized Models](#specialized-models)
@@ -20,127 +22,149 @@ This chapter provides a comprehensive guide to the model landscape as of **March
 
 ## Model Categories
 
-### By Capability Level (March 2026 Reality)
+### By Capability Level (April 2026 Reality)
 
 | Tier | Characteristics | Examples | Use Case |
 |------|-----------------|----------|----------|
-| **Frontier** | State-of-the-art reasoning, agentic mastery | Claude 3.7 Sonnet, GPT-4.5, o3, Grok 3 | Complex reasoning, coding, production agents |
-| **Fast/Efficient** | Sub-200ms, cost-optimized | Gemini 2.0 Flash, Claude 3.5 Haiku, o3-mini | High-volume streaming, UI, real-time |
-| **Battle-Tested** | Mature, widely-deployed, stable | GPT-4o, Claude 3.5 Sonnet | Enterprise production workloads |
-| **Small/Edge** | Private, edge, specialized | Llama 3.3 8B, Phi-4, Gemma 3 | Local privacy, on-device |
-| **Reasoning-Heavy** | Extended internal CoT | o3, DeepSeek-R1, Claude 3.7 (thinking) | Math, code debug, multi-step logic |
+| **Frontier** | State-of-the-art reasoning, agentic mastery | Claude Opus 4.6, GPT-5.4, Gemini 3.1 Pro, Grok 4 | Complex reasoning, coding, production agents |
+| **Fast/Efficient** | Sub-200ms, cost-optimized | Gemini 3.1 Flash, GPT-5.4-mini, Claude Haiku 4.5 | High-volume streaming, UI, real-time |
+| **Battle-Tested** | Mature, widely-deployed, stable | Claude Sonnet 4.6, GPT-4o, Gemini 2.5 Pro | Enterprise production workloads |
+| **Small/Edge** | Private, edge, specialized | Llama 4 Scout, Mistral Small 4, Phi-4 | Local privacy, on-device, MoE-efficient |
+| **Reasoning-Heavy** | Extended internal CoT | GPT-5.4 Pro, DeepSeek-R1, Claude Opus 4.6 (thinking) | Math, code debug, multi-step logic |
 
 ### By Reasoning Mode (2025–2026)
 
 | Mode | Capability | Models | Use Case |
 |------|------------|--------|----------|
-| **Standard** | Fast, intuitive response | GPT-4o, Claude 3.5 Sonnet | Chat, simple extraction |
-| **Extended Thinking** | Internal scratchpad CoT before output | Claude 3.7 Sonnet, o3, DeepSeek-R1 | Math, code debugging, planning |
-| **Hybrid** | User-controllable reasoning depth | Claude 3.7 Sonnet | Variable complexity tasks |
+| **Standard** | Fast, intuitive response | GPT-5.4-mini, Claude Sonnet 4.6 | Chat, simple extraction |
+| **Extended Thinking** | Internal scratchpad CoT before output | Claude Opus 4.6, GPT-5.4 Pro, DeepSeek-R1 | Math, code debugging, planning |
+| **Hybrid** | User-controllable reasoning depth | Claude Opus 4.6, GPT-5.4 | Variable complexity tasks |
 
 ---
 
-## Frontier Models (March 2026)
+## Frontier Models (April 2026)
 
-### Claude 3.7 Sonnet (Anthropic)
+### Claude Opus 4.6 (Anthropic)
 
 | Attribute | Value |
 |-----------|-------|
-| Context Window | 200K tokens |
+| Context Window | 1M tokens |
+| Max Output | 128K tokens |
+| Input Cost | $5.00 / 1M tokens |
+| Output Cost | $25.00 / 1M tokens |
+| Extended Thinking | Native adaptive thinking (configurable budget_tokens) |
+| Multimodal | Text + Vision |
+| Highlights | Most capable Anthropic model; exceptional coding and reasoning |
+| Released | February 2026 |
+
+**Best for:** Most complex reasoning, autonomous software engineering, agentic workflows.
+**Considerations:** Premium pricing; use Sonnet 4.6 for tasks that don't need peak capability.
+
+### Claude Sonnet 4.6 (Anthropic)
+
+| Attribute | Value |
+|-----------|-------|
+| Context Window | 1M tokens |
 | Input Cost | $3.00 / 1M tokens |
 | Output Cost | $15.00 / 1M tokens |
-| Extended Thinking | Native (configurable budget_tokens) |
+| Extended Thinking | Supported |
 | Multimodal | Text + Vision |
-| Highlights | Top SWE-bench Verified; best production coding model |
-| Released | February 2025 |
+| Highlights | Handles tasks previously requiring Opus tier; best cost/quality balance |
+| Released | February 2026 |
 
-**Best for:** Autonomous software engineering, Claude Code agent, complex reasoning.
-**Considerations:** Enable Extended Thinking for hard tasks; use standard mode for high-volume.
+**Best for:** Production coding agents (powers Claude Code), complex reasoning at scale.
+**Considerations:** Now covers most Opus-level tasks at lower cost. Strong default for most workloads.
 
-### GPT-4.5 (OpenAI)
-
-| Attribute | Value |
-|-----------|-------|
-| Context Window | 128K tokens |
-| Input Cost | $75.00 / 1M tokens |
-| Output Cost | $150.00 / 1M tokens |
-| Multimodal | Text, Vision |
-| Highlights | Highest EQ/creativity scores; strong instruction following |
-| Released | February 2025 |
-
-**Best for:** Creative tasks, customer-facing chat, nuanced role-following.
-**Considerations:** Expensive; not the top choice for heavy reasoning or volume.
-
-### o3 (OpenAI)
+### GPT-5.4 (OpenAI)
 
 | Attribute | Value |
 |-----------|-------|
-| Context Window | 200K tokens |
-| Input Cost | $10.00 / 1M tokens |
-| Output Cost | $40.00 / 1M tokens |
-| Reasoning | High-compute internal CoT (configurable effort: low/medium/high) |
-| Highlights | #1 on most reasoning benchmarks (ARC-AGI, SWE-bench, AIME) |
-| Released | January 2025 |
+| Context Window | 272K tokens (standard); extended available |
+| Input Cost | $2.50 / 1M tokens |
+| Output Cost | $15.00 / 1M tokens |
+| Multimodal | Text, Vision, native computer use |
+| Highlights | Built-in computer-use capabilities; 33% fewer factual errors vs GPT-5.2; combines coding + agentic strengths |
+| Released | March 2026 |
 
-**Best for:** Autonomous tool use, complex math/science, agentic tasks requiring deep reasoning.
-**Considerations:** Cost scales dramatically on "high" effort; use o3-mini for volume.
+**Best for:** Agentic workflows with computer use, coding, professional tasks.
+**Considerations:** Long-context pricing doubles at 272K+ tokens.
 
-### o3-mini (OpenAI)
+### GPT-5.4-mini (OpenAI)
 
 | Attribute | Value |
 |-----------|-------|
-| Context Window | 200K tokens |
-| Input Cost | $1.10 / 1M tokens |
-| Output Cost | $4.40 / 1M tokens |
-| Reasoning | Lightweight reasoning (effort: low/medium/high) |
-| Highlights | Best cost/reasoning tradeoff in its tier |
-| Released | January 2025 |
+| Context Window | 272K tokens |
+| Input Cost | $0.75 / 1M tokens |
+| Output Cost | $4.50 / 1M tokens |
+| Highlights | Best cost/performance for high-volume GPT-5 tier workloads |
+| Released | March 2026 |
 
-**Best for:** High-volume reasoning tasks, coding assistance, STEM Q&A.
+**Best for:** High-volume API calls, cost-optimized reasoning, production chatbots.
 
-### Gemini 2.0 Flash (Google)
+### GPT-5.4 Pro (OpenAI)
+
+| Attribute | Value |
+|-----------|-------|
+| Context Window | 272K tokens |
+| Input Cost | $30.00 / 1M tokens |
+| Output Cost | $180.00 / 1M tokens |
+| Highlights | Maximum reasoning power; premium tier for hardest tasks |
+| Released | March 2026 |
+
+**Best for:** Competition-level math, complex multi-step reasoning.
+**Considerations:** Very expensive; use standard GPT-5.4 or mini for volume.
+
+### Gemini 3.1 Pro (Google)
+
+| Attribute | Value |
+|-----------|-------|
+| Context Window | 1M tokens |
+| Input Cost | $2.00 / 1M tokens (standard); $4.00 (200K+) |
+| Output Cost | $12.00 / 1M tokens (standard); $18.00 (200K+) |
+| Multimodal | Native: Text, Vision, Audio, Video |
+| Highlights | State-of-the-art Google reasoning; powerful agentic and coding capabilities |
+| Released | February 2026 |
+
+**Best for:** Complex reasoning, multimodal analysis, long-context workloads.
+**Considerations:** Replaced Gemini 3 Pro Preview. Gemini 2.5 Pro/Flash deprecated June 2026.
+
+### Gemini 3.1 Flash (Google)
 
 | Attribute | Value |
 |-----------|-------|
 | Context Window | 1M tokens |
 | Input Cost | $0.10 / 1M tokens |
-| Output Cost | $0.40 / 1M tokens |
+| Output Cost | $3.00 / 1M tokens |
 | Multimodal | Native: Text, Vision, Audio, Video |
-| Highlights | Fastest frontier model; Live API for real-time multimodal |
-| Released | December 2024 |
+| Highlights | Fastest Google model; best price/performance for high-volume |
+| Released | March 2026 |
 
 **Best for:** Real-time multimodal apps, high-volume pipelines, long-context RAG.
 
-### Gemini 2.0 Pro (Google)
+### Grok 4 (xAI)
 
 | Attribute | Value |
 |-----------|-------|
-| Context Window | 1M tokens |
-| Input Cost | $3.50 / 1M tokens |
-| Output Cost | $10.50 / 1M tokens |
-| Highlights | Best Google model for complex tasks; leads on MMLU |
-| Released | January 2025 |
+| Context Window | 256K tokens |
+| Input Cost | $3.00 / 1M tokens |
+| Output Cost | $15.00 / 1M tokens |
+| Highlights | Native tool use and real-time search; competitive reasoning |
+| Released | July 2025 (Grok 4.20 beta: February 2026) |
 
-### Grok 3 (xAI)
+**Best for:** Live web research, reasoning-heavy tasks, real-time X/web integration.
+**Considerations:** Grok 4.1 Fast available at $0.20/$0.50 for high-volume.
 
-| Attribute | Value |
-|-----------|-------|
-| Context Window | 131K tokens |
-| Input Cost | $3.00 / 1M tokens (API preview) |
-| Highlights | Competitive with claude/o3 on reasoning; DeepSearch for real-time web |
-| Released | February 2026 |
-
-**Best for:** Live web research, reasoning-heavy tasks, frontier alternative.
-
-### Model Comparison: Frontier Tier (March 2026)
+### Model Comparison: Frontier Tier (April 2026)
 
 | Model | Reasoning | Coding | Context | Agentic | Cost |
 |-------|-----------|--------|---------|---------|------|
-| o3 | ★★★★★ | ★★★★★ | ★★★★ | ★★★★★ | $$$$ |
-| Claude 3.7 Sonnet | ★★★★★ | ★★★★★ | ★★★★ | ★★★★★ | $$$ |
-| GPT-4.5 | ★★★★ | ★★★★ | ★★★ | ★★★★ | $$$$$ |
-| Gemini 2.0 Flash | ★★★ | ★★★ | ★★★★★ | ★★★ | $ |
-| Grok 3 | ★★★★ | ★★★★ | ★★★ | ★★★★ | $$$ |
+| Claude Opus 4.6 | ★★★★★ | ★★★★★ | ★★★★★ | ★★★★★ | $$$$ |
+| GPT-5.4 | ★★★★★ | ★★★★★ | ★★★★ | ★★★★★ | $$$ |
+| Claude Sonnet 4.6 | ★★★★★ | ★★★★★ | ★★★★★ | ★★★★★ | $$$ |
+| Gemini 3.1 Pro | ★★★★★ | ★★★★ | ★★★★★ | ★★★★ | $$ |
+| Grok 4 | ★★★★ | ★★★★ | ★★★★ | ★★★★ | $$$ |
+| GPT-5.4-mini | ★★★★ | ★★★★ | ★★★★ | ★★★ | $ |
+| Gemini 3.1 Flash | ★★★ | ★★★ | ★★★★★ | ★★★ | $ |
 
 ### Production Heritage & Maturity
 
@@ -149,9 +173,9 @@ While frontier models lead on benchmarks, many enterprise systems rely on **batt
 | Model Family | Production Since | Maturity Note |
 |--------------|------------------|---------------|
 | **GPT-4o** | May 2024 | Most mature ecosystem; lowest latency variance; highest rate limits. |
-| **Claude 3.5 Sonnet** | June 2024 | Gold standard for tool-use reliability and structured output. |
-| **Gemini 1.5 Pro** | May 2024 | Pioneer of mass-scale context; highly stable for long-document analysis. |
-| **o1** | Sept 2024 | First production reasoning model; well-understood failure modes. |
+| **Claude 3.5 Sonnet / 3.7 Sonnet** | June 2024 | Gold standard for tool-use reliability and structured output. |
+| **Gemini 2.5 Pro** | March 2025 | Proven at scale; stable long-context. Being deprecated June 2026 in favor of 3.x. |
+| **o1 / o3** | Sept 2024 | Well-understood reasoning model failure modes; o3 superseded o1. |
 
 **Why stay on "older" frontier models?**
 1. **Consistency**: New models have "release-window" latency spikes and behavior shifts.
@@ -162,28 +186,39 @@ While frontier models lead on benchmarks, many enterprise systems rely on **batt
 
 ## Open Source Models
 
-### Llama 3.3 Family (Meta)
+### Llama 4 Family (Meta) -- NEW April 2026
+
+| Model | Parameters | Context | Architecture | Notes |
+|-------|------------|---------|--------------|-------|
+| Llama 4 Scout | 17B active / 16 experts (MoE) | 10M | Sparse MoE | Industry-leading 10M context; fits single H100; beats Gemma 3, Gemini 2.0 Flash-Lite |
+| Llama 4 Maverick | 17B active / 128 experts (MoE) | 1M | Sparse MoE | Beats GPT-4o and Gemini 2.0 Flash; comparable to DeepSeek V3 at half active params |
+| Llama 4 Behemoth | ~288B active (est.) | — | Dense MoE | Still training; outperforms GPT-4.5, Gemini 2.0 Pro on STEM benchmarks |
+
+**Strengths:**
+- First Llama generation with Mixture-of-Experts architecture
+- Natively multimodal from the ground up (text, image, video input)
+- Open weights on Hugging Face; available via Meta AI on WhatsApp, Messenger, Instagram
+- Scout's 10M token context window is industry-leading for open models
+
+### Llama 3.x Family (Meta) -- Previous Generation
 
 | Model | Parameters | Context | License | Notes |
 |-------|------------|---------|---------|-------|
-| Llama 3.3 8B | 8B | 128K | Llama 3.3 | Best-in-class small model (March 2026) |
-| Llama 3.3 70B | 70B | 128K | Llama 3.3 | Strongest open-weight general model |
-| Llama 3.1 405B | 405B | 128K | Llama 3.1 | Largest Meta model; frontier-competitive |
+| Llama 3.3 70B | 70B | 128K | Llama 3.3 | Still widely deployed; strong general model |
+| Llama 3.1 405B | 405B | 128K | Llama 3.1 | Largest dense Meta model; being superseded by Llama 4 |
 
-**Strengths:**
-- Native multimodality across sizes (Llama 3.2 vision variants)
-- Excellent tool-use and JSON following
-- Largest open community and tooling ecosystem
+**Note:** Llama 3.x remains widely used in production, but Llama 4 Scout/Maverick offer superior performance with lower active parameter counts thanks to MoE.
 
 ### DeepSeek Family
 
 | Model | Parameters | Status | Notes |
 |-------|------------|--------|-------|
-| DeepSeek-V3 | 671B (MoE) | Frontier | GPT-4o level at a fraction of training cost; open weights |
+| DeepSeek-V3 | 671B (MoE, 37B active) | Frontier | GPT-4o level at a fraction of training cost; open weights |
+| DeepSeek-V3.2 | 671B (MoE) | Frontier | General-purpose, optimized for speed and daily tasks |
 | DeepSeek-R1 | 671B (MoE) | Reasoning | Matches o1 on math/code; first open-source reasoning model |
 | DeepSeek-R1-Distill | 7B–70B | Reasoning | Distilled to smaller models; cost-efficient reasoning |
 
-**Key 2026 context**: DeepSeek shocked the industry by demonstrating frontier-level performance at dramatically lower training costs. Open weights available on Hugging Face.
+**Key 2026 context**: DeepSeek shocked the industry by demonstrating frontier-level performance at dramatically lower training costs. V3.2 is the latest general-purpose release. DeepSeek R2 (successor to R1) has been delayed, reportedly due to challenges training on Huawei Ascend chips. DeepSeek V4, focused on coding and long-context software engineering, is anticipated in 2026. Open weights available on Hugging Face.
 
 ### Qwen 2.5 Family (Alibaba)
 
@@ -197,45 +232,48 @@ While frontier models lead on benchmarks, many enterprise systems rely on **batt
 
 | Model | Parameters | Notes |
 |-------|------------|-------|
-| Mistral Large 2 | 123B | Strong reasoning; permissive license |
-| Mistral Small 3 | 24B | Ultra-efficient; matches 7B quality at less compute |
-| Mixtral 8x22B | 141B (MoE) | Best open MoE for throughput |
+| Mistral Large 3 | 675B (MoE, 41B active) | Sparse MoE; parity with best open-weight models; #2 OSS non-reasoning on LMArena |
+| Mistral Small 4 | — | Hybrid instruct/reasoning/coding; 256K context; released March 2026 |
+| Mistral 3 (14B/8B/3B) | 3B–14B | Unified family: multilingual, multimodal, Apache 2.0 |
+| Mixtral 8x22B | 141B (MoE) | Previous gen; still viable for throughput |
 
 ---
 
 ## Specialized Models
 
-### Coding Mastery (March 2026)
+### Coding Mastery (April 2026)
 
 | Model | Specialization | Why it wins |
 |-------|----------------|-------------|
-| **Claude 3.7 Sonnet** | Software Engineering | Highest SWE-bench Verified score; powers Claude Code |
-| **o3** | Algorithmic reasoning | Best at complex multi-step code logic; USACO problems |
-| **Qwen2.5-Coder-32B** | Open-source coding | Best price-to-performance for self-hosted IDEs |
+| **Claude Sonnet 4.6 / Opus 4.6** | Software Engineering | Powers Claude Code; top SWE-bench scores; 1M context |
+| **GPT-5.4** | Agentic coding | Native computer-use; strong full-stack coding |
+| **Llama 4 Maverick** | Open-source coding | Beats GPT-4o on coding benchmarks; open weights |
+| **Qwen2.5-Coder-32B** | Self-hosted coding | Best price-to-performance for self-hosted IDEs |
 | **DeepSeek-R1-Distill-70B** | Open reasoning+code | Best open reasoning model for coding at 70B |
 
 ### Reasoning & Math
 
 | Model | Approach | Best For |
 |-------|----------|----------|
-| **o3** | High-compute internal CoT | ARC-AGI, competition math, autonomous agents |
-| **Claude 3.7 Sonnet (thinking)** | Extended Thinking mode | Software planning, complex logic |
+| **GPT-5.4 Pro** | Maximum-compute reasoning | Competition math, hardest multi-step problems |
+| **Claude Opus 4.6 (thinking)** | Adaptive thinking | Software planning, complex logic, agentic reasoning |
 | **DeepSeek-R1** | RL-based thinking | Open-source logical inference, competitive math |
-| **Grok 3 (DeepSearch)** | Web-grounded reasoning | Research tasks needing live information |
+| **Grok 4 (DeepSearch)** | Web-grounded reasoning | Research tasks needing live information |
 
 ### Long Context (1M+)
 
 | Model | Window | Recall Performance |
 |-------|--------|-------------------|
-| **Gemini 2.0 Flash** | 1M | 99%+ Needle-in-a-Haystack (verified) |
-| **Gemini 2.0 Pro** | 1M | Best quality at 1M context |
-| **Claude 3.7 Sonnet** | 200K | Reliable, high-quality long context |
+| **Llama 4 Scout** | 10M | Industry-leading open-weight context window |
+| **Gemini 3.1 Pro / Flash** | 1M | Best quality at 1M context; proven at scale |
+| **Claude Opus 4.6 / Sonnet 4.6** | 1M | Full 1M at standard pricing; reliable recall |
+| **Llama 4 Maverick** | 1M | Open-weight 1M context with MoE efficiency |
 
 ---
 
 ## Embedding Models
 
-### API Embedding Models (March 2026)
+### API Embedding Models (April 2026)
 
 | Model | Dimensions | Max Tokens | MTEB Score | Cost/1M |
 |-------|------------|------------|------------|---------|
@@ -274,21 +312,21 @@ While frontier models lead on benchmarks, many enterprise systems rely on **batt
 What is your primary constraint?
 
 ├── Cost → Use smaller model, consider open source
-│   ├── Very cost sensitive → o3-mini, Claude 3.5 Haiku, Gemini 2.0 Flash
-│   └── Moderate budget → Claude 3.7 Sonnet, o3-mini
+│   ├── Very cost sensitive → GPT-5.4-mini, Claude Haiku 4.5, Gemini 3.1 Flash
+│   └── Moderate budget → Claude Sonnet 4.6, GPT-5.4
 │
 ├── Quality + Reasoning → Use frontier models
-│   ├── Highest reasoning → o3 (high effort)
-│   └── Coding + reasoning → Claude 3.7 Sonnet (Extended Thinking)
+│   ├── Highest reasoning → GPT-5.4 Pro, Claude Opus 4.6
+│   └── Coding + reasoning → Claude Sonnet 4.6 (Extended Thinking)
 │
 ├── Latency → Use fast models
-│   ├── <100ms response → Gemini 2.0 Flash, GPT-4o-mini
-│   └── <500ms response → Claude 3.5 Haiku, o3-mini (low)
+│   ├── <100ms response → Gemini 3.1 Flash, GPT-5.4-mini
+│   └── <500ms response → Claude Haiku 4.5, Grok 4.1 Fast
 │
 ├── Self-hosting → Use open models
-│   ├── Maximum capability → Llama 3.1 405B, DeepSeek-V3
-│   ├── Good balance → Llama 3.3 70B, Qwen2.5-72B
-│   └── Edge/mobile → Llama 3.2 3B, Phi-4
+│   ├── Maximum capability → Llama 4 Maverick, DeepSeek-V3
+│   ├── Good balance → Llama 4 Scout, Llama 3.3 70B, Qwen2.5-72B
+│   └── Edge/mobile → Mistral 3 3B, Phi-4
 │
 └── Privacy → Self-host or use on-prem
     └── Choose open models with appropriate license
@@ -297,7 +335,7 @@ What is your primary constraint?
 ### Semantic Routing
 
 In 2025-26, static decision trees are being replaced by **Semantic Routers**:
-- **How it works**: A small, fast embedding model vectorises the query. If it matches a "known easy" cluster → cheap model (e.g., Gemini 2.0 Flash). If it hits an "agentic/logic" cluster → o3 or Claude 3.7.
+- **How it works**: A small, fast embedding model vectorises the query. If it matches a "known easy" cluster → cheap model (e.g., Gemini 3.1 Flash). If it hits an "agentic/logic" cluster → Claude Opus 4.6 or GPT-5.4.
 - **Benefit**: Automates cost-optimization without hardcoded rules.
 - **Implementation**: Tools like `semantic-router` (Python) or custom Weaviate/Pinecone classifiers.
 
@@ -313,55 +351,60 @@ Enterprises must comply with GDPR (EU), DPDPA (India), Saudi Arabia PDPL, and se
 | **Azure Government/Sovereign** | Microsoft | Dedicated infra in 40+ regions; approved for US Gov/EU NIS2 |
 | **AWS Sovereign Cloud** | Amazon | Physically isolated VPCs; GDPR-safe EU regions |
 | **Google Distributed Cloud** | Google | Air-gapped on-prem Gemini deployment |
-| **Private Llama 3.3** | Meta (self-host) | Maximum data sovereignty; open weights |
+| **Private Llama 4 / 3.3** | Meta (self-host) | Maximum data sovereignty; open weights (Llama 4 MoE or 3.3 dense) |
 | **DeepSeek (self-host)** | DeepSeek (open) | Open weights; no data leaves your infra |
+| **Mistral Large 3 (self-host)** | Mistral (Apache 2.0) | 675B MoE; open weights; strong multilingual |
 
 **Tradeoff**: Sovereign clouds carry a **20-30% premium** over standard global regions but are mandatory for finance and government.
 
-### Cost Comparison at Scale (March 2026)
+### Cost Comparison at Scale (April 2026)
 
 Assume 1M requests/day, 1K input + 500 output tokens:
 
 | Model | Input Cost/Day | Output Cost/Day | Total/Month |
 |-------|----------------|-----------------|-------------|
-| GPT-4o | $2,500 | $5,000 | $225,000 |
-| Claude 3.7 Sonnet | $3,000 | $7,500 | $315,000 |
-| o3-mini | $1,100 | $2,200 | $99,000 |
-| Gemini 2.0 Flash | $100 | $200 | $9,000 |
+| Claude Sonnet 4.6 | $3,000 | $7,500 | $315,000 |
+| GPT-5.4 | $2,500 | $7,500 | $300,000 |
+| Gemini 3.1 Pro | $2,000 | $6,000 | $240,000 |
+| GPT-5.4-mini | $750 | $2,250 | $90,000 |
+| Gemini 3.1 Flash | $100 | $1,500 | $48,000 |
+| Self-hosted Llama 4 Scout* | — | — | ~$15,000 |
 | Self-hosted Llama 3.3 70B* | — | — | ~$50,000 |
 
-*Self-hosted assumes 4× H100 GPUs
+*Self-hosted Llama 4 Scout fits on a single H100; Llama 3.3 70B assumes 4x H100 GPUs
 
 ---
 
 ## Capability Comparison
 
-### Benchmark Performance (March 2026, Verified)
+### Benchmark Performance (April 2026)
 
-| Model | MMLU | HumanEval | SWE-bench Verified | AIME 2025 |
-|-------|------|-----------|--------------------|-----------|
-| **o3 (high)** | 91.6 | 96.7 | 71.7% | 96.7% |
-| **Claude 3.7 Sonnet** | 90.5 | 93.6 | 70.3% | 80.0% |
-| **GPT-4.5** | 89.4 | 86.8 | 38.0% | 36.7% |
-| **Grok 3** | 90.2 | 88.9 | — | 93.3% |
-| **DeepSeek-R1** | 90.8 | 92.6 | 49.2% | 79.8% |
-| **Llama 3.1 405B** | 88.6 | 89.0 | — | — |
-| **Gemini 2.0 Flash** | 85.5 | 83.0 | — | — |
+| Model | MMLU | HumanEval | SWE-bench Verified | Notes |
+|-------|------|-----------|--------------------|-------|
+| **Claude Opus 4.6** | — | — | — | Top-tier across reasoning and coding; specific scores check latest |
+| **GPT-5.4** | — | — | — | 33% fewer factual errors vs GPT-5.2; strong coding + agentic |
+| **Claude Sonnet 4.6** | — | — | — | Approaches Opus-level on many tasks |
+| **Gemini 3.1 Pro** | — | — | — | State-of-the-art Google reasoning |
+| **Grok 4** | — | — | — | Competitive reasoning; real-time web integration |
+| **Llama 4 Maverick** | — | — | — | Beats GPT-4o, Gemini 2.0 Flash on reported benchmarks |
+| **DeepSeek-R1** | 90.8 | 92.6 | 49.2% | First open-source reasoning model; math/code strong |
 
-*Source: Respective technical reports and LMSYS Chatbot Arena, March 2026. Always verify with current leaderboards.*
+*Source: Respective technical reports and LMSYS Chatbot Arena / LMArena, April 2026. Benchmark scores for newest models (Opus 4.6, GPT-5.4, Gemini 3.1) are evolving rapidly -- always verify with current leaderboards.*
 
-### Task-Specific Recommendations (March 2026)
+### Task-Specific Recommendations (April 2026)
 
 | Task | Recommended Models | Why |
 |------|--------------------|-----|
-| **Autonomous Coding Agent** | Claude 3.7 Sonnet | Powers Claude Code; best SWE-bench + tool reliability |
-| **Complex Reasoning** | o3, DeepSeek-R1, Claude 3.7 (thinking) | Extended Thinking / internal CoT |
-| **High-Volume API** | Gemini 2.0 Flash, o3-mini | Lowest cost per token in class |
-| **Long Context RAG** | Gemini 2.0 Flash (1M), Claude 3.7 (200K) | Verified long-range recall |
-| **Multimodal Real-time** | Gemini 2.0 Flash Live API | Real-time audio/video/text native |
-| **Private Production** | Llama 3.3 70B, Qwen2.5-72B | High capability with local control |
-| **Open-source Coding** | Qwen2.5-Coder-32B, DeepSeek-R1-Distill | Self-hosted, top HumanEval |
-| **Creative/Chat** | GPT-4.5 | Top EQ scores; best conversation quality |
+| **Autonomous Coding Agent** | Claude Sonnet 4.6 / Opus 4.6 | Powers Claude Code; 1M context; top tool reliability |
+| **Complex Reasoning** | GPT-5.4 Pro, Claude Opus 4.6 (thinking), DeepSeek-R1 | Maximum reasoning power |
+| **Agentic Computer Use** | GPT-5.4 | First general-purpose model with native computer-use capabilities |
+| **High-Volume API** | Gemini 3.1 Flash, GPT-5.4-mini | Lowest cost per token in class |
+| **Long Context RAG** | Gemini 3.1 Pro/Flash (1M), Claude Sonnet 4.6 (1M) | Verified long-range recall |
+| **Ultra-Long Context** | Llama 4 Scout (10M) | Industry-leading 10M context; open weights |
+| **Multimodal Real-time** | Gemini 3.1 Flash | Real-time audio/video/text native |
+| **Private Production** | Llama 4 Maverick, Llama 3.3 70B, Qwen2.5-72B | High capability with local control |
+| **Open-source Coding** | Llama 4 Maverick, Qwen2.5-Coder-32B | Open weights, strong coding benchmarks |
+| **Creative/Chat** | GPT-5.4 | Strong conversation quality and instruction following |
 
 ---
 
@@ -383,16 +426,16 @@ Monthly cost = requests/day × 30 × avg_tokens × rate
 Always calculate for top 2-3 candidates.
 
 **3. Latency requirements:**
-- If <200ms TTFT needed: Gemini 2.0 Flash, Claude 3.5 Haiku, o3-mini (low)
-- If quality is paramount: Accept 2-3s with Claude 3.7 or o3
+- If <200ms TTFT needed: Gemini 3.1 Flash, Claude Haiku 4.5, GPT-5.4-mini
+- If quality is paramount: Accept 2-3s with Claude Opus 4.6 or GPT-5.4
 
 **4. Operational requirements:**
-- Self-hosting: Llama 3.3, DeepSeek-V3
+- Self-hosting: Llama 4 Scout/Maverick, DeepSeek-V3
 - Compliance / data residency: Azure Sovereign or self-hosted
 
 **5. Practical selection:**
-- Start with Claude 3.7 Sonnet or GPT-4o for prototyping
-- A/B test Gemini 2.0 Flash for 80% of queries (cost)
+- Start with Claude Sonnet 4.6 or GPT-5.4 for prototyping
+- A/B test Gemini 3.1 Flash for 80% of queries (cost)
 - Keep frontier on hard queries via semantic routing
 
 ### Q: Explain the tradeoffs between proprietary and open source models.
@@ -408,28 +451,30 @@ Always calculate for top 2-3 candidates.
 | Customization | Limited fine-tuning | Full fine-tuning |
 | Ops overhead | None | Significant |
 
-**Key insight (2026)**: DeepSeek-V3 and R1 changed this conversation — open models now match GPT-4o on benchmarks. The gap is real but narrower than ever.
+**Key insight (2026)**: DeepSeek-V3/R1 and now Llama 4 have changed this conversation -- open models match or beat GPT-4o on many benchmarks. With Llama 4 Maverick matching DeepSeek V3 on reasoning at half the active parameters, the gap is narrower than ever.
 
-### Q: What is the difference between o3 and Claude 3.7's Extended Thinking?
+### Q: What is the difference between GPT-5.4 Pro and Claude Opus 4.6's Extended Thinking?
 
 **Strong answer:**
 Both use internal chain-of-thought, but the mechanics differ:
 
-- **o3**: OpenAI's compute-scaling approach. Allocates variable compute effort (low/medium/high). Internal thoughts are never exposed. Single API parameter: `reasoning_effort`.
-- **Claude 3.7 Extended Thinking**: Returns thinking tokens in a separate `<thinking>` block. Configurable `budget_tokens` (1024–100K). You can inspect the reasoning chain for debugging, though it's not shown to end users.
+- **GPT-5.4 Pro**: OpenAI's maximum-compute reasoning tier ($30/$180 per 1M tokens). Allocates high compute to reasoning. Internal thoughts are not exposed. Successor to the o3 line.
+- **Claude Opus 4.6 Adaptive Thinking**: Returns thinking tokens in a separate `<thinking>` block. Configurable `budget_tokens`. You can inspect the reasoning chain for debugging. Full 1M context with 128K max output.
 
-**Production choice**: For debugging and trust-building, Claude's visible thinking is more transparent. For simple high-accuracy tasks, o3-mini on medium effort is most cost-effective.
+**Production choice**: For debugging and trust-building, Claude's visible thinking is more transparent. For maximum raw reasoning power on math/competition tasks, GPT-5.4 Pro leads. For cost-effective reasoning, Claude Sonnet 4.6 or GPT-5.4-mini are strong choices.
 
 ---
 
 ## References
 
-- Anthropic: https://anthropic.com/claude/claude-3-7-sonnet
-- OpenAI Platform: https://platform.openai.com/docs/models
-- Google AI: https://ai.google.dev/
-- Meta Llama: https://llama.meta.com/
+- Anthropic: https://platform.claude.com/docs/en/about-claude/models/overview
+- OpenAI Platform: https://developers.openai.com/api/docs/models
+- Google AI: https://ai.google.dev/gemini-api/docs/models
+- Meta Llama: https://www.llama.com/
 - DeepSeek: https://api-docs.deepseek.com/
-- LMSYS Chatbot Arena: https://chat.lmsys.org/
+- xAI Grok: https://docs.x.ai/developers/models
+- Mistral AI: https://docs.mistral.ai/models/
+- LMArena Leaderboard: https://lmarena.ai/
 - Hugging Face Open LLM Leaderboard: https://huggingface.co/spaces/open-llm-leaderboard/open_llm_leaderboard
 
 ---

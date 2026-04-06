@@ -596,4 +596,4 @@ With circuit breaker: after detecting the outage, requests fail fast. System rem
 
 ---
 
-*Next: [Safety and Guardrails](02-guardrails.md)*
+*Previous: [Ensemble Methods](02-ensemble-methods.md)*
