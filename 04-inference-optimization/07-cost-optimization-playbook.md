@@ -48,6 +48,10 @@ The most effective cost-saving strategy is to use the **cheapest model capable o
 - **Cost**: 100x cheaper to run than frontier models.
 - **Latency**: < 100ms response times.
 
+### The DeepSeek V4 Floor
+
+DeepSeek V4 Flash (released April 24, 2026) reset the floor for cheap frontier-class inference at **$0.14 / $0.28 per 1M tokens** with a 1M context window and cache-hit input at $0.0028/M. DeepSeek V4 Pro is roughly 10x cheaper than Claude Opus 4.7 ($0.435 / $0.87 vs $5 / $25 per 1M) after the 75% discount was made permanent on May 22, 2026. For cache-heavy, high-volume workloads where the prefix is reused often (RAG with shared knowledge bases, batch classification, codebase agents), V4 Flash or V4 Pro is now the dominant cost-optimization lever before you even start cascading. Verify on the [DeepSeek pricing page](https://api-docs.deepseek.com/quick_start/pricing) before committing.
+
 ---
 
 ## Spot Instance Strategies

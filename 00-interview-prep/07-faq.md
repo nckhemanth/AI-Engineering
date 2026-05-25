@@ -113,9 +113,9 @@ A computer-use agent takes screenshots of a desktop or browser, decides on a mou
 
 There is no single best model in May 2026. The leaderboard has fractured by task. **Claude Opus 4.7** leads SWE-bench Pro at 64.3% for complex coding. **GPT-5.5** leads Terminal-Bench 2.0 at 82.7% for agentic terminal work. **Gemini 3.1 Pro** leads GPQA Diamond at 94.3% for scientific reasoning. **Claude Sonnet 4.6** delivers around 90% of Opus 4.7's quality at 40% of the price. See [Model Taxonomy](../02-model-landscape/01-model-taxonomy.md).
 
-### How much does Claude / GPT / Gemini cost?
+### How much does Claude / GPT / Gemini / DeepSeek cost?
 
-Pricing changes monthly. As of May 2026, frontier-tier models run roughly $3-15 per million input tokens and $15-75 per million output tokens, with caching cutting that 75-90% on repeated prefixes. Mid-tier models (Claude Sonnet 4.6, GPT-5.5-mini, Gemini 3.1 Flash) run roughly $0.30-3 / $1-15 per million. Always cross-check the provider pricing pages for current rates. See [Pricing and Costs](../02-model-landscape/03-pricing-and-costs.md).
+Pricing changes monthly. As of May 2026, frontier-tier closed models run roughly $3-15 per million input tokens and $15-75 per million output tokens, with caching cutting that 75-90% on repeated prefixes. Mid-tier models (Claude Sonnet 4.6, GPT-5.5-mini, Gemini 3.1 Flash) run roughly $0.30-3 / $1-15 per million. **DeepSeek reset the floor**: V4 Pro is $0.435 / $0.87 per 1M (75% discount made permanent May 22, 2026), and V4 Flash is $0.14 / $0.28 per 1M with a 1M context window, roughly 10x cheaper than the closed frontier for many tasks. Always cross-check the provider pricing pages for current rates. See [Pricing and Costs](../02-model-landscape/03-pricing-and-costs.md).
 
 ### What is the difference between Claude Opus and Claude Sonnet?
 

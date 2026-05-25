@@ -74,7 +74,7 @@ flowchart TD
 | Real pricing with May 2026 verification dates | Already wrong |
 | Staff-level interview Q&A (110 questions through May 2026) + Job Market Trends | Generic questions |
 
-**Quick model picker (May 2026):** Claude Opus 4.7 for tool-use and long-context reasoning, GPT-5.5 for general production, Gemini 3.1 Pro for multimodal, DeepSeek V4 Pro and Llama 4 for self-hosted. Full breakdown in [Model Taxonomy](02-model-landscape/01-model-taxonomy.md).
+**Quick model picker (May 2026):** Claude Opus 4.7 for tool-use and long-context reasoning, GPT-5.5 for general production, Gemini 3.1 Pro for multimodal, DeepSeek V4 Flash ($0.14/$0.28 per 1M) or V4 Pro ($0.435/$0.87 after permanent May 22 discount) for cheap frontier-class output, Llama 4 for self-hosted. Full breakdown in [Model Taxonomy](02-model-landscape/01-model-taxonomy.md).
 
 ---
 

@@ -52,15 +52,16 @@ Production systems use **Shared KV Caches** for prompts with common prefixes (e.
 
 ## API-level Context Caching (Prompt Caching)
 
-Major providers (OpenAI, Anthropic, DeepSeek) now offer **Prompt Caching** discounts.
+Major providers (OpenAI, Anthropic, Google, DeepSeek) now offer **Prompt Caching** discounts.
 
-| Provider | Feature Name | Pricing (Cached) | Best For |
-|----------|--------------|------------------|----------|
-| **Anthropic** | Context Caching | 90% discount ($0.30/1M) | Long system prompts |
-| **OpenAI** | Prompt Caching | 50% discount ($2.50/1M) | Multi-turn chat |
-| **DeepSeek** | Context Caching | **$0.01 / 1M tokens** | Massive codebase RAG |
+| Provider | Feature Name | Pricing (Cached input) | Best For |
+|----------|--------------|------------------------|----------|
+| **Anthropic** | Context Caching | 90% discount (Sonnet 4.6 cached: $0.30/1M) | Long system prompts, tool schemas |
+| **OpenAI** | Prompt Caching | ~50% discount on cached input (GPT-5.5 cached: ~$2.50/1M) | Multi-turn chat |
+| **Google** | Context Caching | Cache reads $0.20/1M (Gemini 3.1 Pro under 200K); hourly storage fee separate | Long shared corpora |
+| **DeepSeek** | Context Caching | **$0.003625/M (V4 Pro) / $0.0028/M (V4 Flash)** | Massive codebase RAG; cheapest cache tier on the market |
 
-**Break-even Nuance**: If your cached prefix is reused more than **1.1x to 1.5x**, it is cheaper to use caching than raw tokens.
+**Break-even nuance**: If your cached prefix is reused more than **1.1x to 1.5x**, it is cheaper to use caching than raw tokens. Anthropic charges a 25% premium on cache writes, so for short prefixes the break-even is higher (3-5x reuse). DeepSeek cut the cache-hit price to 1/10 of launch on April 26, 2026. For cache-heavy workloads, V4 Flash now lands roughly 30-50x cheaper per cached token than GPT-5.5.
 
 ---
 
