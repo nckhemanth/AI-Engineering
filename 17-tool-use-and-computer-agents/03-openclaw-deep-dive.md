@@ -1,4 +1,4 @@
-# OpenClaw Deep Dive: The Open-Source Personal AI Agent (April 2026)
+# OpenClaw Deep Dive: The Open-Source Personal AI Agent
 
 OpenClaw is an **open-source, self-hosted personal AI agent** that executes tasks through LLMs using messaging platforms as its primary interface. You talk to it via WhatsApp, Telegram, Slack, Discord, or Signal, and it talks back -- running shell commands, controlling your browser, managing calendars, processing emails, and orchestrating multi-step workflows.
 

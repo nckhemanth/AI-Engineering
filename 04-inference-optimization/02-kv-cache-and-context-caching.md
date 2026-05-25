@@ -1,6 +1,6 @@
 # KV Cache and Context Caching
 
-The KV Cache is the most significant memory consumer in long-context AI systems. In 2025, managing this cache effectively is the difference between a system that scales to 2M tokens and one that crashes at 10k.
+The KV Cache is the most significant memory consumer in long-context AI systems. Managing this cache effectively is the difference between a system that scales to 2M tokens and one that crashes at 10k.
 
 ## Table of Contents
 
@@ -28,7 +28,7 @@ During generation, the model needs the Key (K) and Value (V) tensors for all pre
 
 ## GQA: Grouped Query Attention
 
-GQA is the 2024-2025 standard for reducing KV Cache size without losing performance.
+GQA is the modern standard for reducing KV Cache size without losing performance.
 
 | Method | Ratio | KV Cache Reduction | Quality Loss |
 |--------|-------|-------------------|--------------|
@@ -42,7 +42,7 @@ GQA is the 2024-2025 standard for reducing KV Cache size without losing performa
 
 ## Context Caching (Self-hosted)
 
-In 2025, systems use **Shared KV Caches** for prompts with common prefixes (e.g., a 100-page knowledge base shared by 1,000 users).
+Production systems use **Shared KV Caches** for prompts with common prefixes (e.g., a 100-page knowledge base shared by 1,000 users).
 
 ### Disk vs. VRAM Caching
 - **VRAM Cache**: Instant access, strictly limited size.
@@ -64,9 +64,9 @@ Major providers (OpenAI, Anthropic, DeepSeek) now offer **Prompt Caching** disco
 
 ---
 
-## RAD-O: Retrieval Augmented Decoding (Dec 2025)
+## RAD-O: Retrieval Augmented Decoding
 
-RAD-O is a 2025 technique for context caching where the model **compresses** the KV cache of long documents into "Latent tokens."
+RAD-O is a context-caching technique where the model **compresses** the KV cache of long documents into "Latent tokens."
 - **How**: Instead of storing the full KV vectors for 1M tokens, it stores a compressed representation that is 10x smaller.
 - **Impact**: Enables 2M+ token contexts on hardware that previously only supported 200k.
 
@@ -82,7 +82,7 @@ Standard KV caches require contiguous memory allocation (one giant block of RAM)
 ### Q: Why is Context Caching better than RAG for a 50k token document?
 
 **Strong answer:**
-In 2025, with cheap context caching (like DeepSeek or Gemini), RAG is often "overkill" for medium-sized documents. 
+With cheap context caching (DeepSeek, Gemini, Anthropic), RAG is often "overkill" for medium-sized documents.
 1. **Recall**: Context caching gives 100% recall (the whole doc is in the window), whereas RAG depends on retrieval accuracy.
 2. **Coherence**: The model can see cross-references across the whole document.
 3. **Economics**: At 50k tokens, the cost of a cached input is often lower than the complexity of maintaining a vector database and retrieval pipeline.

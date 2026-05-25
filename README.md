@@ -40,7 +40,8 @@ A practical, continuously updated guide to AI system design, RAG architectures, 
 | **Evaluate AI in production** | [AI Evals Guide (Phoenix/Langfuse)](ai_evals_comprehensive_study_guide.md) → [AI Evals Guide (LangWatch/Langfuse)](ai_evals_complete_guide_langwatch_langfuse.md) |
 | **Find the best courses to learn AI** | [Recommended Courses & Learning Paths](COURSES.md) |
 | **Transition from my current role to AI** | [Role Transition Guide](TRANSITION_GUIDE.md) |
-| **Understand the 2026 AI job market** | [Job Market Trends - May 2026](00-interview-prep/06-job-market-trends-2026.md) ⭐ *NEW* |
+| **Understand the 2026 AI job market** | [Job Market Trends - May 2026](00-interview-prep/06-job-market-trends-2026.md) |
+| **Get a quick answer to a common question** | [FAQ](00-interview-prep/07-faq.md) (RAG, agents, models, eval, inference, memory, security) |
 | **Look up a term** | [Glossary](GLOSSARY.md) (every term defined) |
 
 ### Pick a path
