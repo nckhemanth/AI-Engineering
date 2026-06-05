@@ -121,10 +121,25 @@ The Claude Agent SDK (renamed from Claude Code SDK) provides the same tools, age
 
 OpenAI's lightweight framework for multi-agent workflows using native Python/TypeScript constructs:
 
-- **Handoff-based**: Agents delegate to each other using `Handoff(TargetAgent)` — no central supervisor needed
+- **Handoff-based**: Agents delegate to each other using `Handoff(TargetAgent)`, no central supervisor needed
 - **Guardrails**: Built-in input validation and safety checks
 - **MCP integration**: Native MCP server tool support
 - **Realtime agents**: Voice agent support with gpt-realtime-1.5
+
+### OpenAI AgentKit
+
+AgentKit is OpenAI's higher-level toolset that sits on top of the Responses API and Agents SDK. Where the Agents SDK is code-first, AgentKit targets teams who want to assemble and ship agents with less plumbing:
+
+- **Agent Builder**: A visual canvas for composing and versioning multi-agent workflows (nodes, branches, loops), then exporting to Agents SDK code.
+- **ChatKit**: An embeddable, themeable chat UI for dropping an agent experience into your product without building the front end.
+- **Connector Registry**: A central admin surface for managing how data sources and tools connect across OpenAI products, with governance and access control.
+- **Evals and guardrails**: Built-in trace grading, datasets, and prompt-optimization hooks so the build-to-eval loop stays in one place.
+
+**When to use it**: AgentKit suits teams who want a managed build-and-ship loop and are comfortable on OpenAI infrastructure. Drop to the raw Agents SDK when you need full control over the loop, or to LangGraph / Microsoft Agent Framework when you need a framework-neutral or self-hosted runtime.
+
+### OpenAI Apps SDK
+
+The Apps SDK extends the **Model Context Protocol** so an MCP server can ship a UI alongside its tools. A developer defines both the logic and an interactive interface, and the app renders inside a client like ChatGPT. This is the same idea the MCP spec is standardizing as "MCP Apps" (server-rendered UIs), and it turns MCP servers from headless tool endpoints into interactive surfaces. See [Tool Use and MCP](../07-agentic-systems/03-tool-use-and-mcp.md).
 
 ### Google Agent Development Kit (ADK)
 
@@ -187,6 +202,8 @@ We use **Termination Conditions** and **Max Conversational Turns**. We also impl
 - Microsoft. "AutoGen to Agent Framework Migration Guide" (2026)
 - Anthropic. "Claude Agent SDK" (2026) — platform.claude.com/docs/en/agent-sdk
 - OpenAI. "Agents SDK Documentation" (2026)
+- [OpenAI. "Introducing AgentKit" (2025)](https://openai.com/index/introducing-agentkit/)
+- [OpenAI. "Apps SDK" (2025)](https://developers.openai.com/apps-sdk)
 - Google. "Agent Development Kit" (2026) — google.github.io/adk-docs
 - OpenAI Swarm. "Lightweight Multi-Agent Orchestration" (2024 tech report)
 
