@@ -183,6 +183,20 @@ Windsurf differentiates via **Flows** (not to be confused with CrewAI Flows):
 
 **2026 reality**: Copilot's completion quality has been surpassed by Cursor/Windsurf for most developers, but its enterprise features and GitHub integration keep it dominant in large orgs.
 
+### Google Antigravity
+
+Antigravity is Google's agentic development platform, the successor to the Gemini CLI. It is less a text editor and more an **agent-first workspace** built around Gemini 3:
+
+| Feature | Detail |
+|---------|--------|
+| **Agent Manager** | A dedicated view to launch, watch, and steer multiple async coding agents instead of editing files one at a time |
+| **Planning + artifacts** | Agents produce a plan and reviewable artifacts (diffs, task lists, live browser sessions) before and during execution |
+| **Built-in browser** | Agents can run and visually test the UI they build |
+| **Model optionality** | Gemini 3 Pro by default, with support for Anthropic Claude and open models |
+| **Platform** | Cross-platform (macOS, Windows, Linux); public preview, free for individuals |
+
+**Best for**: Developers who want to operate at the "task" level (delegate a goal, review the plan and result) rather than the "edit" level. It competes with Cursor's Composer and Claude Code's agentic loop, with Google's bet being the multi-agent manager UI and tight Gemini 3 integration.
+
 ---
 
 ## Open-Source Coding Agents
@@ -505,6 +519,7 @@ I also track **regression rate** — if an agent fix introduces a new failing te
 - Cline: https://github.com/cline/cline
 - Cursor: https://cursor.sh/
 - Windsurf: https://codeium.com/windsurf
+- Google Antigravity: https://developers.googleblog.com/build-with-google-antigravity-our-new-agentic-development-platform/
 - SWE-bench Leaderboard: https://www.swebench.com/
 - LiveCodeBench: https://livecodebench.github.io/
 

@@ -89,7 +89,7 @@ Agents embedded directly in code editors. They have deep understanding of projec
 - Background agents that work asynchronously on branches
 - Optimized for developer workflow, not general automation
 
-**Examples:** Cursor (Agent Mode + Background Agents), Windsurf (Cascade), Cline, GitHub Copilot
+**Examples:** Cursor (Agent Mode + Background Agents), Windsurf (Cascade), Cline, GitHub Copilot, Google Antigravity (Gemini 3 agent-first workspace with a multi-agent manager view, successor to the Gemini CLI)
 
 ### 4. Computer-Use Agents (Vision-Based, GUI-Driven)
 
