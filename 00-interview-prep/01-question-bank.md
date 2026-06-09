@@ -1,6 +1,6 @@
 # AI System Design Interview Question Bank
 
-A topic-organized bank of 110+ AI system design interview questions (Q1-Q110, continuously numbered) with model answers, follow-ups, and signals strong candidates show, plus five unnumbered deep-dive scenarios. Updated through June 2026.
+A topic-organized bank of 116 AI system design interview questions (Q1-Q116, continuously numbered) with model answers, follow-ups, and signals strong candidates show, plus five unnumbered deep-dive scenarios. Updated through June 2026.
 
 This chapter provides a comprehensive collection of interview questions organized by topic. Each question includes the depth of answer expected and key points that strong candidates cover. Pair this with the [Answer Frameworks](02-answer-frameworks.md) (the meta-skill that turns memorized answers into fluent ones), the [FAQ](07-faq.md) (short answers to the most-asked AI engineering questions), and the [Job Market Trends](06-job-market-trends-2026.md) (the hiring context that shapes what gets asked right now).
 
@@ -8,7 +8,7 @@ This chapter provides a comprehensive collection of interview questions organize
 
 ```mermaid
 mindmap
-  root((110+ Questions))
+  root((116 Questions))
     RAG Architecture
       Pipeline design
       Chunking
@@ -63,6 +63,7 @@ mindmap
 - [Advanced Questions (December 2025)](#advanced-questions-december-2025) (Q50-Q65)
 - [Advanced Questions - March 2026](#advanced-questions--march-2026) (Q66-Q80)
 - [Advanced Questions - May 2026](#advanced-questions--may-2026) (Q81-Q110)
+- [Advanced Questions - June 2026](#advanced-questions--june-2026) (Q111-Q116) ⭐ *NEW*
 
 ---
 
@@ -4867,14 +4868,187 @@ Hallucination is now a P0 incident class, like a security breach. Treat it accor
 
 ---
 
+## Advanced Questions - June 2026
+
+*Fresh questions reflecting the June 2026 landscape: the Claude Fable 5 launch and its safeguard architecture, agentic context engineering becoming standard interview vocabulary, computer-use agents in production, Agent Skills, eval gaming, and cost-aware multi-provider routing. Designed for senior+ candidates.*
+
+### Q111: Claude Fable 5 routes sensitive queries to Claude Opus 4.8 via classifier-gated fallback. Critique this as a system design pattern and describe where you would apply tier routing in your own stack.
+
+**What interviewers look for:**
+- Understanding that model routing serves safety and compliance, not just cost
+- Ability to reason about classifier-gated architectures and their failure modes
+- Awareness of the June 2026 Fable 5 launch mechanics
+
+**Strong answer:**
+
+"Anthropic shipped a production example of a pattern most of us only used for cost: a classifier in front of the model decides per-request which tier serves it. With Fable 5, requests in three categories (offensive cyber, bioweapon-adjacent bio/chem, distillation attempts) fall back to Opus 4.8, the user is told, and Anthropic reports under 5% of sessions trigger it.
+
+**What the pattern buys you:**
+- **Capability without full exposure.** You can ship a stronger model while bounding its risk surface to the categories your classifiers watch.
+- **Graceful degradation instead of refusal.** The fallback serves a real answer from a weaker-but-safe tier rather than a refusal string. Users keep working.
+- **Auditability.** Every fallback event is a logged, explainable decision you can show a regulator.
+
+**Failure modes I would raise:**
+- **Classifier precision.** A conservative gate catches harmless requests (Anthropic admits this). In an enterprise product, false positives translate to support tickets, so I would track fallback rate per tenant and alert on spikes.
+- **Consistency cliffs.** The two tiers differ in capability and sometimes in formatting. A session that silently switches tiers mid-conversation can contradict itself. Surfacing the switch to the user, as Anthropic does, is the right call.
+- **Latency stacking.** The classifier adds a hop on every request. It must be a small fast model or a logit-based check, not another frontier call.
+
+**Where I apply it in my own stack:** compliance tiering (PII-touching queries go to a model deployment with stricter data residency), cost tiering (cheap tier with a confidence gate, escalation on low confidence), and capability tiering (route only ceiling-bound work to Fable-class pricing). The design lesson from June 2026 is that routing is now a first-class safety control, and interviewers increasingly expect you to treat the router as the most important component in the serving path."
+
+**Follow-up to expect:** How do you evaluate the router itself? (Golden set of boundary cases, per-category precision/recall, shadow-mode before enforcement, and a kill switch that fails open to the safe tier.)
+
+### Q112: Your agent performs well on short tasks but degrades badly past 30 minutes of autonomous work. Diagnose and fix it using context engineering.
+
+**What interviewers look for:**
+- Fluency in the agentic context engineering vocabulary (context rot, compaction, just-in-time loading, note-taking, sub-agent isolation)
+- A diagnosis-first approach rather than jumping to a framework
+- Quantified intuition about context budgets
+
+**Strong answer:**
+
+"This is almost always context rot: the window fills with stale tool output, the attention budget stretches across hundreds of thousands of low-signal tokens, and accuracy drops even though nothing 'failed.'
+
+**Diagnosis first.** I instrument the agent loop to log tokens-in-context per turn, split by category: system prompt, tool schemas, conversation, tool results, retrieved data. In degraded sessions you typically find 70-80% of the window is old tool output that no future step reads.
+
+**The fix is a layered context policy:**
+
+1. **Compaction.** At a threshold (say 60% of window), summarize the history into a structured digest that preserves decisions, constraints, and unresolved problems, then reinitialize the loop with the digest plus the most recent artifacts. Tune for recall first, then precision.
+2. **Just-in-time loading.** Stop pre-loading whole files and result sets. Keep lightweight identifiers (paths, IDs, URLs) in context and fetch content through tools when a step needs it.
+3. **Structured note-taking.** Give the agent a scratch file it writes progress to and re-reads after compaction. This is what keeps a 2-hour task coherent across multiple compaction cycles.
+4. **Sub-agent isolation.** Anything that generates bulk intermediate detail (a deep search, a multi-file analysis) runs in a sub-agent with a clean window and returns a 1-2k token summary. The coordinator never sees the raw detail.
+5. **System prompt calibration.** Keep the standing instructions in the minimal high-signal zone; every permanent token in the prompt is rent paid on every single turn.
+
+**The number that matters:** smallest high-signal token set per turn. I set a per-turn context budget and treat exceeding it as a bug, the same way a backend team treats a memory leak. Claude Code's own harness works this way: compaction plus recently-accessed files, with Dynamic Workflows pushing bulk work into parallel subagents."
+
+**Follow-up to expect:** How do you evaluate that compaction is not losing critical facts? (Recall-focused eval: seed sessions with facts that must survive N compactions, then probe for them; track task completion rate by session length before and after.)
+
+### Q113: Your computer-use agent passes demos but fails 30% of real workflows in production. Walk through your reliability engineering plan.
+
+**What interviewers look for:**
+- Knowledge of where vision-action agents actually fail (UI drift, latency, ambiguity)
+- An engineering plan: instrumentation, fallbacks, selective automation
+- Benchmark literacy (OSWorld-Verified) without benchmark worship
+
+**Strong answer:**
+
+"First I stop treating the agent as one system. A computer-use workflow is a chain of perception (screenshot to state), decision (next action), and actuation (click/type), and each link fails differently.
+
+**Instrument before fixing.** I log every step: screenshot hash, chosen action, confidence, retry count, and final outcome, then cluster failures. In practice three buckets dominate:
+
+1. **UI drift.** The app shipped a redesign and selectors or visual anchors moved. Fix: anchor on semantic cues (labels, roles) over pixel positions; add a nightly smoke run against the top 20 workflows so drift pages me before users see it.
+2. **Ambiguous intermediate states.** Modals, spinners, partial loads. Fix: explicit wait-and-verify steps; the agent must confirm the expected state transition happened before proceeding, not just fire actions on a timer.
+3. **Genuinely hard decisions.** A form with ambiguous fields. Fix: human-confirmation gates on irreversible actions and a structured escalation path instead of a guess.
+
+**Architecture changes that move the number:**
+- **Selective automation.** I split workflows into deterministic segments (scripted, no model) and judgment segments (agent). Most 'agent failures' are deterministic steps that never needed a model.
+- **Step budgets and checkpoints.** Hard cap on actions per workflow; checkpoint state so a retry resumes instead of restarting.
+- **Model tier.** Claude Sonnet 4.6 reaches 72.5% on OSWorld-Verified, and that benchmark is the right sanity check, but my production target is per-workflow success rate, which selective automation can push past any raw model score.
+
+**The honest framing for leadership:** computer-use agents in mid-2026 are reliable as supervised co-workers on bounded workflows and unreliable as unsupervised general operators. I scope deployments accordingly and publish the per-workflow success dashboard."
+
+**Follow-up to expect:** When do you choose a computer-use agent over an API integration? (Only when no API exists or the integration cost dwarfs the workflow value; APIs beat screenshots on reliability, latency, and cost every time they are available.)
+
+### Q114: Design a skill system for a fleet of internal agents using Agent Skills. How do skills differ from MCP tools and from fine-tuning?
+
+**What interviewers look for:**
+- Understanding of progressive disclosure and why it matters for context budgets
+- Clear mental model separating knowledge (skills), access (tools), and behavior (weights)
+- Governance thinking: versioning, review, distribution
+
+**Strong answer:**
+
+"Agent Skills are folders of instructions, scripts, and resources an agent loads on demand: a `SKILL.md` with YAML metadata plus optional bundled files. The design that makes them scale is **progressive disclosure**: only the name and description sit in the system prompt; the full skill loads when the agent judges it relevant; referenced files load only as needed. A fleet can carry hundreds of skills while paying a few tokens each until one is actually used.
+
+**The three-layer mental model I use:**
+
+| Layer | Mechanism | Question it answers |
+|-------|-----------|---------------------|
+| Access | MCP tools | What can the agent touch? |
+| Knowledge | Agent Skills | How should the agent do this workflow? |
+| Behavior | Fine-tuning | What should the agent be like on every request? |
+
+MCP gives the agent a database connection; a skill teaches it our runbook for using that database safely; fine-tuning changes the model itself and is the last resort because it is expensive to iterate and opaque to audit.
+
+**Fleet design:**
+- **Repository and registry.** Skills live in a versioned repo with owners, like Terraform modules. Agents resolve skills by name and version range.
+- **Review gate.** A skill is executable organizational knowledge, so it gets code review plus a metadata lint (clear description, scoped permissions on bundled scripts).
+- **Eval per skill.** Each skill ships with a small eval set: given these task prompts, does the agent with the skill outperform the agent without it? That catches skills that sound helpful and measurably are not.
+- **Distribution.** The interesting operational risk is marketplace-style sprawl. OpenClaw's ClawHub showed both the upside (instant capability sharing) and the downside (minimal security oversight). Internally I allow only the curated registry.
+
+**Why this beats prompt sprawl:** before skills, this knowledge lived in ever-growing system prompts, paying full token rent on every request and impossible to version per workflow. Skills make organizational knowledge modular, reviewable, and lazy-loaded."
+
+**Follow-up to expect:** When does a skill graduate to fine-tuning? (When the behavior is needed on virtually every request, is stable for months, and latency or token budgets make even lazy-loaded instructions too expensive.)
+
+### Q115: Your team's eval scores keep improving but production complaints are flat. Diagnose the eval gaming problem and redesign the eval system.
+
+**What interviewers look for:**
+- Recognition of Goodhart's law in eval systems
+- Concrete gaming mechanisms, not just the buzzword
+- A redesign with held-out sets, rotating judges, and outcome linkage
+
+**Strong answer:**
+
+"When the metric improves and reality does not, the metric has become the target. I look for four specific gaming mechanisms:
+
+1. **Overfitting to the golden set.** Engineers iterate prompts against the same 200 examples until the set is memorized in spirit. Fix: split golden into dev and held-out; the held-out set is run by CI only, never inspected during development, and rotates quarterly.
+2. **Judge sycophancy drift.** An LLM judge re-used across iterations starts rewarding the house style instead of correctness. Fix: anchor the judge with rubric-and-examples, calibrate it against a human-labeled sample monthly, and track judge-human agreement as its own dashboard metric. If agreement drops below threshold, the judge is the incident.
+3. **Metric narrowing.** The suite measures what is easy (format validity, faithfulness on short answers) and the team optimizes exactly that while end-to-end task success goes unmeasured. Fix: every eval suite must include at least one outcome-level metric tied to the user journey, even if it is sampled and expensive.
+4. **Selection effects.** Hard cases get quietly excluded as 'out of scope flakes.' Fix: an exclusion log with review; excluded cases count as failures until triaged.
+
+**The redesign:**
+- Dev set (visible, iterate freely) / held-out set (CI-only, rotating) / live sample (weekly human-graded production slice).
+- Judge calibration as a first-class job: binary decisions over Likert scales, position randomization, multiple judges with majority vote for high-stakes gates.
+- Link evals to outcomes: complaint rate, thumbs-down rate, and escalation rate plotted against eval score on one dashboard. Divergence triggers an eval review, not a celebration.
+
+**The cultural piece:** I make 'the eval improved but production did not' a named failure mode in the team vocabulary. Engineers stop gaming metrics when gaming is detectable and socially costly."
+
+**Follow-up to expect:** How do you keep the held-out set representative as the product evolves? (Quarterly refresh sampled from recent production traces, stratified by intent cluster, with the old set archived for longitudinal comparison.)
+
+### Q116: Design cost-aware multi-provider routing for June 2026 prices: Fable 5 at $10/$50, Opus 4.8 at $5/$25, GPT-5.5 at $5/$30, Sonnet 4.6 at $3/$15, DeepSeek V4 Flash at $0.14/$0.28.
+
+**What interviewers look for:**
+- Routing as a policy engine, not an if-else chain
+- Cache economics and provider-specific prompt variants
+- Failure handling: circuit breakers, capacity, and policy blocks
+
+**Strong answer:**
+
+"The price spread is now 70x between the cheapest frontier-class tier and the capability ceiling, so routing policy is the single biggest cost lever in the system.
+
+**Policy engine design:**
+
+```
+Request → Classifier (intent, complexity, risk) → Policy lookup → Provider call
+            ↑                                          |
+            └────────── outcome feedback ──────────────┘
+```
+
+- **Tier 0 (under $0.30/1M):** DeepSeek V4 Flash for classification, extraction, and cache-friendly RAG. The 98% cache-hit discount means shared-prefix workloads are nearly free.
+- **Tier 1 ($3/$15):** Claude Sonnet 4.6 as the production default for generation and tool use.
+- **Tier 2 ($5/$25-30):** Opus 4.8 for long-horizon agentic work, GPT-5.5 for single-shot hard coding and omni multimodal.
+- **Tier 3 ($10/$50):** Fable 5, allow-listed use cases only, with a per-team monthly budget.
+
+**The parts juniors miss:**
+- **Confidence-gated escalation.** The cheap tier answers first with a self-consistency or judge check; only low-confidence requests escalate. This typically keeps 60-80% of traffic on Tier 0-1 with no quality loss.
+- **Provider-specific prompts.** A prompt tuned for Claude underperforms on GPT-5.5. The router selects the prompt variant with the provider; they version together.
+- **Cache-aware placement.** Moving a workload between providers resets its cache economics. For a 100k-token shared prefix, staying on one provider with warm cache can beat a nominally cheaper cold provider.
+- **Circuit breakers per provider** on error rate, p95 latency, and rate-limit headroom, with pre-shift of traffic before hard limits. Policy blocks are a real failure class too: a provider can decline a category your product needs, so the fallback chain must be policy-aware, not just availability-aware.
+- **Data residency constraints** override cost: Mythos-class traffic carries 30-day retention on the Claude side, and some tenants cannot leave approved regions. The policy engine enforces residency before price.
+
+**Reporting:** cost per resolved task by tier, not cost per token. The goal is moving tasks down-tier without moving complaints up."
+
+**Follow-up to expect:** Where does semantic caching fit? (In front of the router: an exact or semantic cache hit costs no provider call at all, and the router only sees cache misses.)
+
+---
+
 ## Key Takeaways
 
 - Practice answers out loud at the level of detail shown here; mumbled hand-waving fails staff-level loops even when the underlying knowledge is correct.
 - Always state the latency, scale, and accuracy assumptions before sketching architecture; interviewers downgrade candidates who design without scope.
 - Strong answers cite a specific tradeoff and a concrete number (latency in ms, cost per token, recall at K); generic answers get scored as junior.
 - The "follow-up to expect" hints under each question are real; prepare a one-paragraph extension for each.
-- The May 2026 section (Q81 onward) reflects what's actually being asked in current loops; older questions test foundational depth, not currency.
-- Pair this bank with the [Answer Frameworks](02-answer-frameworks.md), [Whiteboard Exercises](04-whiteboard-exercises.md), and the [May 2026 Job Market Trends](06-job-market-trends-2026.md).
+- The May and June 2026 sections (Q81 onward) reflect what's actually being asked in current loops; older questions test foundational depth, not currency.
+- Pair this bank with the [Answer Frameworks](02-answer-frameworks.md), [Whiteboard Exercises](04-whiteboard-exercises.md), and the [Job Market Trends](06-job-market-trends-2026.md).
 
 ---
 
