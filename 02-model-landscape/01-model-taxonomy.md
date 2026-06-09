@@ -2,9 +2,11 @@
 
 This chapter provides a comprehensive guide to the model landscape as of **May 2026**, covering model families, capabilities, and selection criteria for production systems.
 
-> **Last verified: May 29, 2026.** The model landscape evolves rapidly. Always cross-check with provider pricing pages and release notes.
+> **Last verified: June 10, 2026.** The model landscape evolves rapidly. Always cross-check with provider pricing pages and release notes.
 >
-> **May 2026 - what's new since the April refresh:** Anthropic Claude Opus 4.8 (May 28, same $5/$25 price as Opus 4.7; Dynamic Workflows research preview with hundreds of parallel subagents; fast mode at $10/$50 is 3x cheaper than the Opus 4.7 fast mode); OpenAI GPT-5.5 (April 23) and GPT-5.5 Instant (May 5, default in ChatGPT); Claude Opus 4.7 (April 16, GA on Bedrock/Vertex/Foundry); Claude Mythos Preview (restricted; Project Glasswing partners only); Google Gemma 4 (April 2, Apache 2.0) and Gemini 3.2 Flash (quiet rollout May 5); DeepSeek V4 Pro and V4 Flash (April 24; 75% V4 Pro discount made **permanent** May 22, new list price $0.435/$0.87 per 1M from June 1); Moonshot Kimi K2.6 (April 20, 1T MoE / 32B active); Alibaba Qwen 3.6 Plus / 3.6-35B-A3B / 3.6 Max-Preview; Mistral Medium 3.5 (April 29, unified chat/reasoning/coding/vision); Meta Muse Spark (April 8, first closed-weight Meta model); Llama 4 Behemoth release paused through fall 2026 amid capability concerns. SWE-bench Verified leaders: Claude Mythos Preview 93.9%, GPT-5.5 88.7%, Claude Opus 4.8 88.6%, Claude Opus 4.7 87.6%; ARC-AGI-2 leader: GPT-5.5 at 85.0%.
+> **June 2026 headline:** Anthropic released **Claude Fable 5** (June 9, `claude-fable-5`, $10/$50 per 1M, 1M context), its most capable widely released model: a Mythos-class model made safe for general availability, with an Opus 4.8 fallback safeguard on sensitive topics. **Claude Mythos 5** ships the same day as the unrestricted variant for Project Glasswing partners, succeeding Mythos Preview at less than half its price.
+>
+> **May 2026 recap:** Anthropic Claude Opus 4.8 (May 28, same $5/$25 price as Opus 4.7; Dynamic Workflows research preview with hundreds of parallel subagents; fast mode at $10/$50 is 3x cheaper than the Opus 4.7 fast mode); OpenAI GPT-5.5 (April 23) and GPT-5.5 Instant (May 5, default in ChatGPT); Claude Opus 4.7 (April 16, GA on Bedrock/Vertex/Foundry); Google Gemma 4 (April 2, Apache 2.0) and Gemini 3.2 Flash (quiet rollout May 5); DeepSeek V4 Pro and V4 Flash (April 24; 75% V4 Pro discount made **permanent** May 22, new list price $0.435/$0.87 per 1M from June 1); Moonshot Kimi K2.6 (April 20, 1T MoE / 32B active); Alibaba Qwen 3.6 Plus / 3.6-35B-A3B / 3.6 Max-Preview; Mistral Medium 3.5 (April 29, unified chat/reasoning/coding/vision); Meta Muse Spark (April 8, first closed-weight Meta model); Llama 4 Behemoth release paused through fall 2026 amid capability concerns. SWE-bench Verified published leaders before the Fable 5 launch: Claude Mythos Preview 93.9%, GPT-5.5 88.7%, Claude Opus 4.8 88.6%; ARC-AGI-2 leader: GPT-5.5 at 85.0%. Anthropic describes Fable 5 as state of the art on nearly all tested benchmarks; standard numeric scores were not in the launch post, so verify on the leaderboards.
 
 ## Table of Contents
 
@@ -28,7 +30,7 @@ This chapter provides a comprehensive guide to the model landscape as of **May 2
 
 | Tier | Characteristics | Examples | Use Case |
 |------|-----------------|----------|----------|
-| **Frontier** | State-of-the-art reasoning, agentic mastery | Claude Opus 4.8, GPT-5.5, Gemini 3.1 Pro, Grok 4.3 | Complex reasoning, coding, production agents |
+| **Frontier** | State-of-the-art reasoning, agentic mastery | Claude Fable 5, Claude Opus 4.8, GPT-5.5, Gemini 3.1 Pro, Grok 4.3 | Complex reasoning, coding, production agents |
 | **Fast/Efficient** | Sub-200ms, cost-optimized | Gemini 3.1 Flash, GPT-5.5-mini, Claude Haiku 4.5, DeepSeek V4 Flash | High-volume streaming, UI, real-time |
 | **Battle-Tested** | Mature, widely-deployed, stable | Claude Sonnet 4.6, GPT-5.5 Instant, Gemini 3.1 Pro | Enterprise production workloads |
 | **Small/Edge** | Private, edge, specialized | Llama 4 Scout, Mistral Small 4, Phi-4 | Local privacy, on-device, MoE-efficient |
@@ -44,9 +46,43 @@ This chapter provides a comprehensive guide to the model landscape as of **May 2
 
 ---
 
-## Frontier Models (May 2026)
+## Frontier Models (June 2026)
 
-### Claude Opus 4.8 (Anthropic) - May 2026 NEW
+### Claude Fable 5 (Anthropic) - June 2026 NEW
+
+| Attribute | Value |
+|-----------|-------|
+| Model ID | `claude-fable-5` |
+| Context Window | 1M tokens (Opus 4.7 tokenizer; roughly 30% more tokens than pre-4.7 models for the same text) |
+| Max Output | 128K tokens |
+| Input Cost | $10.00 / 1M tokens |
+| Output Cost | $50.00 / 1M tokens |
+| Thinking | Adaptive thinking, always on (no separate extended-thinking toggle) |
+| Multimodal | Text + Vision (new state of the art on vision tasks per Anthropic) |
+| Benchmarks | State of the art on nearly all tested benchmarks per Anthropic; highest frontier score on Cognition's FrontierCode, highest on the Hebbia Finance Benchmark, ViBench, and CursorBench. Standard numeric scores (SWE-bench, GPQA) were not published in the launch post. |
+| Released | June 9, 2026 (GA on Claude API, Claude Platform on AWS, Amazon Bedrock, Vertex AI, Microsoft Foundry) |
+
+**What it is:** A Mythos-class model made safe for general availability. Until now the Mythos line (SWE-bench Verified 93.9% on Mythos Preview) was restricted to ~11 Project Glasswing partners over dual-use cybersecurity concerns. Fable 5 brings that capability tier to everyone by pairing it with conservative safeguards.
+
+**The Opus 4.8 fallback safeguard:** When Fable 5's classifiers detect a request in one of three categories (offensive cyber techniques, bioweapon-adjacent biology and chemistry, or attempts to distill the model), the response is silently delegated to **Claude Opus 4.8** and the user is informed. Anthropic says this triggers in under 5% of sessions and is deliberately tuned conservative, so some harmless requests get caught. Architecturally this is a production example of **model-tier routing as a safety control**, not just a cost control.
+
+**Best for:** The most demanding reasoning, long-horizon agentic work, vision-heavy tasks, and workloads where capability ceiling matters more than unit cost. Anthropic reports it sustains autonomous operation longer than any previous Claude model.
+
+**Considerations:** 2x the per-token price of Opus 4.8 ($10/$50 vs $5/$25), so route only ceiling-bound work to it. Mythos-class traffic carries a 30-day data retention requirement (not used for training; access-logged; deleted after 30 days in almost all cases), which matters for compliance reviews. On subscription plans it was included at no extra cost June 9-22, then moved to usage credits. There is no Fable-tier fast mode or published cache/batch discount at launch; check the pricing page.
+
+### Claude Mythos 5 (Anthropic) - RESTRICTED ACCESS
+
+| Attribute | Value |
+|-----------|-------|
+| Model ID | `claude-mythos-5` |
+| Status | Limited availability: Project Glasswing partners and select biology researchers |
+| Relationship | Same underlying model as Fable 5 with safeguards lifted in some areas |
+| Pricing | $10 / $50 per 1M (less than half of Mythos Preview) |
+| Released | June 9, 2026 |
+
+**Why it matters:** Succeeds Claude Mythos Preview at comparable or somewhat stronger capability and much lower price. The Fable/Mythos split formalizes a two-track release pattern: one safeguarded general release, one unrestricted release for vetted defenders.
+
+### Claude Opus 4.8 (Anthropic) - May 2026
 
 | Attribute | Value |
 |-----------|-------|
@@ -95,16 +131,16 @@ This chapter provides a comprehensive guide to the model landscape as of **May 2
 **Best for:** Autonomous coding agents (powers Claude Code), multi-file refactors, complex reasoning. Same pricing as 4.6 - straight upgrade for most workloads.
 **Considerations:** Use Sonnet 4.6 for cost-sensitive workloads; Opus 4.7 mainly for tasks requiring peak coding/agentic quality.
 
-### Claude Mythos Preview (Anthropic) - RESTRICTED ACCESS
+### Claude Mythos Preview (Anthropic) - SUCCEEDED BY MYTHOS 5
 
 | Attribute | Value |
 |-----------|-------|
-| Status | Unreleased - Project Glasswing partners only (~11 orgs: AWS, Apple, Cisco, Google, Microsoft, NVIDIA, Palo Alto, etc.) |
+| Status | Restricted research preview, Project Glasswing partners only (~11 orgs: AWS, Apple, Cisco, Google, Microsoft, NVIDIA, Palo Alto, etc.) |
 | Reason for restriction | Dual-use cybersecurity capabilities |
-| SWE-bench Verified | 93.9% (May 13, 2026 - current SOTA) |
-| Released | April 7, 2026 (restricted partner preview) |
+| SWE-bench Verified | 93.9% (May 13, 2026; the published SOTA before the Fable 5 / Mythos 5 launch) |
+| Released | April 7, 2026 (restricted partner preview); succeeded by Claude Mythos 5 on June 9, 2026 at less than half the price |
 
-**Best for:** N/A in production. Tracked here because it sets the public SOTA on SWE-bench Verified and signals where the frontier sits internally.
+**Best for:** Historical reference. Its capability tier reached general availability as Claude Fable 5 on June 9, 2026; new Glasswing work should target Mythos 5.
 
 ### Claude Opus 4.6 (Anthropic)
 
@@ -284,11 +320,12 @@ This chapter provides a comprehensive guide to the model landscape as of **May 2
 **Best for:** Live web research, reasoning-heavy tasks, real-time X/web integration.
 **Considerations:** Grok 4.1 Fast available at $0.20/$0.50 for high-volume.
 
-### Model Comparison: Frontier Tier (May 2026)
+### Model Comparison: Frontier Tier (June 2026)
 
 | Model | Reasoning | Coding | Context | Agentic | Cost |
 |-------|-----------|--------|---------|---------|------|
-| Claude Mythos Preview (restricted) | ★★★★★ | ★★★★★ | ★★★★★ | ★★★★★ | n/a |
+| Claude Fable 5 | ★★★★★ | ★★★★★ | ★★★★★ | ★★★★★ | $$$$$ |
+| Claude Mythos 5 (restricted) | ★★★★★ | ★★★★★ | ★★★★★ | ★★★★★ | $$$$$ |
 | Claude Opus 4.8 | ★★★★★ | ★★★★★ | ★★★★★ | ★★★★★ | $$$$ |
 | Claude Opus 4.7 | ★★★★★ | ★★★★★ | ★★★★★ | ★★★★★ | $$$$ |
 | GPT-5.5 | ★★★★★ | ★★★★★ | ★★★★★ | ★★★★★ | $$$$ |
@@ -411,11 +448,12 @@ While frontier models lead on benchmarks, many enterprise systems rely on **batt
 
 ## Specialized Models
 
-### Coding Mastery (May 2026)
+### Coding Mastery (June 2026)
 
 | Model | Specialization | Why it wins |
 |-------|----------------|-------------|
-| **GPT-5.5** | Single-shot coding leader | SWE-bench Verified 88.7% (#1); Terminal-Bench 2.1 78.2% (#1) |
+| **Claude Fable 5** | Capability ceiling | Mythos-class coding now generally available; highest frontier score on Cognition's FrontierCode and SOTA on CursorBench per Anthropic; 2x Opus 4.8 price |
+| **GPT-5.5** | Single-shot coding leader (published) | SWE-bench Verified 88.7%; Terminal-Bench 2.1 78.2% |
 | **Claude Opus 4.8** | Long-running agentic coding | SWE-bench Verified 88.6%; SWE-Bench Pro 69.2%; Dynamic Workflows with parallel subagents in Claude Code |
 | **Claude Opus 4.7** | Predecessor flagship coding | SWE-bench Verified 87.6%; SWE-Bench Pro 64.3% |
 | **Claude Sonnet 4.6** | Workhorse coding | Powers Claude Code at lower cost; 1M context |
@@ -427,6 +465,7 @@ While frontier models lead on benchmarks, many enterprise systems rely on **batt
 
 | Model | Approach | Best For |
 |-------|----------|----------|
+| **Claude Fable 5** | Always-on adaptive thinking at the Mythos capability tier | The hardest reasoning problems where ceiling beats cost |
 | **Claude Opus 4.8 (thinking)** | Adaptive thinking with parallel subagents | Software planning, codebase-scale work, agentic reasoning |
 | **GPT-5.5 reasoning** | Maximum-compute reasoning | Competition math (AIME 2025 81.2% on Instant), ARC-AGI-2 85.0% leader |
 | **Gemini 3.1 Pro Deep Think** | Sustained chain-of-thought | Scientific reasoning, GPQA Diamond leader |
@@ -439,6 +478,7 @@ While frontier models lead on benchmarks, many enterprise systems rely on **batt
 |-------|--------|-------------------|
 | **Llama 4 Scout** | 10M | Industry-leading open-weight context window |
 | **Gemini 3.1 Pro / Flash** | 1M | Best quality at 1M context; proven at scale |
+| **Claude Fable 5** | 1M | Anthropic reports improved long-context performance with persistent memory across long sessions |
 | **Claude Opus 4.8 / 4.7 / Sonnet 4.6** | 1M | Full 1M at standard pricing; reliable recall |
 | **Llama 4 Maverick** | 1M | Open-weight 1M context with MoE efficiency |
 
@@ -489,7 +529,7 @@ What is your primary constraint?
 │   └── Moderate budget → Claude Sonnet 4.6, GPT-5.5 Instant, DeepSeek V4 Pro
 │
 ├── Quality + Reasoning → Use frontier models
-│   ├── Highest reasoning → Claude Opus 4.8 (thinking), GPT-5.5 reasoning, Gemini 3.1 Pro Deep Think
+│   ├── Highest reasoning → Claude Fable 5, Claude Opus 4.8 (thinking), GPT-5.5 reasoning, Gemini 3.1 Pro Deep Think
 │   └── Coding + reasoning → Claude Opus 4.8 with Dynamic Workflows, Claude Sonnet 4.6 (Extended Thinking), GPT-5.5
 │
 ├── Latency → Use fast models
