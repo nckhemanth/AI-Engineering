@@ -1,6 +1,6 @@
 # AI System Design Interview Question Bank
 
-A topic-organized bank of 110+ AI system design interview questions with model answers, follow-ups, and signals strong candidates show. Updated through May 2026.
+A topic-organized bank of 110+ AI system design interview questions (Q1-Q110, continuously numbered) with model answers, follow-ups, and signals strong candidates show, plus five unnumbered deep-dive scenarios. Updated through June 2026.
 
 This chapter provides a comprehensive collection of interview questions organized by topic. Each question includes the depth of answer expected and key points that strong candidates cover. Pair this with the [Answer Frameworks](02-answer-frameworks.md) (the meta-skill that turns memorized answers into fluent ones), the [FAQ](07-faq.md) (short answers to the most-asked AI engineering questions), and the [Job Market Trends](06-job-market-trends-2026.md) (the hiring context that shapes what gets asked right now).
 
@@ -37,22 +37,32 @@ mindmap
       Deployment
       Drift
       Incidents
+    Tooling and Lifecycle
+      Vector DB tradeoffs
+      DSPy
+      Feedback loops
+    Ensemble Methods
+      Self-consistency
+      Best-of-N
+      Debate
     System Design Scenarios
     Advanced sets (frontier topics)
 ```
 
 ## Table of Contents
 
-- [RAG Architecture Questions](#rag-architecture-questions)
-- [Agentic Systems Questions](#agentic-systems-questions)
-- [Model Selection Questions](#model-selection-questions)
-- [Optimization Questions](#optimization-questions)
-- [Evaluation Questions](#evaluation-questions)
-- [Production and MLOps Questions](#production-and-mlops-questions)
-- [System Design Scenarios](#system-design-scenarios)
-- [Advanced Questions (December 2025)](#advanced-questions-december-2025)
-- [Advanced Questions - March 2026](#advanced-questions--march-2026)
-- [Advanced Questions - May 2026](#advanced-questions--may-2026) ⭐ *NEW*
+- [RAG Architecture Questions](#rag-architecture-questions) (Q1-Q10)
+- [Agentic Systems Questions](#agentic-systems-questions) (Q11-Q17)
+- [Model Selection Questions](#model-selection-questions) (Q18-Q21)
+- [Optimization Questions](#optimization-questions) (Q22-Q26)
+- [Evaluation Questions](#evaluation-questions) (Q27-Q29)
+- [Production and MLOps Questions](#production-and-mlops-questions) (Q30-Q33)
+- [Tooling and Lifecycle Questions](#tooling-and-lifecycle-questions) (Q34-Q39)
+- [Ensemble Methods Questions](#ensemble-methods-questions) (Q40-Q49)
+- [System Design Scenarios](#system-design-scenarios) (5 deep-dive walkthroughs)
+- [Advanced Questions (December 2025)](#advanced-questions-december-2025) (Q50-Q65)
+- [Advanced Questions - March 2026](#advanced-questions--march-2026) (Q66-Q80)
+- [Advanced Questions - May 2026](#advanced-questions--may-2026) (Q81-Q110)
 
 ---
 
@@ -1708,6 +1718,274 @@ async def call_llm_with_retry(prompt):
 
 ---
 
+## Tooling and Lifecycle Questions
+
+### Q34: Explain the tradeoffs between different vector database options
+
+**What interviewers look for:**
+- Knowledge of options
+- Decision criteria
+- Operational awareness
+
+**Sample Answer:**
+
+"My decision framework:
+
+| Database | Best For | Tradeoff |
+|----------|----------|----------|
+| **Pinecone** | Managed, quick start | Cost at scale, vendor lock-in |
+| **Qdrant** | Self-host, performance | Operational overhead |
+| **Weaviate** | Hybrid search, multimodal | Complexity |
+| **Chroma** | Local dev, prototyping | Not for production scale |
+| **pgvector** | Already using Postgres | Limited features, slower |
+
+**Decision criteria:**
+
+**Managed vs self-hosted:**
+Pinecone if ops is expensive, Qdrant if you want control
+
+**Scale:**
+Under 1M vectors: pgvector or Chroma sufficient
+1M-100M: Qdrant, Pinecone, Weaviate
+100M+: Need dedicated infrastructure
+
+**Features needed:**
+Hybrid search: Weaviate, Qdrant
+Multi-tenancy: Pinecone namespaces, Qdrant collections
+Filtering: All support, check performance
+
+**My default:** Qdrant for flexibility and performance. Pinecone when team lacks infrastructure resources. pgvector for quick prototypes within existing Postgres."
+
+---
+
+### Q35: How do you handle model updates and deprecations from providers?
+
+**What interviewers look for:**
+- Production resilience thinking
+- Abstraction design
+- Testing strategies
+
+**Sample Answer:**
+
+"Model deprecations are inevitable. I design for it:
+
+**Abstraction layer:**
+```python
+class LLMClient:
+    def __init__(self, model_config):
+        self.models = model_config  # Maps logical names to actual models
+    
+    def get_model(self, task_type):
+        return self.models[task_type]
+```
+
+This lets me change models in config without code changes.
+
+**Migration process:**
+1. Pin current model versions explicitly
+2. When new model releases, evaluate on test suite
+3. Shadow test in production (run both, compare)
+4. Gradual rollout with metrics monitoring
+5. Update config, not code
+
+**Evaluation suite:**
+Maintain golden set that runs against any model. Tracks quality, latency, cost. Alerts if new model regresses.
+
+**Multi-provider fallback:**
+```python
+providers = ['openai', 'anthropic']
+for provider in providers:
+    try:
+        return await call_provider(provider, prompt)
+    except ProviderError:
+        continue
+```
+
+If OpenAI deprecates with short notice, I can route to Anthropic. The abstraction makes this possible."
+
+---
+
+### Q36: What is DSPy and when would you use it?
+
+**What interviewers look for:**
+- Knowledge of emerging tools
+- Understanding of prompt optimization
+- Practical applicability
+
+**Sample Answer:**
+
+"DSPy treats prompts as parameters to be optimized rather than hand-written strings.
+
+**Traditional approach:**
+Write prompt -> Test -> Tweak -> Repeat -> Hope it works with new model
+
+**DSPy approach:**
+Define task signature -> Define metric -> Let optimizer find best prompts
+
+**Core concepts:**
+- Signatures: Input/output specifications
+- Modules: Composable LLM components
+- Optimizers: Find best prompts for your metric
+
+**When to use DSPy:**
+- Have training data and clear metrics
+- Building multi-step pipelines
+- Need to adapt to model changes automatically
+- Research or experimentation focus
+
+**When to skip:**
+- Simple use cases (direct API is fine)
+- No training data for optimization
+- Need maximum control
+- Team unfamiliar with the paradigm
+
+**My take:** DSPy is valuable for complex pipelines where manual prompt tuning is tedious. For simple Q&A or generation, direct prompting is simpler."
+
+---
+
+### Q37: How do you design a feedback loop for continuous improvement?
+
+**What interviewers look for:**
+- System thinking
+- Data collection strategies
+- Practical implementation
+
+**Sample Answer:**
+
+"A good feedback loop has four components:
+
+**1. Signal collection**
+- Explicit: Thumbs up/down, ratings, corrections
+- Implicit: Regenerate clicks, copy actions, time on page
+- Automated: LLM-as-judge on samples
+
+**2. Data pipeline**
+```
+User action -> Event stream -> Aggregate -> Labeling queue -> Training data
+```
+
+**3. Analysis and prioritization**
+- Cluster failure cases by type
+- Identify high-impact improvements
+- Balance quick wins vs systemic fixes
+
+**4. Improvement deployment**
+- Curated examples become few-shot samples
+- Systematic failures inform prompt updates
+- Large enough sets enable fine-tuning
+
+**Practical implementation:**
+
+Log all interactions with unique IDs. When user gives feedback, link it to the interaction. Periodically sample for human review.
+
+Aggregate signals:
+- High negative feedback on specific topics
+- Common regeneration patterns
+- Correlation between retrieval and satisfaction
+
+Use this data to:
+- Add few-shot examples for failure cases
+- Update retrieval or chunking for missed context
+- Fine-tune if systematic pattern emerges
+
+The loop is: Collect -> Analyze -> Improve -> Measure -> Repeat."
+
+---
+
+### Q38: Explain token counting and why it matters
+
+**What interviewers look for:**
+- Technical understanding
+- Cost awareness
+- Practical experience
+
+**Sample Answer:**
+
+"Tokens are the atomic units LLMs process. Understanding them matters for:
+
+**Cost:** You pay per token. A 1000-word article might be 1300 tokens, costing differently than word count suggests.
+
+**Limits:** Context windows are in tokens. 128K tokens is roughly 96K words, but varies by content.
+
+**Approximations:**
+- English: ~0.75 words per token, or ~4 characters
+- Code: More tokens per character due to punctuation
+- Non-Latin scripts: Often more tokens per character
+
+**Counting accurately:**
+```python
+import tiktoken
+enc = tiktoken.encoding_for_model('gpt-4o')
+tokens = enc.encode(text)
+count = len(tokens)
+```
+
+**Why it matters in practice:**
+- Estimating costs before calls
+- Staying within context limits
+- Optimizing prompts for efficiency
+
+**Common mistakes:**
+- Assuming word count equals token count
+- Not counting message overhead (role, formatting)
+- Ignoring that different models use different tokenizers
+
+I always use the actual tokenizer for the target model. tiktoken for OpenAI, model-specific for others."
+
+---
+
+### Q39: How do you evaluate and compare RAG systems objectively?
+
+**What interviewers look for:**
+- Systematic evaluation approach
+- Knowledge of metrics
+- Practical pipeline design
+
+**Sample Answer:**
+
+"I evaluate RAG at three levels:
+
+**1. Retrieval evaluation**
+- **Precision@K:** What fraction of retrieved docs are relevant?
+- **Recall@K:** What fraction of relevant docs did we find?
+- **MRR:** How high is the first relevant result?
+
+Requires labeled relevance judgments. I create a test set of ~200 queries with known relevant documents.
+
+**2. Generation evaluation (RAGAS)**
+- **Faithfulness:** Is the answer grounded in context? (Detects hallucination)
+- **Answer relevance:** Does it address the question?
+- **Context relevance:** Was retrieved context useful?
+
+These use LLM-as-judge, so no manual labeling needed.
+
+**3. End-to-end evaluation**
+- **Correctness:** Compare to ground truth answers
+- **User satisfaction:** Thumbs up/down, CSAT surveys
+- **Task completion:** Did user achieve their goal?
+
+**My evaluation pipeline:**
+
+```
+Change proposed
+    ↓
+Run golden set (regression detection)
+    ↓
+Run evaluation suite (quality metrics)
+    ↓
+Check quality gates (faithfulness > 0.85, etc.)
+    ↓
+Canary deployment (5% traffic)
+    ↓
+Monitor production metrics
+    ↓
+Full rollout or rollback
+```
+
+The key is automation. Every change runs through this pipeline before reaching users."
+
+---
+
 ## Ensemble Methods Questions
 
 ### Q40: When would you use Self-Consistency vs Best-of-N sampling?
@@ -2064,272 +2342,6 @@ Users perceive streaming responses as 2-3x faster than waiting for complete resp
 - Speculative decoding
 - Cache common queries
 - Pre-compute where possible"
-
----
-
-### Q50: Explain the tradeoffs between different vector database options
-
-**What interviewers look for:**
-- Knowledge of options
-- Decision criteria
-- Operational awareness
-
-**Sample Answer:**
-
-"My decision framework:
-
-| Database | Best For | Tradeoff |
-|----------|----------|----------|
-| **Pinecone** | Managed, quick start | Cost at scale, vendor lock-in |
-| **Qdrant** | Self-host, performance | Operational overhead |
-| **Weaviate** | Hybrid search, multimodal | Complexity |
-| **Chroma** | Local dev, prototyping | Not for production scale |
-| **pgvector** | Already using Postgres | Limited features, slower |
-
-**Decision criteria:**
-
-**Managed vs self-hosted:**
-Pinecone if ops is expensive, Qdrant if you want control
-
-**Scale:**
-Under 1M vectors: pgvector or Chroma sufficient
-1M-100M: Qdrant, Pinecone, Weaviate
-100M+: Need dedicated infrastructure
-
-**Features needed:**
-Hybrid search: Weaviate, Qdrant
-Multi-tenancy: Pinecone namespaces, Qdrant collections
-Filtering: All support, check performance
-
-**My default:** Qdrant for flexibility and performance. Pinecone when team lacks infrastructure resources. pgvector for quick prototypes within existing Postgres."
-
----
-
-### Q51: How do you handle model updates and deprecations from providers?
-
-**What interviewers look for:**
-- Production resilience thinking
-- Abstraction design
-- Testing strategies
-
-**Sample Answer:**
-
-"Model deprecations are inevitable. I design for it:
-
-**Abstraction layer:**
-```python
-class LLMClient:
-    def __init__(self, model_config):
-        self.models = model_config  # Maps logical names to actual models
-    
-    def get_model(self, task_type):
-        return self.models[task_type]
-```
-
-This lets me change models in config without code changes.
-
-**Migration process:**
-1. Pin current model versions explicitly
-2. When new model releases, evaluate on test suite
-3. Shadow test in production (run both, compare)
-4. Gradual rollout with metrics monitoring
-5. Update config, not code
-
-**Evaluation suite:**
-Maintain golden set that runs against any model. Tracks quality, latency, cost. Alerts if new model regresses.
-
-**Multi-provider fallback:**
-```python
-providers = ['openai', 'anthropic']
-for provider in providers:
-    try:
-        return await call_provider(provider, prompt)
-    except ProviderError:
-        continue
-```
-
-If OpenAI deprecates with short notice, I can route to Anthropic. The abstraction makes this possible."
-
----
-
-### Q52: What is DSPy and when would you use it?
-
-**What interviewers look for:**
-- Knowledge of emerging tools
-- Understanding of prompt optimization
-- Practical applicability
-
-**Sample Answer:**
-
-"DSPy treats prompts as parameters to be optimized rather than hand-written strings.
-
-**Traditional approach:**
-Write prompt -> Test -> Tweak -> Repeat -> Hope it works with new model
-
-**DSPy approach:**
-Define task signature -> Define metric -> Let optimizer find best prompts
-
-**Core concepts:**
-- Signatures: Input/output specifications
-- Modules: Composable LLM components
-- Optimizers: Find best prompts for your metric
-
-**When to use DSPy:**
-- Have training data and clear metrics
-- Building multi-step pipelines
-- Need to adapt to model changes automatically
-- Research or experimentation focus
-
-**When to skip:**
-- Simple use cases (direct API is fine)
-- No training data for optimization
-- Need maximum control
-- Team unfamiliar with the paradigm
-
-**My take:** DSPy is valuable for complex pipelines where manual prompt tuning is tedious. For simple Q&A or generation, direct prompting is simpler."
-
----
-
-### Q53: How do you design a feedback loop for continuous improvement?
-
-**What interviewers look for:**
-- System thinking
-- Data collection strategies
-- Practical implementation
-
-**Sample Answer:**
-
-"A good feedback loop has four components:
-
-**1. Signal collection**
-- Explicit: Thumbs up/down, ratings, corrections
-- Implicit: Regenerate clicks, copy actions, time on page
-- Automated: LLM-as-judge on samples
-
-**2. Data pipeline**
-```
-User action -> Event stream -> Aggregate -> Labeling queue -> Training data
-```
-
-**3. Analysis and prioritization**
-- Cluster failure cases by type
-- Identify high-impact improvements
-- Balance quick wins vs systemic fixes
-
-**4. Improvement deployment**
-- Curated examples become few-shot samples
-- Systematic failures inform prompt updates
-- Large enough sets enable fine-tuning
-
-**Practical implementation:**
-
-Log all interactions with unique IDs. When user gives feedback, link it to the interaction. Periodically sample for human review.
-
-Aggregate signals:
-- High negative feedback on specific topics
-- Common regeneration patterns
-- Correlation between retrieval and satisfaction
-
-Use this data to:
-- Add few-shot examples for failure cases
-- Update retrieval or chunking for missed context
-- Fine-tune if systematic pattern emerges
-
-The loop is: Collect -> Analyze -> Improve -> Measure -> Repeat."
-
----
-
-### Q54: Explain token counting and why it matters
-
-**What interviewers look for:**
-- Technical understanding
-- Cost awareness
-- Practical experience
-
-**Sample Answer:**
-
-"Tokens are the atomic units LLMs process. Understanding them matters for:
-
-**Cost:** You pay per token. A 1000-word article might be 1300 tokens, costing differently than word count suggests.
-
-**Limits:** Context windows are in tokens. 128K tokens is roughly 96K words, but varies by content.
-
-**Approximations:**
-- English: ~0.75 words per token, or ~4 characters
-- Code: More tokens per character due to punctuation
-- Non-Latin scripts: Often more tokens per character
-
-**Counting accurately:**
-```python
-import tiktoken
-enc = tiktoken.encoding_for_model('gpt-4o')
-tokens = enc.encode(text)
-count = len(tokens)
-```
-
-**Why it matters in practice:**
-- Estimating costs before calls
-- Staying within context limits
-- Optimizing prompts for efficiency
-
-**Common mistakes:**
-- Assuming word count equals token count
-- Not counting message overhead (role, formatting)
-- Ignoring that different models use different tokenizers
-
-I always use the actual tokenizer for the target model. tiktoken for OpenAI, model-specific for others."
-
----
-
-### Q55: How do you evaluate and compare RAG systems objectively?
-
-**What interviewers look for:**
-- Systematic evaluation approach
-- Knowledge of metrics
-- Practical pipeline design
-
-**Sample Answer:**
-
-"I evaluate RAG at three levels:
-
-**1. Retrieval evaluation**
-- **Precision@K:** What fraction of retrieved docs are relevant?
-- **Recall@K:** What fraction of relevant docs did we find?
-- **MRR:** How high is the first relevant result?
-
-Requires labeled relevance judgments. I create a test set of ~200 queries with known relevant documents.
-
-**2. Generation evaluation (RAGAS)**
-- **Faithfulness:** Is the answer grounded in context? (Detects hallucination)
-- **Answer relevance:** Does it address the question?
-- **Context relevance:** Was retrieved context useful?
-
-These use LLM-as-judge, so no manual labeling needed.
-
-**3. End-to-end evaluation**
-- **Correctness:** Compare to ground truth answers
-- **User satisfaction:** Thumbs up/down, CSAT surveys
-- **Task completion:** Did user achieve their goal?
-
-**My evaluation pipeline:**
-
-```
-Change proposed
-    ↓
-Run golden set (regression detection)
-    ↓
-Run evaluation suite (quality metrics)
-    ↓
-Check quality gates (faithfulness > 0.85, etc.)
-    ↓
-Canary deployment (5% traffic)
-    ↓
-Monitor production metrics
-    ↓
-Full rollout or rollback
-```
-
-The key is automation. Every change runs through this pipeline before reaching users."
 
 ---
 
@@ -4908,3 +4920,4 @@ Hallucination is now a P0 incident class, like a security breach. Treat it accor
 ---
 
 *See also: [Answer Frameworks](02-answer-frameworks.md) | [Common Pitfalls](03-common-pitfalls.md) | [Whiteboard Exercises](04-whiteboard-exercises.md)*
+
