@@ -117,7 +117,7 @@ These embeddings go into a vector database. I typically use Qdrant or Pinecone d
 
 I then rerank the top 50 results using a cross-encoder like Cohere Rerank or bge-reranker. This step typically improves precision by 10-15%. The top 5-10 reranked chunks become my context.
 
-For generation, I format the context clearly with source labels, add the user query, and call the LLM with a system prompt that instructs citing sources. I use Claude or GPT-4o depending on requirements.
+For generation, I format the context clearly with source labels, add the user query, and call the LLM with a system prompt that instructs citing sources. I use Claude Sonnet 4.6 or GPT-5.5 depending on requirements.
 
 Finally, I have observability hooks at each stage: retrieval latency, reranker latency, LLM latency, plus quality metrics like faithfulness sampled on a percentage of requests."
 
@@ -181,7 +181,7 @@ For example, at scale I might fine-tune a smaller model to handle 70% of queries
    - Place critical information at start and end of context
    - Use reranking to ensure quality before stuffing context
    - Consider recursive summarization for long contexts
-   - Use models with better long-context handling (Gemini 1.5, Claude 3.5)
+   - Use models with better long-context handling (Gemini 3.1 Pro, Claude Sonnet 4.6 at 1M)
 
 **Sample Answer:**
 
@@ -199,7 +199,7 @@ Third, I order strategically. I put the most important chunk first, second-most-
 
 Fourth, for very long contexts, I use hierarchical approaches. I might summarize groups of related chunks and include both summaries and key verbatim sections.
 
-Finally, model selection matters. Claude 3.5 and Gemini 1.5 Pro have shown better long-context performance than earlier models. If I must use very long contexts, I choose models specifically tested for this."
+Finally, model selection matters. Current 1M-window models (Claude Sonnet 4.6, Gemini 3.1 Pro, GPT-5.5) hold attention across long contexts far better than earlier generations, but the attention gradient still exists. If I must use very long contexts, I choose models specifically tested for this and still apply the ordering tricks above."
 
 ---
 
@@ -440,7 +440,7 @@ I choose the isolation level based on compliance requirements and customer sensi
 3. Consider table-specific queries that filter by table presence
 
 **Images/Charts:**
-1. Use vision-language models (GPT-4V, Claude 3.5, Gemini) for description
+1. Use vision-language models (Claude Opus 4.8, GPT-5.5, Gemini 3.1 Pro) for description
 2. Index generated descriptions as text
 3. Store image references for multimodal generation
 4. For charts: consider extracting underlying data if available
@@ -876,65 +876,63 @@ result = app.invoke(input, config)
 
 ## Model Selection Questions
 
-### Q18: How do you choose between GPT-4o, Claude 3.5 Sonnet, and Gemini 1.5 Pro?
+### Q18: How do you choose between Claude Sonnet 4.6, GPT-5.5, and Gemini 3.1 Pro for a production workload?
 
 **What interviewers look for:**
 - Current model knowledge
 - Decision framework
 - Cost awareness
 
-**Strong answer (December 2025):**
+**Strong answer (June 2026, verify current):**
 
-| Factor | GPT-4o | Claude 3.5 Sonnet | Gemini 1.5 Pro |
-|--------|--------|-------------------|----------------|
-| Context window | 128K | 200K | 2M |
-| Coding | Excellent | Best in class | Very good |
-| Long context | Good | Good | Best in class |
-| Vision | Yes | Yes | Yes |
-| Pricing (input) | $2.50/1M | $3/1M | $1.25/1M |
-| Pricing (output) | $10/1M | $15/1M | $5/1M |
-| Latency (TTFT) | Fast | Fast | Medium |
+| Factor | Claude Sonnet 4.6 | GPT-5.5 | Gemini 3.1 Pro |
+|--------|-------------------|---------|----------------|
+| Context window | 1M | 1M | 1M |
+| Coding | Excellent (powers Claude Code) | Best single-shot (SWE-bench Verified 88.7%) | Very good |
+| Scientific reasoning | Very good | Excellent | Best in class (GPQA Diamond 94.3%) |
+| Vision | Yes | Yes (native omni) | Yes (strongest multimodal) |
+| Pricing (input) | $3/1M | $5/1M | $2/1M |
+| Pricing (output) | $15/1M | $30/1M | $12/1M |
+| Latency (TTFT) | Fast | Medium | Medium (spikes on Deep Think) |
 | Function calling | Excellent | Excellent | Good |
 
 **Selection framework:**
 
-Choose **GPT-4o** when:
-- Ecosystem integration matters (OpenAI tools)
-- Balanced performance across tasks
-- Need fastest time to first token
+Choose **Claude Sonnet 4.6** when:
+- Code generation, agentic loops, or tool-heavy workloads
+- You want the best price-to-quality at the production tier
+- Long-running sessions where caching discounts compound
 
-Choose **Claude 3.5 Sonnet** when:
-- Code generation or analysis
-- Complex reasoning tasks
-- Need nuanced, detailed responses
-- Safety/refusals are not problematic for use case
+Choose **GPT-5.5** when:
+- Single-shot coding quality is the bar (current SWE-bench Verified leader)
+- Native omni multimodal (audio and video in one model) matters
+- Ecosystem integration with OpenAI tooling (AgentKit, Apps SDK)
 
-Choose **Gemini 1.5 Pro** when:
-- Very long context (over 200K)
-- Cost optimization is priority
-- Video or audio understanding
-- Multimodal grounding needed
+Choose **Gemini 3.1 Pro** when:
+- Scientific or analytical reasoning is the core task
+- Multimodal grounding across documents, images, and video
+- Cost-sensitive frontier work ($2/$12 undercuts both rivals)
 
 **Sample Answer:**
 
 "My model selection depends on the specific requirements. Here is how I think about it:
 
-**For most production workloads**, I default to Claude 3.5 Sonnet or GPT-4o. They are both excellent general-purpose models with strong instruction following, good coding ability, and reliable function calling. Sonnet has a slight edge on coding tasks in my experience, while GPT-4o has better ecosystem integration if you are already in the OpenAI world.
+**For most production workloads**, I default to Claude Sonnet 4.6. It covers most tasks that used to require an Opus-tier model at $3/$15, powers Claude Code, and includes the full 1M context at standard pricing. GPT-5.5 wins when I need the best single-shot coding quality or native omni multimodal.
 
-**For long-context applications**, Gemini 1.5 Pro is the clear winner with its 1-2 million token context. If I am building a system that needs to process entire codebases or very long documents in a single call, Gemini is my choice. It is also the most cost-effective of the frontier models.
+**For the capability ceiling**, the calculus changed in June 2026: Claude Fable 5 ($10/$50) made Mythos-class capability generally available, and Claude Opus 4.8 ($5/$25) holds the best price-to-capability at the frontier. I route only ceiling-bound work to those tiers.
 
-**For cost-sensitive high-volume applications**, I use GPT-4o-mini or Claude 3.5 Haiku. These are 10-20x cheaper than their larger siblings and handle straightforward tasks well. I often build cascading systems where simple queries go to these smaller models.
+**For cost-sensitive high-volume applications**, I use Claude Haiku 4.5, GPT-5.5-mini, Gemini 3.1 Flash, or DeepSeek V4 Flash ($0.14/$0.28 with a 1M window). I build cascading systems where simple queries go to these tiers and only hard queries escalate.
 
-**For the most demanding reasoning tasks**, I consider o1 or Claude 3.5 Opus. These are expensive but provide measurable quality improvements on complex multi-step reasoning.
+**For the most demanding reasoning tasks**, I use models with controllable thinking: Claude Opus 4.8 adaptive thinking or GPT-5.5 reasoning. The thinking budget is a cost lever, not a free win, so I gate it behind a complexity classifier.
 
 **My practical approach:**
 
-1. Start prototyping with Claude Sonnet or GPT-4o since they are reliable and high-quality.
+1. Start prototyping with Claude Sonnet 4.6 or GPT-5.5 since they are reliable and high-quality.
 2. Evaluate on my specific task since benchmark rankings do not always predict task performance.
-3. Build an abstraction layer so I can switch models easily.
+3. Build an abstraction layer so I can switch models easily; the leaderboard reshuffles every quarter.
 4. Optimize costs by routing simpler requests to cheaper models once the system is stable.
 
-I never rely solely on benchmark scores. A model that ranks lower on MMLU might excel on my specific domain."
+I never rely solely on benchmark scores. A model that ranks lower on a public leaderboard might excel on my specific domain. And I re-verify pricing monthly: the DeepSeek V4 price cuts and the Fable 5 launch both reshaped routing economics within a single quarter."
 
 ---
 
@@ -974,7 +972,7 @@ I never rely solely on benchmark scores. A model that ranks lower on MMLU might 
 
 ---
 
-### Q20: Explain reasoning models (o1, DeepSeek-R1). When are they worth the cost?
+### Q20: Explain reasoning models and controllable thinking. When are they worth the cost?
 
 **What interviewers look for:**
 - Understanding of test-time compute
@@ -985,17 +983,17 @@ I never rely solely on benchmark scores. A model that ranks lower on MMLU might 
 
 **How reasoning models differ:**
 - Spend more tokens "thinking" before answering
-- Chain-of-thought is built into the model
+- Chain-of-thought is built into the model, often with a controllable budget (Claude adaptive thinking, GPT-5.5 reasoning effort)
 - Trade latency and cost for accuracy on hard problems
 
-**Performance profile (December 2025):**
+**Performance profile (June 2026, verify current):**
 
-| Model | MATH benchmark | Latency | Cost (output) |
-|-------|---------------|---------|---------------|
-| GPT-4o | ~76% | Fast | $10/1M |
-| o1 | ~94% | 10-60s | $60/1M |
-| o1-mini | ~90% | 5-30s | $12/1M |
-| DeepSeek-R1 | ~92% | 10-40s | $2/1M |
+| Model | Thinking control | Latency | Cost (output) |
+|-------|------------------|---------|---------------|
+| Claude Sonnet 4.6 (standard) | Optional extended thinking | Fast | $15/1M |
+| Claude Opus 4.8 (adaptive thinking) | Effort defaults to high | 5-30s | $25/1M |
+| GPT-5.5 reasoning | Effort levels low/medium/high | 10-60s | $30/1M |
+| DeepSeek-R1 | Always-on RL thinking | 10-40s | $2.19/1M |
 
 **When worth the cost:**
 - Mathematical proofs and formal reasoning
@@ -1009,7 +1007,7 @@ I never rely solely on benchmark scores. A model that ranks lower on MMLU might 
 - Content generation
 - Latency-sensitive applications
 - High volume use cases
-- Tasks where GPT-4o/Claude already excel
+- Tasks where a standard-mode frontier model (Claude Sonnet 4.6, GPT-5.5) already excels
 
 ---
 
@@ -1027,14 +1025,16 @@ I never rely solely on benchmark scores. A model that ranks lower on MMLU might 
 - Tasks: retrieval, classification, clustering, semantic similarity
 - Leaderboard at huggingface.co/spaces/mteb/leaderboard
 
-**Current top models (December 2025):**
+**Current top models (June 2026, verify on the MTEB leaderboard):**
 
-| Model | MTEB Score | Dimensions | Max Tokens | Cost |
-|-------|------------|------------|------------|------|
-| OpenAI text-embedding-3-large | 64.6 | 3072 | 8191 | $0.13/1M |
-| Voyage-3 | 67.8 | 1024 | 32000 | $0.06/1M |
-| Cohere embed-v3 | 66.4 | 1024 | 512 | $0.10/1M |
-| BGE-large-en-v1.5 | 63.9 | 1024 | 512 | Self-host |
+| Model | MTEB standing | Dimensions | Max Tokens | Cost |
+|-------|---------------|------------|------------|------|
+| Gemini Embedding 001 | English leader (~68.3) | 3072 (Matryoshka) | 8K | API pricing |
+| Qwen3-Embedding-8B | Multilingual leader (~70.6) | 4096 | 32K | Self-host |
+| Cohere Embed 4 | Strong multimodal | 256-1536 (Matryoshka) | 128K | $0.10/1M |
+| Voyage-4 | Strong retrieval | 1024 | 128K | $0.05/1M |
+| OpenAI text-embedding-3-large | Solid baseline | 3072 | 8K | $0.13/1M |
+| BGE-M3 | Open multi-granularity | 1024 | 8K | Self-host |
 
 **Practical evaluation approach:**
 1. Start with MTEB as baseline
@@ -1232,7 +1232,7 @@ At 8K context, that is 2.6 GB per request. With 100 concurrent requests, I need 
 
 "I approach LLM cost optimization in layers, starting with the highest-impact changes.
 
-**Layer 1: Model selection** has the biggest impact, potentially 50-90% savings. The question is: what is the cheapest model that meets my quality bar? I run evaluations to find this. Often GPT-4o-mini or Claude Haiku handles 60-70% of queries just fine, and I only route complex queries to frontier models.
+**Layer 1: Model selection** has the biggest impact, potentially 50-90% savings. The question is: what is the cheapest model that meets my quality bar? I run evaluations to find this. Often GPT-5.5-mini, Claude Haiku 4.5, or DeepSeek V4 Flash handles 60-70% of queries just fine, and I only route complex queries to frontier models.
 
 **Layer 2: Caching** can reduce API calls by 30-80%. I implement two levels:
 - Exact match cache for repeated queries
@@ -3061,16 +3061,16 @@ The key insight: Assume code execution will be exploited. Design so that exploit
 
 ---
 
-### Q66: When would you use Claude 3.7's Extended Thinking mode vs. standard mode, and how do you control costs?
+### Q66: When would you use Claude's extended or adaptive thinking vs. standard mode, and how do you control costs?
 
 **What interviewers look for:**
-- Practical knowledge of the Extended Thinking API
+- Practical knowledge of the thinking APIs
 - Cost/quality tradeoff reasoning
 - Production gate patterns
 
 **Strong answer:**
 
-"Extended Thinking adds an internal reasoning scratchpad before the model produces its final response. It genuinely helps for complex tasks but can add 2–10× cost.
+"Thinking modes add an internal reasoning scratchpad before the model produces its final response. On current Claude models this comes in two flavors: **extended thinking** with an explicit `budget_tokens` cap (Sonnet 4.6, Haiku 4.5) and **adaptive thinking** where the model allocates effort itself (Opus 4.8, Fable 5, with an `effort` parameter that defaults to high on Opus 4.8). Either way it genuinely helps for complex tasks but can add 2-10x cost.
 
 **I enable it for:**
 - Complex code refactoring or debugging spanning multiple files
@@ -3078,15 +3078,15 @@ The key insight: Assume code execution will be exploited. Design so that exploit
 - Security-critical decisions where extra reasoning catches edge cases
 - Architecture design questions with many interdependent constraints
 
-**I disable it for:**
+**I disable it (or set effort low) for:**
 - Simple extraction, summarization, or Q&A (adds latency with no benefit)
 - High-volume chatbot turns (kills cost budget instantly)
 - Format-only tasks like JSON conversion
 
-**API usage:**
+**API usage (budgeted extended thinking):**
 ```python
 response = client.messages.create(
-    model='claude-3-7-sonnet-20250219',
+    model='claude-sonnet-4-6',
     max_tokens=16000,
     thinking={
         'type': 'enabled',
@@ -3096,43 +3096,44 @@ response = client.messages.create(
 )
 ```
 
-**Production cost control pattern:** I run a lightweight complexity classifier (a fine-tuned BERT or even a prompt-based binary classifier) on every incoming query. If complexity score > 0.7, I route to Extended Thinking. Otherwise standard mode. In practice this saves 60–70% on thinking costs while preserving quality where it matters.
+**Production cost control pattern:** I run a lightweight complexity classifier (a fine-tuned BERT or even a prompt-based binary classifier) on every incoming query. If complexity score > 0.7, I route to a thinking-enabled call. Otherwise standard mode. On adaptive-thinking models I set `effort` explicitly instead of accepting the high default. In practice this saves 60-70% on thinking costs while preserving quality where it matters.
 
-**o3 vs. Claude Extended Thinking:** o3 also has configurable reasoning effort (low/medium/high) but never exposes the chain of thought. Claude's thinking block is visible (useful for debugging). For transparency and auditability, Claude wins; for raw benchmark performance on math, o3 high wins."
+**GPT-5.5 reasoning vs. Claude thinking:** GPT-5.5's reasoning effort (low/medium/high) never exposes the chain of thought. Claude's thinking block is visible, which is useful for debugging and compliance review. For transparency and auditability, Claude wins; for some math benchmarks, GPT-5.5 at high effort wins."
 
 ---
 
-### Q67: How does o3's reasoning effort setting work and when would you choose o3 over Claude 3.7?
+### Q67: How does reasoning effort work on GPT-5.5, and when would you choose it over Claude Opus 4.8?
 
 **What interviewers look for:**
-- Up-to-date knowledge of reasoning model distinctions  
-- Benchmark awareness  
+- Up-to-date knowledge of reasoning model distinctions
+- Benchmark awareness
 - Practical selection criteria
 
 **Strong answer:**
 
-"o3 uses OpenAI's compute-scaling approach. You set `reasoning_effort` to `low`, `medium`, or `high`. The model allocates internal compute token budget accordingly.
+"GPT-5.5 uses OpenAI's compute-scaling approach. You set `reasoning_effort` to `low`, `medium`, or `high`. The model allocates internal compute token budget accordingly.
 
 | Effort | Relative cost | When to use |
 |--------|---------------|-------------|
-| low | ~1× | Simple lookups, fast Q&A |
-| medium | ~3–5× | Code generation, analysis |
-| high | ~8–20× | ARC-AGI, AIME math, deep reasoning |
+| low | ~1x | Simple lookups, fast Q&A |
+| medium | ~3-5x | Code generation, analysis |
+| high | ~8-20x | ARC-AGI, AIME math, deep reasoning |
 
-**When I choose o3 over Claude 3.7:**
-- Top-of-class benchmark performance is required (o3 leads ARC-AGI, AIME 2025)
-- Autonomous tool-use at high accuracy - o3's SWE-bench is competitive with Claude Code's backbone
-- I don't need to inspect the reasoning chain (o3 never shows it)
+**When I choose GPT-5.5 over Claude Opus 4.8:**
+- Top-of-class single-shot benchmarks are the bar (GPT-5.5 leads ARC-AGI-2 at 85.0% and SWE-bench Verified at 88.7%)
+- Native omni multimodal in one model
+- I don't need to inspect the reasoning chain (GPT-5.5 never shows it)
 
-**When I choose Claude 3.7 over o3:**
-- I need visible chain-of-thought for debugging or compliance audit
-- The task involves software engineering - Claude 3.7 powers Claude Code and leads SWE-bench Verified
-- I need 200K context (o3 is also 200K, but Claude's reliability at long context is more tested in production)
-- I'm building with MCP tools - Claude's ecosystem is more mature
+**When I choose Claude Opus 4.8 over GPT-5.5:**
+- I need visible thinking for debugging or compliance audit
+- Long-horizon agentic coding: Opus 4.8 powers Claude Code, leads SWE-Bench Pro at 69.2%, and runs Dynamic Workflows with parallel subagents
+- I need the full 1M context at standard pricing with battle-tested recall
+- I'm building with MCP tools and the Claude Agent SDK ecosystem
 
 **Cost reality (always verify on the provider pricing page):**
-- Frontier reasoning tier (GPT-5.5 reasoning, Claude Opus 4.7): $10-$15 / $40-$75 per 1M input/output
-- Production mid-tier (Claude Sonnet 4.6): $3 / $15 per 1M
+- Capability ceiling: Claude Fable 5 at $10 / $50 per 1M
+- Frontier tier: Claude Opus 4.8 at $5 / $25, GPT-5.5 at $5 / $30
+- Production mid-tier: Claude Sonnet 4.6 at $3 / $15
 - For volume workloads, the mid-tier is significantly cheaper at comparable quality for most software engineering tasks."
 
 ---
@@ -3193,24 +3194,24 @@ response = client.messages.create(
 
 **Strong answer:**
 
-"DeepSeek-V3 and DeepSeek-R1 (released early 2025) changed the calculus in three ways:
+"DeepSeek-V3 and DeepSeek-R1 (released early 2025) changed the calculus, and the V4 line (April 2026) pushed it further:
 
-**1. The quality gap closed.** DeepSeek-V3 matches GPT-4o on most benchmarks. DeepSeek-R1 matches o1 on math and code. These are open weights under MIT license.
+**1. The quality gap closed.** DeepSeek-V3 matched the then-frontier on most benchmarks, R1 matched o1 on math and code, and V4 Pro now scores 80.6% on SWE-bench Verified with open weights. All under permissive licenses.
 
-**2. Cost is an order of magnitude lower.** Via Together AI or Fireworks, DeepSeek-V3 API access is ~$0.27/1M blended - compared to $10/1M for GPT-4o. For high-volume workloads, that's a 30–40× cost reduction.
+**2. Cost is an order of magnitude lower.** DeepSeek V4 Flash runs $0.14/$0.28 per 1M with a 1M context window, and V4 Pro is $0.435/$0.87 after the discount was made permanent in May 2026. Against a $5/$25-and-up closed frontier, that is a 10-30x reduction for many workloads.
 
-**3. Self-hosting is now viable at scale.** With the MoE architecture (671B params but only ~21B activated per token), you can run it on a smaller GPU cluster than a dense 70B model would suggest.
+**3. Self-hosting is now viable at scale.** With the MoE architecture (V4 Pro: 1.6T total, 49B active per token), you can run it on a smaller GPU cluster than a dense model of comparable quality would suggest.
 
 **How I update my architecture decisions:**
 
-For price-sensitive, high-volume tasks (classification, extraction, summarization): Evaluate DeepSeek-V3 first. At $0.27/1M it often wins on ROI.
+For price-sensitive, high-volume tasks (classification, extraction, summarization): Evaluate DeepSeek V4 Flash first. At $0.14/1M input it often wins on ROI.
 
-For data-sovereign deployments: Self-hosted DeepSeek-R1 or DeepSeek-V3 on your own H100s. No data leaves the network - critical for healthcare, finance, defense.
+For data-sovereign deployments: Self-hosted DeepSeek V4 or R1 on your own H100s. No data leaves the network - critical for healthcare, finance, defense.
 
-For fine-tuning: Open weights enable full fine-tuning on proprietary datasets. Closed models (GPT-4o, Claude) only allow limited fine-tuning with data going to the provider.
+For fine-tuning: Open weights enable full fine-tuning on proprietary datasets. Closed models (OpenAI, Anthropic) only allow limited fine-tuning with data going to the provider.
 
 **What I still use closed models for:**
-- Tasks requiring the absolute best quality (Claude 3.7 for agentic coding)
+- Tasks requiring the absolute best quality (Claude Opus 4.8 or Fable 5 for agentic coding)
 - Low-latency serving where managed APIs beat self-hosted ops overhead
 - Situations where inference engineering burden outweighs cost savings (< ~500 requests/day)
 
@@ -3317,7 +3318,7 @@ Even good judges have systematic biases (positivity bias, verbosity preference).
 - **Criteria drift**: Judge evaluates criteria other than what you defined. Use strict JSON output format and validate schema.
 - **Context window contamination**: If your judge context is too long, the model loses track of the criteria.
 
-**Mitigation:** Use a stronger model as judge than the model you're evaluating (e.g., use o3 to judge Claude 3.5 Haiku outputs). Use multiple independent judges and take majority vote for high-stakes evaluations."
+**Mitigation:** Use a stronger model as judge than the model you're evaluating (e.g., use Claude Opus 4.8 or GPT-5.5 reasoning to judge Haiku 4.5 outputs). Use multiple independent judges and take majority vote for high-stakes evaluations."
 
 ---
 
@@ -3386,9 +3387,9 @@ Incoming query
     ↓
 Route to appropriate model tier
 
-Tier A (simple): Gemini 2.0 Flash ($0.10/1M) - factual Q&A, extraction
-Tier B (complex): Claude 3.7 Sonnet ($3/1M) - reasoning, code review
-Tier C (reasoning): o3-mini medium ($1.10/1M) - math, logic problems
+Tier A (simple): Gemini 3.1 Flash ($0.10/1M) or DeepSeek V4 Flash ($0.14/1M) - factual Q&A, extraction
+Tier B (complex): Claude Sonnet 4.6 ($3/1M) - reasoning, code review
+Tier C (reasoning): Claude Opus 4.8 ($5/1M) or GPT-5.5 reasoning ($5/1M) - math, logic problems
 ```
 
 **Cluster training:**  
@@ -3473,7 +3474,7 @@ I've seen 40–60% cost reduction using semantic routing vs. always using the fr
 **LiveCodeBench:**
 - Competitive programming problems released *after* model training cutoffs
 - Designed to be contamination-free
-- Much harder scores (o3 gets ~68%, Claude 3.7 gets ~54%, vs SWE-bench where both exceed 70%)
+- Materially harder scores than SWE-bench for the same models
 - Measures: Raw algorithmic reasoning without memorization
 
 **Which matters for production coding agents?**
@@ -3481,7 +3482,7 @@ I've seen 40–60% cost reduction using semantic routing vs. always using the fr
 For real-world software engineering tasks (write a feature, fix a bug, refactor code) use SWE-bench, because:
 - It reflects actual software engineering workflows
 - It tests file navigation, test-driven iteration, and multi-file edits
-- March 2026 leaders: Claude 3.7 Sonnet at ~70%, o3 at ~71%
+- June 2026 published leaders: GPT-5.5 at 88.7%, Claude Opus 4.8 at 88.6% (and 69.2% on the harder SWE-Bench Pro)
 
 For reasoning capability (math-heavy algorithms, competitive programming) use LiveCodeBench:
 - More reliable signal since it's contamination-free
@@ -3552,9 +3553,9 @@ For reasoning capability (math-heavy algorithms, competitive programming) use Li
 Request
     ↓
 [Smart Router]
-    ├── Primary: Claude 3.7 Sonnet (70% traffic)
-    ├── Secondary: GPT-4o (25% traffic, validates primary)
-    └── Fallback: Gemini 2.0 Flash (5%, emergency)
+    ├── Primary: Claude Sonnet 4.6 (70% traffic)
+    ├── Secondary: GPT-5.5 (25% traffic, validates primary)
+    └── Fallback: Gemini 3.1 Flash (5%, emergency)
 
 Health check every 30s:
 - P95 latency > 5s → reduce traffic share
@@ -3564,7 +3565,7 @@ Health check every 30s:
 
 **Challenges with multi-provider:**
 
-1. **Prompt compatibility**: Prompts optimized for Claude may produce worse results on GPT-4o. I maintain provider-specific prompt variants and test each separately.
+1. **Prompt compatibility**: Prompts optimized for Claude may produce worse results on GPT-5.5. I maintain provider-specific prompt variants and test each separately.
 
 2. **Output consistency**: Two providers may format responses differently. I use DSPy or a post-processing normalization layer to standardize output structure.
 
@@ -3724,34 +3725,35 @@ Error analysis is discovery. Automated evals are measurement. Discovery must pre
 
 ## Advanced Questions - May 2026
 
-*New questions surfaced from Glassdoor, Blind, LinkedIn interview write-ups, Latent Space, Anthropic / OpenAI / Sierra / Cursor / Mistral / Perplexity / Forward Deployed loops, and AI-native hiring rubrics published April–May 2026. Themes: GPT-5.5 vs Claude Opus 4.7, the May AI-security inflection (Mythos, Daybreak, MDASH, first AI-built zero-day in the wild), DeepSeek V4 economics, Llama 4 Scout's 10M-context reality, A2A v1.0 vs MCP, computer-use agents, Forward Deployed Engineering, distillation as a budgeted line item, EU AI Act enforcement, and agent-as-judge eval evolution. Designed for senior+ candidates and engineering leaders.*
+*New questions surfaced from Glassdoor, Blind, LinkedIn interview write-ups, Latent Space, Anthropic / OpenAI / Sierra / Cursor / Mistral / Perplexity / Forward Deployed loops, and AI-native hiring rubrics published April-June 2026. Themes: GPT-5.5 vs Claude Opus 4.8, the May AI-security inflection (Mythos, Daybreak, MDASH, first AI-built zero-day in the wild) and its June resolution (Fable 5 brought Mythos-class capability to general availability), DeepSeek V4 economics, Llama 4 Scout's 10M-context reality, A2A v1.0 vs MCP, computer-use agents, Forward Deployed Engineering, distillation as a budgeted line item, EU AI Act enforcement, and agent-as-judge eval evolution. Designed for senior+ candidates and engineering leaders.*
 
 ---
 
-### Q81: Pick a frontier model for a production agentic workload in May 2026 and defend the choice against Claude Opus 4.7, GPT-5.5, Gemini 3.1 Pro, and DeepSeek V4 Pro.
+### Q81: Pick a frontier model for a production agentic workload in June 2026 and defend the choice against Claude Fable 5, Claude Opus 4.8, GPT-5.5, Gemini 3.1 Pro, and DeepSeek V4 Pro.
 
 **What interviewers look for:**
-- Current awareness of the May 2026 frontier (GPT-5.5 launched April 23; Claude Opus 4.7 launched April 16; DeepSeek V4 Pro previewed April 24)
+- Current awareness of the June 2026 frontier (Fable 5 launched June 9; Opus 4.8 launched May 28; GPT-5.5 launched April 23; DeepSeek V4 Pro April 24)
 - Ability to map *workload* to *model*, not just recite benchmarks
-- Awareness that "frontier" is now a 4-way tie on most production workloads
+- Awareness that "frontier" is now a multi-way tie on most production workloads, with a separate capability-ceiling tier above it
 
 **Strong answer:**
 
-"I don't pick a 'best' model - I pick the model that minimizes total cost of risk for a specific workload. My matrix for May 2026:
+"I don't pick a 'best' model - I pick the model that minimizes total cost of risk for a specific workload. My matrix for June 2026:
 
 | Workload | Pick | Why |
 |----------|------|-----|
-| Autonomous coding agent (multi-file, long-horizon) | **Claude Opus 4.7** | Leads SWE-bench Verified (~87.6% Adaptive); deepest MCP/skills ecosystem; native Extended Thinking with visible CoT for audit |
+| Capability-ceiling work (hardest reasoning, vision, longest-horizon autonomy) | **Claude Fable 5** | Mythos-class capability now generally available at $10/$50; reserve it for work where the ceiling pays for the 2x price |
+| Autonomous coding agent (multi-file, long-horizon) | **Claude Opus 4.8** | SWE-bench Verified 88.6%, SWE-Bench Pro 69.2%; Dynamic Workflows runs hundreds of parallel subagents in Claude Code; deepest MCP/skills ecosystem; visible thinking for audit |
 | Customer-facing assistant with computer use | **GPT-5.5** | Native computer-use, 52.5% fewer hallucinations on high-stakes prompts vs GPT-5.3 Instant, $5/$30 per 1M is workable |
-| High-volume RAG / classification at scale | **DeepSeek V4 Flash** or **Gemini 3.1 Flash** | DeepSeek V4 Flash is 13B-active MoE with 1M context; ~$0.28/$0.42 per 1M and 98% cache-hit discount makes it 10–30× cheaper |
+| High-volume RAG / classification at scale | **DeepSeek V4 Flash** or **Gemini 3.1 Flash** | DeepSeek V4 Flash is 13B-active MoE with 1M context at $0.14/$0.28 per 1M; the 98% cache-hit discount makes it 10-30x cheaper |
 | Sovereign / regulated workload | **DeepSeek V4 Pro self-hosted** or **Mistral Medium 3.5** | Open weights for DeepSeek; Mistral hits 77.6% SWE-Bench Verified and is EU-hosted |
-| Maximum reasoning (math, hard science, ARC-AGI) | **GPT-5.5 Pro** | Tops ARC-AGI-2 at 85.0% as of May 13, 2026 |
+| Maximum single-shot reasoning (math, hard science, ARC-AGI) | **GPT-5.5** | Tops ARC-AGI-2 at 85.0% and SWE-bench Verified at 88.7% |
 
-**The interview trap I avoid:** saying 'Claude Opus 4.7 is the best.' Opus is the right default for coding agents. For a chatbot answering FAQs at 50M req/day, it would burn your runway in a week. Always tie the model to the SLO, the cost ceiling, and the risk surface.
+**The interview trap I avoid:** saying any one model 'is the best.' Opus 4.8 is the right default for coding agents; Fable 5 only when the ceiling matters. For a chatbot answering FAQs at 50M req/day, either would burn your runway in a week. Always tie the model to the SLO, the cost ceiling, and the risk surface.
 
-**Cost-of-risk framing:** If a hallucination costs $X (regulator fine, customer churn, a bad merge), I'll pay 10× more for a frontier model. If the worst outcome is a re-try, I'll route 95% of traffic to a cheap model and 5% to a frontier model for hard cases."
+**Cost-of-risk framing:** If a hallucination costs $X (regulator fine, customer churn, a bad merge), I'll pay 10x more for a frontier model. If the worst outcome is a re-try, I'll route 95% of traffic to a cheap model and 5% to a frontier model for hard cases."
 
-**Follow-up to expect:** What changes if Claude Mythos Preview ships to general availability? (Mythos Preview is currently restricted to ~11 partner orgs via 'Project Glasswing' for dual-use cybersecurity concerns; ungating it would put SWE-bench Verified 93.9% on the table and would force a reshuffle.)
+**Follow-up to expect:** The Mythos question resolved itself in June 2026: Anthropic shipped Fable 5 (a Mythos-class model with safeguards, sensitive queries falling back to Opus 4.8) instead of ungating Mythos Preview directly. A strong candidate notes what this teaches: labs can productize a restricted capability tier by wrapping it in classifier-gated routing, so "restricted" models reshape the market sooner than their access lists suggest.
 
 ---
 
@@ -4298,7 +4300,7 @@ Implication: code review for AI-generated patches must include adversarial testi
 "Real numbers from a recent project shape my answer:
 
 **Project frame:**
-- Customer baseline: $50K/month frontier spend (let's say Claude Opus 4.7 for code review)
+- Customer baseline: $50K/month frontier spend (let's say Claude Opus 4.8 for code review)
 - Target: 90% of traffic served by a fine-tuned smaller model, 10% remaining on frontier for hard cases
 
 **One-time costs:**
@@ -4311,7 +4313,7 @@ Implication: code review for AI-generated patches must include adversarial testi
 
 **Run-rate after rollout:**
 - 90% traffic on student model: $2–4K/month inference
-- 10% on Opus 4.7: $5K/month
+- 10% on Opus 4.8: $5K/month
 - **New monthly spend: ~$7–9K, vs $50K baseline → ~$42–43K monthly savings**
 
 **Payback math:**
@@ -4526,7 +4528,7 @@ Implication: code review for AI-generated patches must include adversarial testi
 
 1. **Provider abstraction layer.** Vercel AI SDK, LangChain's `llms` abstraction, or a custom adapter - anything that lets me swap providers behind a flag.
 
-2. **Per-task provider preferences with fallback.** Primary: Claude Opus 4.7. Secondary: GPT-5.5. Tertiary: DeepSeek V4 Pro self-hosted. Routing layer fails-over on rate-limit, outage, OR policy block.
+2. **Per-task provider preferences with fallback.** Primary: Claude Opus 4.8. Secondary: GPT-5.5. Tertiary: DeepSeek V4 Pro self-hosted. Routing layer fails-over on rate-limit, outage, OR policy block.
 
 3. **Track terms-of-service diffs.** GitHub Actions monitoring vendor ToS pages; alert on changes. Sounds paranoid; in 2026 it's prudent.
 
@@ -4885,8 +4887,8 @@ Hallucination is now a P0 incident class, like a security breach. Treat it accor
 5. **Consider failure modes** - What can go wrong?
 6. **End with monitoring** - How do you know it works?
 7. **Acknowledge uncertainty** - It is okay to say "I would research this more"
-8. **Cite benchmarks specifically** - SWE-bench Verified (Mythos Preview 93.9%, Opus 4.7 Adaptive 87.6%), ARC-AGI-2 (GPT-5.5 85.0%), AIME 2025, OSWorld, τ²-bench
-9. **Know the May 2026 landscape** - Claude Opus 4.7, GPT-5.5 / GPT-5.5 Instant, Gemini 3.1 Pro, DeepSeek V4 Pro / Flash, Llama 4 Scout / Maverick, Kimi K2.6, Qwen 3.6 Max, Mistral Medium 3.5, Gemma 4. Reference the May AI-security inflection (Mythos, Daybreak, MDASH, first AI-built zero-day in the wild) and EU AI Act enforcement (Aug 2, 2026)
+8. **Cite benchmarks specifically** - SWE-bench Verified (GPT-5.5 88.7%, Opus 4.8 88.6%, Mythos Preview 93.9% pre-Fable), SWE-Bench Pro (Opus 4.8 69.2%), ARC-AGI-2 (GPT-5.5 85.0%), AIME 2025, OSWorld, τ²-bench
+9. **Know the June 2026 landscape** - Claude Fable 5 ($10/$50, Mythos-class with an Opus 4.8 fallback safeguard), Claude Opus 4.8, GPT-5.5 / GPT-5.5 Instant, Gemini 3.1 Pro, DeepSeek V4 Pro / Flash, Llama 4 Scout / Maverick, Kimi K2.6, Qwen 3.6 Max, Mistral Medium 3.5, Gemma 4. Reference the May AI-security inflection (Mythos, Daybreak, MDASH, first AI-built zero-day in the wild), its June resolution via Fable 5, and EU AI Act enforcement (Aug 2, 2026)
 
 ---
 
