@@ -7,6 +7,7 @@ Strong interview answers follow consistent structures. This chapter provides fra
 ## Table of Contents
 
 - [System Design Framework (SPIDER)](#system-design-framework-spider)
+- [Worked Example: SPIDER in a 45-Minute Session](#worked-example-spider-in-a-45-minute-session) ⭐ *NEW*
 - [Concept Explanation Framework (ETA)](#concept-explanation-framework-eta)
 - [Tradeoff Analysis Framework](#tradeoff-analysis-framework)
 - [Debugging and Troubleshooting Framework](#debugging-and-troubleshooting-framework)
@@ -157,6 +158,83 @@ Cost optimization will be a second-order concern once we have the basic system w
 - Where are the bottlenecks?
 - What scales horizontally vs vertically?
 - What costs scale with usage?
+
+---
+
+## Worked Example: SPIDER in a 45-Minute Session
+
+A condensed transcript showing how the framework sounds in a real loop. The prompt: "Design a document Q&A system for a 10,000-employee company." Notes in brackets mark the framework step and the clock.
+
+```
+[0:00 - S: Scope]
+You: "Before I draw anything, let me scope this. Roughly how many
+documents, what types, and what freshness do answers need?"
+Interviewer: "About 2 million documents, mostly PDFs and wikis.
+Updated daily is fine."
+You: "Two more: what accuracy bar are we targeting, and is this
+internal-only or exposed to customers?"
+Interviewer: "Internal. Wrong answers are embarrassing but not
+catastrophic. p95 under 3 seconds."
+You: "So: 2M mixed documents, daily freshness, internal users,
+soft accuracy bar, p95 under 3s. I'll design for 10K employees
+with maybe 5% daily active. That's roughly 500-2,000 queries/hour
+at peak. Sound right?"
+Interviewer: "Works."
+
+[0:05 - P: Plan the architecture out loud]
+You: "I'll draw the full pipeline first, then deep dive where you
+want. Ingestion on the left: connectors, parsing, chunking,
+embedding, vector store. Serving on the right: query, hybrid
+retrieval, rerank, generation with citations, response. Eval and
+monitoring underneath as a cross-cutting layer."
+
+[0:08 - I: Identify components, draw and narrate]
+You: "Ingestion: connectors pull from SharePoint and Confluence
+nightly. Parsing handles PDFs with a document-AI tier first and a
+vision-LLM fallback for complex layouts. Chunking is structure-
+aware, 300-500 tokens with headers prepended. Embeddings go into
+a vector DB with metadata: source, team, date, access tags."
+Interviewer: "Why hybrid retrieval instead of pure vector?"
+You: "Internal corpora are full of project codenames and
+acronyms. Embeddings miss exact-match tokens; BM25 catches them.
+RRF to fuse, cross-encoder rerank on the top 50. That combination
+is the difference between 70% and 90%+ retrieval hit rate here."
+
+[0:18 - D: Deep dive where the interviewer steers]
+Interviewer: "Go deeper on access control."
+You: "Permissions evaluated at retrieval time, not index time.
+Every chunk carries ACL tags from the source system. The retrieval
+query filters on the caller's groups before similarity scoring, so
+a result the user can't read never enters the candidate set. Index-
+time filtering breaks the moment permissions change; retrieval-time
+filtering follows the source of truth. Cache keys include the
+permission set so a cached answer never leaks across groups."
+
+[0:30 - E: Evaluate your own design]
+You: "Weaknesses I'd flag in my own design: nightly sync means up
+to 24h staleness, fine per requirements but I'd add webhook-based
+invalidation for the wikis later. The reranker adds ~150ms at p95,
+worth it for quality. Failure modes: provider outage falls back to
+a second model with provider-specific prompts; retrieval returning
+nothing returns 'not found in our docs' rather than letting the
+model improvise."
+
+[0:38 - R: Requirements check and evaluation story]
+You: "Back to the requirements: 3s p95 gives me a budget of
+~400ms retrieval, ~150ms rerank, ~2s generation, with streaming so
+perceived latency is under a second. For quality, I'd stand up a
+200-case golden set from real employee questions, score
+faithfulness and citation accuracy with an LLM judge calibrated
+monthly against human review, and sample 2% of production traffic.
+Anything else you'd like me to go deeper on?"
+```
+
+**What this transcript demonstrates:**
+- Scope took five minutes and produced numbers the whole design referenced.
+- The candidate narrated while drawing and invited steering at each phase.
+- Deep-dive answers led with the decision, then the reason, then the failure mode.
+- The candidate critiqued their own design before the interviewer had to.
+- Evaluation was part of the design, not an afterthought.
 
 ---
 
@@ -408,7 +486,7 @@ find them and what questions to ask when evaluating it."
 **Wrong:**
 ```
 Interviewer: "How would you design a document Q&A system?"
-You: "I would use LangChain with Pinecone and GPT-4."
+You: "I would use LangChain with Pinecone and GPT-5.5."
 ```
 
 **Right:**
@@ -423,15 +501,16 @@ What types of documents? What volume? What accuracy is needed?"
 
 **Wrong:**
 ```
-"I would always use GPT-4 for the best quality."
+"I would always use the biggest frontier model for the best quality."
 ```
 
 **Right:**
 ```
 "Model selection depends on the quality bar and volume. For high-volume, 
-lower-stakes queries, I might use GPT-4o-mini or Claude Haiku and reserve 
-GPT-4 or Claude Sonnet for complex cases. At 1M queries/day, this could 
-save $50K/month without meaningful quality loss."
+lower-stakes queries, I might use Claude Haiku 4.5, GPT-5.5-mini, or 
+DeepSeek V4 Flash and reserve Claude Sonnet 4.6 or GPT-5.5 for complex 
+cases. At 1M queries/day, this could save $50K/month without meaningful 
+quality loss."
 ```
 
 ---

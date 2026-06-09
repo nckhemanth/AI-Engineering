@@ -7,8 +7,11 @@ Behavioral questions in AI roles assess how you approach ambiguous problems, col
 - [Why Behavioral Questions Matter for AI Roles](#why-behavioral-questions-matter-for-ai-roles)
 - [AI-Specific Behavioral Themes](#ai-specific-behavioral-themes)
 - [Question Categories and Examples](#question-categories-and-examples)
-- [Sample Answers Using STAR-L](#sample-answers-using-star-l)
+- [Sample Answers Using STAR-L](#sample-answers-using-star-l) (6 worked examples)
 - [Questions to Ask Your Interviewers](#questions-to-ask-your-interviewers)
+- [Red Flags to Avoid](#red-flags-to-avoid)
+- [Practicing Out Loud](#practicing-out-loud) ⭐ *NEW*
+- [Preparation Checklist](#preparation-checklist)
 
 ---
 
@@ -319,6 +322,44 @@ We shipped in 8 weeks with 18% recall improvement (slightly less than their benc
 **Learning:**
 I learned that understanding what motivates others is the key to collaboration. Researchers want impact and credit. By making production success support those goals, I turned potential friction into partnership.
 
+### Example 5: Being Wrong and Walking It Back
+
+**Question:** "Tell me about a time you strongly advocated for a technical decision that turned out to be wrong."
+
+**Situation:**
+I pushed hard to replace our retrieval pipeline with a pure long-context approach: load the whole knowledge base into the prompt, drop the vector database. I argued it in two design reviews, citing recall benefits and a simpler architecture, and the team committed a quarter to the migration partly on my conviction.
+
+**Task:**
+Two months in, I owned proving the new system out before full cutover.
+
+**Action:**
+The eval results were uncomfortable: quality matched, but cost ran four times projection because cache hit rates collapsed under our update frequency, and p95 latency doubled. My first instinct was to tune my way out. After two weeks of marginal gains, I wrote a one-page memo with the numbers, stated plainly that my recommendation had been wrong on the economics, and proposed a hybrid: long-context for the small static corpora where it shone, retrieval for everything else. I presented it to the same audience I had originally convinced.
+
+**Result:**
+We kept the hybrid, salvaged about 60% of the migration work, and the postmortem produced a new rule the team still uses: any architecture pitch must include a cost model under realistic update patterns, not just a quality benchmark.
+
+**Learning:**
+Conviction is useful for getting decisions made and dangerous for unmaking them. I now attach explicit kill criteria to my own proposals, so walking back is a checkpoint, not a confession.
+
+### Example 6: Raising a Concern That Was Dismissed
+
+**Question:** "Describe a time you raised a concern and the team decided against you. What did you do?"
+
+**Situation:**
+Before a launch, I flagged that our agent's tool permissions were broader than the feature needed: it could write to systems it only needed to read. Leadership weighed the two-week delay to scope permissions against launch commitments and decided to ship as-is, with a fast-follow ticket.
+
+**Task:**
+I disagreed with the call. My job was to make sure the decision was made with full information, then either escalate or commit.
+
+**Action:**
+I wrote the risk down concretely: the specific blast radius if the agent was prompt-injected, with a realistic attack path, not a vague "this is risky." I asked for two mitigations that fit inside the launch window: an audit log on the write paths and an anomaly alert on write volume. Both were accepted. I documented my disagreement in the decision record and committed to the launch without relitigating it in hallway conversations.
+
+**Result:**
+The launch went fine. Three weeks later the alert fired on a misconfigured integration test, not an attack, but it proved the monitoring worked, and the fast-follow got prioritized off the back of that signal. The permission scoping shipped a month later.
+
+**Learning:**
+Being overruled is not the end of the job. Converting a lost argument into cheap guardrails and a written record is usually worth more than winning the argument, and it builds the credibility that makes the next concern land harder.
+
 ---
 
 ## Questions to Ask Your Interviewers
@@ -349,6 +390,16 @@ Strong candidates ask thoughtful questions. Here are AI-specific questions that 
 - How do engineers stay current with the rapidly changing AI landscape?
 - What are the paths for growth from this role?
 
+### About Compensation and Leveling (for later-stage conversations)
+
+Save these for the recruiter call or after an offer signal; asking them shows you evaluate companies the way a senior hire should.
+
+- How is compensation structured at this level: base, bonus, equity split, and the equity refresh cadence?
+- What was the last leveling calibration like for this role? Where do you see me landing and why?
+- What separates this level from the next one up here? Can you give an example of someone who made that jump?
+- How did the team handle compensation during the last market shift?
+- For AI-specialized roles: is there a separate track or premium for AI-critical skills, and how is it reviewed as the market moves?
+
 ---
 
 ## Red Flags to Avoid
@@ -363,15 +414,30 @@ Strong candidates ask thoughtful questions. Here are AI-specific questions that 
 
 ---
 
+## Practicing Out Loud
+
+Reading stories is not preparing them. The gap between a written story and a spoken one is where most candidates lose points.
+
+1. **Two lengths per story.** Rehearse each story at 2 minutes (full STAR-L) and at 30 seconds (the elevator version for "tell me briefly about..."). If you only have the long version, you will ramble when time is short.
+2. **Record and review once per story.** One listen-through catches filler words, buried results, and the spots where you explain context nobody asked for. You do not need ten takes; you need one honest one.
+3. **Full mock with interruptions.** Have a peer run 3-4 questions and interrupt you mid-story with "why did you do that?" and "what would you do differently?" Real interviewers probe; rehearsing only clean run-throughs leaves you brittle.
+4. **Drill the bridge sentences.** The transitions ("the result was...", "what I took from it...") are what keep an interviewer oriented. Practice them until they are automatic so your attention stays on content.
+5. **One mock per loop stage.** A recruiter screen, a hiring-manager behavioral, and a bar-raiser style cross-examination reward different depths. Practice at least one round of each shape before a full onsite.
+
+---
+
 ## Preparation Checklist
 
 Before your behavioral interviews:
 
 - [ ] Prepare 5-7 stories covering: leadership, failure, conflict, ambiguity, learning
-- [ ] Practice telling stories in 2-3 minutes (timed)
+- [ ] Include at least one story where you were wrong and one where you were overruled (Examples 5 and 6 show the shape)
+- [ ] Practice telling stories in 2-3 minutes (timed), plus a 30-second version of each
 - [ ] For each story, identify: situation, your specific actions, measurable results, learnings
 - [ ] Include at least one AI-specific story (model failure, bias, stakeholder education)
-- [ ] Prepare 3-5 thoughtful questions for interviewers
+- [ ] Record yourself once per story and fix what you hear
+- [ ] Do one full mock with a peer who interrupts
+- [ ] Prepare 3-5 thoughtful questions for interviewers, including the leveling and compensation set for late-stage calls
 - [ ] Research the company's AI products and potential ethical considerations
 
 ---

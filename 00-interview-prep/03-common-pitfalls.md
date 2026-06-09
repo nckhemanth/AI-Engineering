@@ -59,10 +59,10 @@ Different tasks have different requirements. Using a frontier model for classifi
 ```
 "Model selection varies by task:
 
-- Intent classification: Fine-tuned BERT or GPT-4o-mini
-- Simple responses: Claude Haiku or GPT-4o-mini  
-- Complex reasoning: GPT-4o or Claude 3.5 Sonnet
-- Code generation: Claude 3.5 Sonnet or Codestral
+- Intent classification: Fine-tuned BERT or GPT-5.5-mini
+- Simple responses: Claude Haiku 4.5, GPT-5.5-mini, or DeepSeek V4 Flash
+- Complex reasoning: Claude Sonnet 4.6 or GPT-5.5
+- Code generation: Claude Sonnet 4.6 (Opus 4.8 for the hardest cases)
 
 I would implement a router that classifies query complexity 
 and routes to the appropriate model. This typically reduces 
@@ -212,7 +212,7 @@ RAG uses embedding models for retrieval, then passes retrieved chunks to a gener
 
 **Better framing:**
 ```
-"While GPT-4o supports 128K tokens, I design for much smaller effective context:
+"While current frontier models advertise 1M-token windows, I design for much smaller effective context:
 
 - System prompt: ~500 tokens
 - Retrieved context: 3-5 chunks × 500 tokens = 1.5-2.5K
@@ -237,26 +237,43 @@ Candidates discuss features without understanding cost implications.
 - Output tokens cost 2-4x input tokens for most providers
 - Streaming does not change cost
 
-**Quick reference (December 2025, verify current):**
+**Quick reference (June 2026, verify current):**
 
 | Model | Input/1M | Output/1M |
 |-------|----------|-----------|
-| GPT-4o | $2.50 | $10 |
-| GPT-4o-mini | $0.15 | $0.60 |
-| Claude 3.5 Sonnet | $3 | $15 |
-| Claude 3.5 Haiku | $0.25 | $1.25 |
-| Gemini 1.5 Pro | $1.25 | $5 |
+| Claude Fable 5 | $10 | $50 |
+| Claude Opus 4.8 | $5 | $25 |
+| GPT-5.5 | $5 | $30 |
+| Claude Sonnet 4.6 | $3 | $15 |
+| Gemini 3.1 Pro | $2 | $12 |
+| Claude Haiku 4.5 | $1 | $5 |
+| DeepSeek V4 Flash | $0.14 | $0.28 |
 
 **Cost calculation example:**
 ```
 10,000 queries/day
 Average: 2K input tokens, 500 output tokens
-Model: GPT-4o
+Model: Claude Sonnet 4.6
 
-Daily cost = 10K × (2K × $2.50/1M + 500 × $10/1M)
-          = 10K × ($0.005 + $0.005)
-          = 10K × $0.01
-          = $100/day = $3K/month
+Daily cost = 10K × (2K × $3/1M + 500 × $15/1M)
+          = 10K × ($0.006 + $0.0075)
+          = 10K × $0.0135
+          = $135/day = ~$4K/month
+```
+
+**The caching lever (often the difference between candidates):**
+```
+Same workload, but 1.5K of the 2K input is a shared prefix
+(system prompt + tool schemas) served from cache at 10% of
+the input price:
+
+Daily cost = 10K × (0.5K × $3/1M + 1.5K × $0.30/1M + 500 × $15/1M)
+          = 10K × ($0.0015 + $0.00045 + $0.0075)
+          = ~$94/day = ~$2.8K/month   (30% saved by prompt shape alone)
+
+Design implication: keep the static content (instructions, schemas)
+at the front of the prompt and the dynamic content at the end, so
+the prefix stays byte-identical across requests and the cache hits.
 ```
 
 ---
@@ -311,6 +328,18 @@ I specify the output format explicitly and use few-shot
 examples for complex response structures. For this use case, 
 I also include negative examples showing when to abstain."
 ```
+
+**Prompt failure modes worth naming in an interview:**
+
+| Failure mode | What it looks like | Defense |
+|--------------|--------------------|---------|
+| Lost in the middle | Critical instruction buried at token 40K gets ignored | Put rules at the start and end; keep middle for data |
+| Instruction hierarchy break | Retrieved document text overrides the system prompt | Wrap untrusted content in delimiters; treat it as data, never as instructions |
+| Format slipping | JSON output degrades after long sessions or model updates | Engine-level structured output (json_schema, tool schemas), not "please return JSON" |
+| Cache-busting dynamism | A timestamp at the top of the prompt kills the prefix cache on every request | Static content first, dynamic content last |
+| Prompt-model coupling | A prompt tuned on one provider silently underperforms after a model swap | Version prompts with the model ID; re-run evals on every model change |
+
+Naming two or three of these unprompted moves a prompting answer from junior to senior, because each one is a production incident the interviewer has probably lived through.
 
 ---
 
