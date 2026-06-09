@@ -17,11 +17,20 @@ A practical framework for choosing the right LLM for your use case, considering 
 
 ## Selection Framework
 
-### Decision Tree (Dec 2025)
+### Decision Tree (June 2026)
 
 ```
 Start Here
     │
+    ├── Need the absolute capability ceiling?
+    │   └── Yes ─────────────────────────────────────────┐
+    │   └── No ──┐                                       │
+    │            │                                       ▼
+    │            │                              ┌─────────────────┐
+    │            │                              │ Claude Fable 5  │
+    │            │                              │ ($10/$50, 1M)   │
+    │            │                              └─────────────────┘
+    │            │
     ├── Need autonomous agents / long-horizon planning?
     │   └── Yes ─────────────────────────────────────────┐
     │   └── No ──┐                                       │
@@ -36,7 +45,8 @@ Start Here
     │   └── No ──┐                                       │
     │            │                                       ▼
     │            │                              ┌─────────────────┐
-    │            │                              │ GPT-5.5 88.7% / │
+    │            │                              │ Fable 5 ceiling /│
+    │            │                              │ GPT-5.5 88.7%   │
     │            │                              │ Opus 4.8 88.6%  │
     │            │                              │ Sonnet 4.6 cheap│
     │            │                              └─────────────────┘
@@ -81,11 +91,12 @@ Start Here
 
 ## Capability Comparison
 
-### Frontier Model Comparison (May 2026)
+### Frontier Model Comparison (June 2026)
 
 | Model | Strengths | Cons | Context | Best For |
 |-------|-----------|------|---------|----------|
-| **Claude Opus 4.8** | Long-running agentic coding (SWE-bench 88.6%), Dynamic Workflows with parallel subagents, $10/$50 fast mode | Same $5/$25 standard pricing as 4.7; GPT-5.5 narrowly leads single-shot SWE-bench | 1M | Codebase-scale migrations, autonomous coding loops |
+| **Claude Fable 5** | Most capable widely released model; Mythos-class capability with safeguards; always-on adaptive thinking; SOTA vision; sustains the longest autonomous runs | 2x Opus 4.8 price ($10/$50); under 5% of sessions fall back to Opus 4.8 on sensitive topics; 30-day data retention | 1M | Capability-ceiling work: hardest reasoning, vision, longest-horizon agents |
+| **Claude Opus 4.8** | Long-running agentic coding (SWE-bench 88.6%), Dynamic Workflows with parallel subagents, $10/$50 fast mode | GPT-5.5 narrowly leads single-shot SWE-bench; Fable 5 now sits above it on capability | 1M | Codebase-scale migrations, autonomous coding loops, best price-to-capability at the frontier |
 | **GPT-5.5** | SWE-bench Verified leader (88.7%), Terminal-Bench leader (78.2%), native omni multimodal | High cost ($5/$30) | 1M | Multi-agent systems, single-shot coding |
 | **Claude Opus 4.7** | Predecessor flagship (SWE-bench 87.6%, SWE-Bench Pro 64.3%) | Superseded by 4.8 at same price | 1M | Existing 4.7 deployments without migration pressure |
 | **Claude Sonnet 4.6** | Strong cost/quality balance, full 1M at standard price | No Sonnet 4.8 release yet | 1M | General production workhorse |
@@ -112,10 +123,11 @@ Start Here
 
 ## Use Case Mapping
 
-### By Application Type (May 2026)
+### By Application Type (June 2026)
 
 | Use Case | Recommended Models | Rationale |
 |----------|-------------------|-----------|
+| **Capability-ceiling research / hardest problems** | Claude Fable 5 | Mythos-class capability, generally available; route only ceiling-bound work to it at $10/$50 |
 | **Autonomous Dev** | Claude Opus 4.8 with Dynamic Workflows, Claude Sonnet 4.6 | Parallel-subagent runs in Claude Code; top SWE-Bench Pro at 69.2% |
 | **Enterprise RAG** | Gemini 3.1 Pro, Gemini 3.1 Flash, DeepSeek V4 Flash | 1M context and aggressive cache discounts remove retrieval complexity |
 | **Customer Support** | Gemini 3.1 Flash, GPT-5.5-mini, Claude Haiku 4.5 | Near-zero latency with strong reasoning |
@@ -128,7 +140,7 @@ Start Here
 | Constraint | Approach |
 |------------|----------|
 | **Max latency < 100ms** | Gemini 3.1 Flash, GPT-5.5-mini, Claude Haiku 4.5, or self-hosted Nano models |
-| **Context > 1M tokens** | Claude Opus 4.8 / Opus 4.7 / Sonnet 4.6, Gemini 3.1 Pro, GPT-5.5, Llama 4 Scout (10M) |
+| **Context > 1M tokens** | Claude Fable 5 / Opus 4.8 / Opus 4.7 / Sonnet 4.6, Gemini 3.1 Pro, GPT-5.5, Llama 4 Scout (10M) |
 | **Zero-data Leakage** | Llama 4 70B, DeepSeek V4 Pro on internal VPC |
 | **Complex Tool Use** | Claude Opus 4.8 or GPT-5.5 (best planning accuracy) |
 
@@ -136,10 +148,11 @@ Start Here
 
 ## Cost Analysis
 
-### Cost Modeling (May 2026)
+### Cost Modeling (June 2026)
 
 | Model | Input / 1M | Output / 1M | Notes |
 |-------|------------|-------------|-------|
+| **Claude Fable 5** | $10.00 | $50.00 | Capability ceiling; 2x Opus 4.8; reserve for ceiling-bound work |
 | **Claude Opus 4.8** | $5.00 | $25.00 | Frontier coding and agentic; optional fast mode $10 / $50 |
 | **Claude Opus 4.7** | $5.00 | $25.00 | Same standard price; fast mode is the more expensive $30 / $150 |
 | **GPT-5.5** | $5.00 | $30.00 | Single-shot SWE-bench leader |
