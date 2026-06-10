@@ -33,7 +33,7 @@ small practical additions where they improve understanding.
 
 ## Handoff Notes
 
-- Primary continuity lives in the private `nckhemanth0/workspace` hub. If an
+- Primary continuity lives in the private `nckhemanth/workspace` hub. If an
   agent has access, read and update that workspace before relying on this public
   fallback file.
 - If the private workspace is available, use
