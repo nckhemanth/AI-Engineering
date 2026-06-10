@@ -10,7 +10,7 @@ This is a public personal AI engineering learning fork.
 
 ## Rules
 
-- If the private `nckhemanth0/workspace` hub is available, read its
+- If the private `nckhemanth/workspace` hub is available, read its
   `AGENTS.md` and `context/repos/AI-Engineering/` notes before changing this
   repo. Treat that workspace as the primary continuity source.
 - Do not assume changes are intended for the upstream project.
