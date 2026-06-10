@@ -11,6 +11,8 @@ This chapter provides detailed walkthroughs of system design exercises commonly 
 - [Exercise 5: Real-Time Content Moderation](#exercise-5-real-time-content-moderation)
 - [Exercise 6: Multi-Tenant AI Platform](#exercise-6-multi-tenant-ai-platform)
 - [Exercise 7: Semantic Search at Scale](#exercise-7-semantic-search-at-scale)
+- [Exercise 8: Evaluation Pipeline for a Production LLM Product](#exercise-8-evaluation-pipeline-for-a-production-llm-product) ⭐ *NEW*
+- [Exercise 9: Memory and State for a Long-Running Agent](#exercise-9-memory-and-state-for-a-long-running-agent) ⭐ *NEW*
 - [Tips for Whiteboard Exercises](#tips-for-whiteboard-exercises)
 
 ---
@@ -454,8 +456,8 @@ review_types = [
 
 3. **Model Selection:**
 ```
-Primary: Claude 3.5 Sonnet (best for code understanding)
-Fallback: GPT-4o
+Primary: Claude Sonnet 4.6 (best price-to-quality for code understanding; Opus 4.8 for the hardest reviews)
+Fallback: GPT-5.5
 
 Specialized models:
 - Security scanning: CodeQL + LLM review
@@ -542,7 +544,7 @@ Tier 1: Document AI (Textract/Azure)
 - Fast and cheap
 - Returns confidence scores
 
-Tier 2: Vision LLM (GPT-4V/Claude)
+Tier 2: Vision LLM (Claude Opus 4.8, GPT-5.5, Gemini 3.1 Pro)
 - Fallback for complex layouts
 - Better for unstructured text
 - More expensive
@@ -898,6 +900,204 @@ Reindexing (description changes):
 2. Run as async job
 3. Swap index when complete
 ```
+
+---
+
+## Exercise 8: Evaluation Pipeline for a Production LLM Product
+
+### Problem Statement
+
+"Your company ships an AI assistant used by 50,000 daily users. Leadership wants to ship model and prompt changes weekly without quality regressions. Design the evaluation pipeline: offline evals, CI gating, judge calibration, and production monitoring. Budget: the eval system itself should cost under 2% of inference spend."
+
+### Clarifying Questions to Ask
+
+- What does "quality" mean for this product? (Task success, faithfulness, tone, safety?)
+- Do we have any labeled data today, or are we starting from zero?
+- What is the change velocity? (Prompts daily, models monthly?)
+- What is the cost of a shipped regression? (Support tickets, churn, regulatory exposure?)
+- Who consumes eval results? (Engineers gating PRs, PMs tracking quality, execs tracking trend lines?)
+
+### Solution Walkthrough
+
+**High-level architecture:**
+
+```
+                    ┌────────────────────────────────────────────┐
+                    │              EVAL PIPELINE                  │
+                    │                                             │
+  Prompt/model PR ──► CI runner ── dev set (visible, ~200 cases) │
+                    │     │                                       │
+                    │     ├── held-out set (CI-only, ~300 cases,  │
+                    │     │    rotated quarterly)                  │
+                    │     │                                       │
+                    │     └── gate: pass/fail vs baseline ──► merge│
+                    │                                             │
+  Production ──────► sampler (1-5% of traffic)                   │
+                    │     │                                       │
+                    │     ├── LLM-judge scoring (async, cheap)    │
+                    │     ├── human-graded slice (weekly, ~100)   │
+                    │     └── outcome metrics (thumbs, escalation)│
+                    │                                             │
+                    └──── dashboards + regression alerts ─────────┘
+```
+
+**1. Dataset strategy (the part most candidates skip):**
+
+```
+Golden dataset composition:
+- 40% sampled from real production traces (stratified by intent cluster)
+- 30% known-hard cases from past incidents and complaints
+- 20% adversarial cases (injection attempts, edge formats)
+- 10% canary cases that must never change behavior
+
+Split: dev (iterate freely) / held-out (CI-only, never inspected)
+Refresh: quarterly, sampled from recent traffic; archive old sets
+```
+
+**2. Scoring design:**
+
+- Binary pass/fail per dimension (faithfulness, completeness, tone, safety), not 1-5 scales. Binary decisions are reproducible; Likert drifts.
+- LLM-as-judge for scale: a cheap model (Claude Haiku 4.5, GPT-5.5-mini) with a rubric and few-shot anchors per dimension.
+- Judge calibration: monthly agreement check against the human-graded slice. Judge-human agreement is itself a dashboard metric; below 85% agreement, the judge prompt gets fixed before any product conclusions are drawn.
+
+**3. CI gating:**
+
+```python
+def eval_gate(pr_results, baseline_results):
+    # Hard gates: any safety regression blocks merge
+    if pr_results.safety_pass_rate < baseline_results.safety_pass_rate:
+        return Block(reason="safety regression")
+    # Soft gates: quality within noise band
+    delta = pr_results.task_success - baseline_results.task_success
+    if delta < -0.02:                  # 2pt regression threshold
+        return Block(reason=f"quality drop {delta:.1%}")
+    if pr_results.held_out_success < pr_results.dev_success - 0.05:
+        return Warn(reason="possible dev-set overfitting")
+    return Pass()
+```
+
+**4. Production monitoring:**
+
+- Sampled judge scoring on live traffic (1-5%), trended daily.
+- Outcome linkage: complaint rate, thumbs-down rate, and escalation rate plotted against eval scores on the same dashboard. Divergence between eval trend and outcome trend triggers an eval review.
+- Drift alarms: input distribution shift (intent cluster mix), score drop by segment, and judge agreement decay.
+
+**5. Cost control:**
+
+```
+50K DAU, ~3 requests each = 150K requests/day
+Sample 2% = 3K judged requests/day
+Judge cost: ~1K tokens per judgment on a $1/1M model = ~$3/day
+Weekly human slice: 100 cases x 3 min reviewer time
+CI runs: 500 cases x ~2K tokens per PR = under $2 per PR
+Total: well under the 2% budget; the human slice is the
+dominant cost and it is what keeps the judge honest.
+```
+
+### What Distinguishes Strong Candidates
+
+- They design the dataset before the scorer; a great judge on a stale dataset measures nothing.
+- They treat the judge as a system component with its own eval (calibration vs humans), not as ground truth.
+- They name eval gaming risks unprompted: dev-set overfitting, judge sycophancy, metric narrowing, silent exclusion of hard cases.
+- They link offline scores to production outcomes instead of celebrating green dashboards.
+- They quantify the eval budget and place the expensive human grading where it has the most leverage.
+
+---
+
+## Exercise 9: Memory and State for a Long-Running Agent
+
+### Problem Statement
+
+"Design the memory system for a personal AI assistant that works with a user over months: it should remember preferences and facts, learn from past sessions, recall relevant history at the right moments, and forget what it should not keep. Sessions can run for hours. Support 1M users."
+
+### Clarifying Questions to Ask
+
+- What memory failures hurt most: forgetting something important, or recalling something wrong or stale?
+- Privacy constraints? (GDPR deletion, per-user isolation, regulated data?)
+- Is memory per-user only, or shared organizational knowledge too?
+- Latency budget for recall on each turn?
+- How long do individual sessions run? (Determines in-session vs cross-session design.)
+
+### Solution Walkthrough
+
+**The memory hierarchy:**
+
+```
+┌──────────────────────────────────────────────────────────┐
+│ L1 Working memory: the context window                     │
+│   Current session, tool results, scratchpad               │
+│   Managed by compaction + just-in-time loading            │
+├──────────────────────────────────────────────────────────┤
+│ L2 Episodic memory: what happened                         │
+│   Past session summaries, trajectories, outcomes          │
+│   Store: vector DB, retrieved by similarity + recency     │
+├──────────────────────────────────────────────────────────┤
+│ L3 Semantic memory: what is true                          │
+│   Extracted facts and preferences with provenance         │
+│   Store: structured records or knowledge graph            │
+├──────────────────────────────────────────────────────────┤
+│ L4 Procedural memory: how to do things                    │
+│   Learned workflows, per-user playbooks (skills)          │
+│   Store: versioned files, loaded on demand                │
+└──────────────────────────────────────────────────────────┘
+```
+
+**1. In-session (L1): context engineering, not storage.**
+Compaction at a window threshold (summarize history, keep recent artifacts), just-in-time loading of large content by reference, and a structured scratch note the agent re-reads after compaction. A session that runs hours never holds its whole transcript in context.
+
+**2. Write path (the hard part):**
+
+```
+Session ends (or hits checkpoint)
+    │
+    ├── Summarize episode → L2 (embedding + metadata:
+    │     timestamp, topics, outcome, sentiment)
+    │
+    └── Fact extraction pass → candidate facts
+          │
+          ├── Deduplicate against existing L3
+          ├── Conflict check: contradicts a stored fact?
+          │     ├── Newer + higher confidence → supersede (keep old
+          │     │     version with valid_to timestamp)
+          │     └── Ambiguous → store as candidate, confirm with
+          │           user at next natural opportunity
+          └── Importance filter: discard chit-chat, keep
+                preferences, commitments, corrections
+```
+
+The conflict path matters most: "user moved from Madrid to Lisbon" must supersede, not coexist. Bitemporal records (valid_from, valid_to) make supersession auditable and reversible.
+
+**3. Read path:**
+
+- Each turn builds a recall query from the current intent, retrieves top-k from L2 (similarity + recency + importance weighting) and matching facts from L3.
+- A relevance gate drops weak matches rather than stuffing them in; wrong memories poison the response worse than missing ones.
+- Recall budget: a few hundred tokens of memory per turn, never a transcript dump.
+
+**4. Forgetting and privacy:**
+
+- Decay: episodic entries lose retrieval weight over time unless reinforced by access.
+- Consolidation: a periodic job merges related episodes into summaries (many "billing question" episodes become one pattern note).
+- GDPR deletion: per-user partition keys everywhere; deletion removes L2/L3/L4 rows and invalidates caches. Hard isolation per user; memory is never shared across tenants by similarity.
+
+**5. Scale sketch (1M users):**
+
+```
+Storage: ~thousands of L2 entries + hundreds of L3 facts per
+  active user; vector DB partitioned by user_id (metadata
+  filter or namespace per tenant tier)
+Write path: async after session close; queue + worker pool
+Read path: p95 < 150ms recall (ANN on a per-user slice is small)
+Cost: extraction pass on session close is the main LLM cost;
+  use a cheap model (Haiku 4.5 / V4 Flash) with a strict schema
+```
+
+### What Distinguishes Strong Candidates
+
+- They separate in-session context management from cross-session memory instead of conflating them.
+- They spend time on the write path (extraction, dedup, conflict supersession) rather than only on retrieval.
+- They treat wrong recall as worse than no recall and design the relevance gate accordingly.
+- They name memory poisoning as a security surface: untrusted content written today and trusted tomorrow needs provenance tags and review gates.
+- They mention production frameworks (Mem0, Zep, Letta) as build-vs-buy options while still being able to design from primitives.
 
 ---
 

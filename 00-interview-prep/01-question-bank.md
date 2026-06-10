@@ -1,6 +1,6 @@
 # AI System Design Interview Question Bank
 
-A topic-organized bank of 110+ AI system design interview questions with model answers, follow-ups, and signals strong candidates show. Updated through May 2026.
+A topic-organized bank of 116 AI system design interview questions (Q1-Q116, continuously numbered) with model answers, follow-ups, and signals strong candidates show, plus five unnumbered deep-dive scenarios. Updated through June 2026.
 
 This chapter provides a comprehensive collection of interview questions organized by topic. Each question includes the depth of answer expected and key points that strong candidates cover. Pair this with the [Answer Frameworks](02-answer-frameworks.md) (the meta-skill that turns memorized answers into fluent ones), the [FAQ](07-faq.md) (short answers to the most-asked AI engineering questions), and the [Job Market Trends](06-job-market-trends-2026.md) (the hiring context that shapes what gets asked right now).
 
@@ -8,7 +8,7 @@ This chapter provides a comprehensive collection of interview questions organize
 
 ```mermaid
 mindmap
-  root((110+ Questions))
+  root((116 Questions))
     RAG Architecture
       Pipeline design
       Chunking
@@ -37,22 +37,33 @@ mindmap
       Deployment
       Drift
       Incidents
+    Tooling and Lifecycle
+      Vector DB tradeoffs
+      DSPy
+      Feedback loops
+    Ensemble Methods
+      Self-consistency
+      Best-of-N
+      Debate
     System Design Scenarios
     Advanced sets (frontier topics)
 ```
 
 ## Table of Contents
 
-- [RAG Architecture Questions](#rag-architecture-questions)
-- [Agentic Systems Questions](#agentic-systems-questions)
-- [Model Selection Questions](#model-selection-questions)
-- [Optimization Questions](#optimization-questions)
-- [Evaluation Questions](#evaluation-questions)
-- [Production and MLOps Questions](#production-and-mlops-questions)
-- [System Design Scenarios](#system-design-scenarios)
-- [Advanced Questions (December 2025)](#advanced-questions-december-2025)
-- [Advanced Questions - March 2026](#advanced-questions--march-2026)
-- [Advanced Questions - May 2026](#advanced-questions--may-2026) ⭐ *NEW*
+- [RAG Architecture Questions](#rag-architecture-questions) (Q1-Q10)
+- [Agentic Systems Questions](#agentic-systems-questions) (Q11-Q17)
+- [Model Selection Questions](#model-selection-questions) (Q18-Q21)
+- [Optimization Questions](#optimization-questions) (Q22-Q26)
+- [Evaluation Questions](#evaluation-questions) (Q27-Q29)
+- [Production and MLOps Questions](#production-and-mlops-questions) (Q30-Q33)
+- [Tooling and Lifecycle Questions](#tooling-and-lifecycle-questions) (Q34-Q39)
+- [Ensemble Methods Questions](#ensemble-methods-questions) (Q40-Q49)
+- [System Design Scenarios](#system-design-scenarios) (5 deep-dive walkthroughs)
+- [Advanced Questions (December 2025)](#advanced-questions-december-2025) (Q50-Q65)
+- [Advanced Questions - March 2026](#advanced-questions--march-2026) (Q66-Q80)
+- [Advanced Questions - May 2026](#advanced-questions--may-2026) (Q81-Q110)
+- [Advanced Questions - June 2026](#advanced-questions--june-2026) (Q111-Q116) ⭐ *NEW*
 
 ---
 
@@ -107,7 +118,7 @@ These embeddings go into a vector database. I typically use Qdrant or Pinecone d
 
 I then rerank the top 50 results using a cross-encoder like Cohere Rerank or bge-reranker. This step typically improves precision by 10-15%. The top 5-10 reranked chunks become my context.
 
-For generation, I format the context clearly with source labels, add the user query, and call the LLM with a system prompt that instructs citing sources. I use Claude or GPT-4o depending on requirements.
+For generation, I format the context clearly with source labels, add the user query, and call the LLM with a system prompt that instructs citing sources. I use Claude Sonnet 4.6 or GPT-5.5 depending on requirements.
 
 Finally, I have observability hooks at each stage: retrieval latency, reranker latency, LLM latency, plus quality metrics like faithfulness sampled on a percentage of requests."
 
@@ -171,7 +182,7 @@ For example, at scale I might fine-tune a smaller model to handle 70% of queries
    - Place critical information at start and end of context
    - Use reranking to ensure quality before stuffing context
    - Consider recursive summarization for long contexts
-   - Use models with better long-context handling (Gemini 1.5, Claude 3.5)
+   - Use models with better long-context handling (Gemini 3.1 Pro, Claude Sonnet 4.6 at 1M)
 
 **Sample Answer:**
 
@@ -189,7 +200,7 @@ Third, I order strategically. I put the most important chunk first, second-most-
 
 Fourth, for very long contexts, I use hierarchical approaches. I might summarize groups of related chunks and include both summaries and key verbatim sections.
 
-Finally, model selection matters. Claude 3.5 and Gemini 1.5 Pro have shown better long-context performance than earlier models. If I must use very long contexts, I choose models specifically tested for this."
+Finally, model selection matters. Current 1M-window models (Claude Sonnet 4.6, Gemini 3.1 Pro, GPT-5.5) hold attention across long contexts far better than earlier generations, but the attention gradient still exists. If I must use very long contexts, I choose models specifically tested for this and still apply the ordering tricks above."
 
 ---
 
@@ -430,7 +441,7 @@ I choose the isolation level based on compliance requirements and customer sensi
 3. Consider table-specific queries that filter by table presence
 
 **Images/Charts:**
-1. Use vision-language models (GPT-4V, Claude 3.5, Gemini) for description
+1. Use vision-language models (Claude Opus 4.8, GPT-5.5, Gemini 3.1 Pro) for description
 2. Index generated descriptions as text
 3. Store image references for multimodal generation
 4. For charts: consider extracting underlying data if available
@@ -866,65 +877,63 @@ result = app.invoke(input, config)
 
 ## Model Selection Questions
 
-### Q18: How do you choose between GPT-4o, Claude 3.5 Sonnet, and Gemini 1.5 Pro?
+### Q18: How do you choose between Claude Sonnet 4.6, GPT-5.5, and Gemini 3.1 Pro for a production workload?
 
 **What interviewers look for:**
 - Current model knowledge
 - Decision framework
 - Cost awareness
 
-**Strong answer (December 2025):**
+**Strong answer (June 2026, verify current):**
 
-| Factor | GPT-4o | Claude 3.5 Sonnet | Gemini 1.5 Pro |
-|--------|--------|-------------------|----------------|
-| Context window | 128K | 200K | 2M |
-| Coding | Excellent | Best in class | Very good |
-| Long context | Good | Good | Best in class |
-| Vision | Yes | Yes | Yes |
-| Pricing (input) | $2.50/1M | $3/1M | $1.25/1M |
-| Pricing (output) | $10/1M | $15/1M | $5/1M |
-| Latency (TTFT) | Fast | Fast | Medium |
+| Factor | Claude Sonnet 4.6 | GPT-5.5 | Gemini 3.1 Pro |
+|--------|-------------------|---------|----------------|
+| Context window | 1M | 1M | 1M |
+| Coding | Excellent (powers Claude Code) | Best single-shot (SWE-bench Verified 88.7%) | Very good |
+| Scientific reasoning | Very good | Excellent | Best in class (GPQA Diamond 94.3%) |
+| Vision | Yes | Yes (native omni) | Yes (strongest multimodal) |
+| Pricing (input) | $3/1M | $5/1M | $2/1M |
+| Pricing (output) | $15/1M | $30/1M | $12/1M |
+| Latency (TTFT) | Fast | Medium | Medium (spikes on Deep Think) |
 | Function calling | Excellent | Excellent | Good |
 
 **Selection framework:**
 
-Choose **GPT-4o** when:
-- Ecosystem integration matters (OpenAI tools)
-- Balanced performance across tasks
-- Need fastest time to first token
+Choose **Claude Sonnet 4.6** when:
+- Code generation, agentic loops, or tool-heavy workloads
+- You want the best price-to-quality at the production tier
+- Long-running sessions where caching discounts compound
 
-Choose **Claude 3.5 Sonnet** when:
-- Code generation or analysis
-- Complex reasoning tasks
-- Need nuanced, detailed responses
-- Safety/refusals are not problematic for use case
+Choose **GPT-5.5** when:
+- Single-shot coding quality is the bar (current SWE-bench Verified leader)
+- Native omni multimodal (audio and video in one model) matters
+- Ecosystem integration with OpenAI tooling (AgentKit, Apps SDK)
 
-Choose **Gemini 1.5 Pro** when:
-- Very long context (over 200K)
-- Cost optimization is priority
-- Video or audio understanding
-- Multimodal grounding needed
+Choose **Gemini 3.1 Pro** when:
+- Scientific or analytical reasoning is the core task
+- Multimodal grounding across documents, images, and video
+- Cost-sensitive frontier work ($2/$12 undercuts both rivals)
 
 **Sample Answer:**
 
 "My model selection depends on the specific requirements. Here is how I think about it:
 
-**For most production workloads**, I default to Claude 3.5 Sonnet or GPT-4o. They are both excellent general-purpose models with strong instruction following, good coding ability, and reliable function calling. Sonnet has a slight edge on coding tasks in my experience, while GPT-4o has better ecosystem integration if you are already in the OpenAI world.
+**For most production workloads**, I default to Claude Sonnet 4.6. It covers most tasks that used to require an Opus-tier model at $3/$15, powers Claude Code, and includes the full 1M context at standard pricing. GPT-5.5 wins when I need the best single-shot coding quality or native omni multimodal.
 
-**For long-context applications**, Gemini 1.5 Pro is the clear winner with its 1-2 million token context. If I am building a system that needs to process entire codebases or very long documents in a single call, Gemini is my choice. It is also the most cost-effective of the frontier models.
+**For the capability ceiling**, the calculus changed in June 2026: Claude Fable 5 ($10/$50) made Mythos-class capability generally available, and Claude Opus 4.8 ($5/$25) holds the best price-to-capability at the frontier. I route only ceiling-bound work to those tiers.
 
-**For cost-sensitive high-volume applications**, I use GPT-4o-mini or Claude 3.5 Haiku. These are 10-20x cheaper than their larger siblings and handle straightforward tasks well. I often build cascading systems where simple queries go to these smaller models.
+**For cost-sensitive high-volume applications**, I use Claude Haiku 4.5, GPT-5.5-mini, Gemini 3.1 Flash, or DeepSeek V4 Flash ($0.14/$0.28 with a 1M window). I build cascading systems where simple queries go to these tiers and only hard queries escalate.
 
-**For the most demanding reasoning tasks**, I consider o1 or Claude 3.5 Opus. These are expensive but provide measurable quality improvements on complex multi-step reasoning.
+**For the most demanding reasoning tasks**, I use models with controllable thinking: Claude Opus 4.8 adaptive thinking or GPT-5.5 reasoning. The thinking budget is a cost lever, not a free win, so I gate it behind a complexity classifier.
 
 **My practical approach:**
 
-1. Start prototyping with Claude Sonnet or GPT-4o since they are reliable and high-quality.
+1. Start prototyping with Claude Sonnet 4.6 or GPT-5.5 since they are reliable and high-quality.
 2. Evaluate on my specific task since benchmark rankings do not always predict task performance.
-3. Build an abstraction layer so I can switch models easily.
+3. Build an abstraction layer so I can switch models easily; the leaderboard reshuffles every quarter.
 4. Optimize costs by routing simpler requests to cheaper models once the system is stable.
 
-I never rely solely on benchmark scores. A model that ranks lower on MMLU might excel on my specific domain."
+I never rely solely on benchmark scores. A model that ranks lower on a public leaderboard might excel on my specific domain. And I re-verify pricing monthly: the DeepSeek V4 price cuts and the Fable 5 launch both reshaped routing economics within a single quarter."
 
 ---
 
@@ -964,7 +973,7 @@ I never rely solely on benchmark scores. A model that ranks lower on MMLU might 
 
 ---
 
-### Q20: Explain reasoning models (o1, DeepSeek-R1). When are they worth the cost?
+### Q20: Explain reasoning models and controllable thinking. When are they worth the cost?
 
 **What interviewers look for:**
 - Understanding of test-time compute
@@ -975,17 +984,17 @@ I never rely solely on benchmark scores. A model that ranks lower on MMLU might 
 
 **How reasoning models differ:**
 - Spend more tokens "thinking" before answering
-- Chain-of-thought is built into the model
+- Chain-of-thought is built into the model, often with a controllable budget (Claude adaptive thinking, GPT-5.5 reasoning effort)
 - Trade latency and cost for accuracy on hard problems
 
-**Performance profile (December 2025):**
+**Performance profile (June 2026, verify current):**
 
-| Model | MATH benchmark | Latency | Cost (output) |
-|-------|---------------|---------|---------------|
-| GPT-4o | ~76% | Fast | $10/1M |
-| o1 | ~94% | 10-60s | $60/1M |
-| o1-mini | ~90% | 5-30s | $12/1M |
-| DeepSeek-R1 | ~92% | 10-40s | $2/1M |
+| Model | Thinking control | Latency | Cost (output) |
+|-------|------------------|---------|---------------|
+| Claude Sonnet 4.6 (standard) | Optional extended thinking | Fast | $15/1M |
+| Claude Opus 4.8 (adaptive thinking) | Effort defaults to high | 5-30s | $25/1M |
+| GPT-5.5 reasoning | Effort levels low/medium/high | 10-60s | $30/1M |
+| DeepSeek-R1 | Always-on RL thinking | 10-40s | $2.19/1M |
 
 **When worth the cost:**
 - Mathematical proofs and formal reasoning
@@ -999,7 +1008,7 @@ I never rely solely on benchmark scores. A model that ranks lower on MMLU might 
 - Content generation
 - Latency-sensitive applications
 - High volume use cases
-- Tasks where GPT-4o/Claude already excel
+- Tasks where a standard-mode frontier model (Claude Sonnet 4.6, GPT-5.5) already excels
 
 ---
 
@@ -1017,14 +1026,16 @@ I never rely solely on benchmark scores. A model that ranks lower on MMLU might 
 - Tasks: retrieval, classification, clustering, semantic similarity
 - Leaderboard at huggingface.co/spaces/mteb/leaderboard
 
-**Current top models (December 2025):**
+**Current top models (June 2026, verify on the MTEB leaderboard):**
 
-| Model | MTEB Score | Dimensions | Max Tokens | Cost |
-|-------|------------|------------|------------|------|
-| OpenAI text-embedding-3-large | 64.6 | 3072 | 8191 | $0.13/1M |
-| Voyage-3 | 67.8 | 1024 | 32000 | $0.06/1M |
-| Cohere embed-v3 | 66.4 | 1024 | 512 | $0.10/1M |
-| BGE-large-en-v1.5 | 63.9 | 1024 | 512 | Self-host |
+| Model | MTEB standing | Dimensions | Max Tokens | Cost |
+|-------|---------------|------------|------------|------|
+| Gemini Embedding 001 | English leader (~68.3) | 3072 (Matryoshka) | 8K | API pricing |
+| Qwen3-Embedding-8B | Multilingual leader (~70.6) | 4096 | 32K | Self-host |
+| Cohere Embed 4 | Strong multimodal | 256-1536 (Matryoshka) | 128K | $0.10/1M |
+| Voyage-4 | Strong retrieval | 1024 | 128K | $0.05/1M |
+| OpenAI text-embedding-3-large | Solid baseline | 3072 | 8K | $0.13/1M |
+| BGE-M3 | Open multi-granularity | 1024 | 8K | Self-host |
 
 **Practical evaluation approach:**
 1. Start with MTEB as baseline
@@ -1222,7 +1233,7 @@ At 8K context, that is 2.6 GB per request. With 100 concurrent requests, I need 
 
 "I approach LLM cost optimization in layers, starting with the highest-impact changes.
 
-**Layer 1: Model selection** has the biggest impact, potentially 50-90% savings. The question is: what is the cheapest model that meets my quality bar? I run evaluations to find this. Often GPT-4o-mini or Claude Haiku handles 60-70% of queries just fine, and I only route complex queries to frontier models.
+**Layer 1: Model selection** has the biggest impact, potentially 50-90% savings. The question is: what is the cheapest model that meets my quality bar? I run evaluations to find this. Often GPT-5.5-mini, Claude Haiku 4.5, or DeepSeek V4 Flash handles 60-70% of queries just fine, and I only route complex queries to frontier models.
 
 **Layer 2: Caching** can reduce API calls by 30-80%. I implement two levels:
 - Exact match cache for repeated queries
@@ -1708,6 +1719,274 @@ async def call_llm_with_retry(prompt):
 
 ---
 
+## Tooling and Lifecycle Questions
+
+### Q34: Explain the tradeoffs between different vector database options
+
+**What interviewers look for:**
+- Knowledge of options
+- Decision criteria
+- Operational awareness
+
+**Sample Answer:**
+
+"My decision framework:
+
+| Database | Best For | Tradeoff |
+|----------|----------|----------|
+| **Pinecone** | Managed, quick start | Cost at scale, vendor lock-in |
+| **Qdrant** | Self-host, performance | Operational overhead |
+| **Weaviate** | Hybrid search, multimodal | Complexity |
+| **Chroma** | Local dev, prototyping | Not for production scale |
+| **pgvector** | Already using Postgres | Limited features, slower |
+
+**Decision criteria:**
+
+**Managed vs self-hosted:**
+Pinecone if ops is expensive, Qdrant if you want control
+
+**Scale:**
+Under 1M vectors: pgvector or Chroma sufficient
+1M-100M: Qdrant, Pinecone, Weaviate
+100M+: Need dedicated infrastructure
+
+**Features needed:**
+Hybrid search: Weaviate, Qdrant
+Multi-tenancy: Pinecone namespaces, Qdrant collections
+Filtering: All support, check performance
+
+**My default:** Qdrant for flexibility and performance. Pinecone when team lacks infrastructure resources. pgvector for quick prototypes within existing Postgres."
+
+---
+
+### Q35: How do you handle model updates and deprecations from providers?
+
+**What interviewers look for:**
+- Production resilience thinking
+- Abstraction design
+- Testing strategies
+
+**Sample Answer:**
+
+"Model deprecations are inevitable. I design for it:
+
+**Abstraction layer:**
+```python
+class LLMClient:
+    def __init__(self, model_config):
+        self.models = model_config  # Maps logical names to actual models
+    
+    def get_model(self, task_type):
+        return self.models[task_type]
+```
+
+This lets me change models in config without code changes.
+
+**Migration process:**
+1. Pin current model versions explicitly
+2. When new model releases, evaluate on test suite
+3. Shadow test in production (run both, compare)
+4. Gradual rollout with metrics monitoring
+5. Update config, not code
+
+**Evaluation suite:**
+Maintain golden set that runs against any model. Tracks quality, latency, cost. Alerts if new model regresses.
+
+**Multi-provider fallback:**
+```python
+providers = ['openai', 'anthropic']
+for provider in providers:
+    try:
+        return await call_provider(provider, prompt)
+    except ProviderError:
+        continue
+```
+
+If OpenAI deprecates with short notice, I can route to Anthropic. The abstraction makes this possible."
+
+---
+
+### Q36: What is DSPy and when would you use it?
+
+**What interviewers look for:**
+- Knowledge of emerging tools
+- Understanding of prompt optimization
+- Practical applicability
+
+**Sample Answer:**
+
+"DSPy treats prompts as parameters to be optimized rather than hand-written strings.
+
+**Traditional approach:**
+Write prompt -> Test -> Tweak -> Repeat -> Hope it works with new model
+
+**DSPy approach:**
+Define task signature -> Define metric -> Let optimizer find best prompts
+
+**Core concepts:**
+- Signatures: Input/output specifications
+- Modules: Composable LLM components
+- Optimizers: Find best prompts for your metric
+
+**When to use DSPy:**
+- Have training data and clear metrics
+- Building multi-step pipelines
+- Need to adapt to model changes automatically
+- Research or experimentation focus
+
+**When to skip:**
+- Simple use cases (direct API is fine)
+- No training data for optimization
+- Need maximum control
+- Team unfamiliar with the paradigm
+
+**My take:** DSPy is valuable for complex pipelines where manual prompt tuning is tedious. For simple Q&A or generation, direct prompting is simpler."
+
+---
+
+### Q37: How do you design a feedback loop for continuous improvement?
+
+**What interviewers look for:**
+- System thinking
+- Data collection strategies
+- Practical implementation
+
+**Sample Answer:**
+
+"A good feedback loop has four components:
+
+**1. Signal collection**
+- Explicit: Thumbs up/down, ratings, corrections
+- Implicit: Regenerate clicks, copy actions, time on page
+- Automated: LLM-as-judge on samples
+
+**2. Data pipeline**
+```
+User action -> Event stream -> Aggregate -> Labeling queue -> Training data
+```
+
+**3. Analysis and prioritization**
+- Cluster failure cases by type
+- Identify high-impact improvements
+- Balance quick wins vs systemic fixes
+
+**4. Improvement deployment**
+- Curated examples become few-shot samples
+- Systematic failures inform prompt updates
+- Large enough sets enable fine-tuning
+
+**Practical implementation:**
+
+Log all interactions with unique IDs. When user gives feedback, link it to the interaction. Periodically sample for human review.
+
+Aggregate signals:
+- High negative feedback on specific topics
+- Common regeneration patterns
+- Correlation between retrieval and satisfaction
+
+Use this data to:
+- Add few-shot examples for failure cases
+- Update retrieval or chunking for missed context
+- Fine-tune if systematic pattern emerges
+
+The loop is: Collect -> Analyze -> Improve -> Measure -> Repeat."
+
+---
+
+### Q38: Explain token counting and why it matters
+
+**What interviewers look for:**
+- Technical understanding
+- Cost awareness
+- Practical experience
+
+**Sample Answer:**
+
+"Tokens are the atomic units LLMs process. Understanding them matters for:
+
+**Cost:** You pay per token. A 1000-word article might be 1300 tokens, costing differently than word count suggests.
+
+**Limits:** Context windows are in tokens. 128K tokens is roughly 96K words, but varies by content.
+
+**Approximations:**
+- English: ~0.75 words per token, or ~4 characters
+- Code: More tokens per character due to punctuation
+- Non-Latin scripts: Often more tokens per character
+
+**Counting accurately:**
+```python
+import tiktoken
+enc = tiktoken.encoding_for_model('gpt-4o')
+tokens = enc.encode(text)
+count = len(tokens)
+```
+
+**Why it matters in practice:**
+- Estimating costs before calls
+- Staying within context limits
+- Optimizing prompts for efficiency
+
+**Common mistakes:**
+- Assuming word count equals token count
+- Not counting message overhead (role, formatting)
+- Ignoring that different models use different tokenizers
+
+I always use the actual tokenizer for the target model. tiktoken for OpenAI, model-specific for others."
+
+---
+
+### Q39: How do you evaluate and compare RAG systems objectively?
+
+**What interviewers look for:**
+- Systematic evaluation approach
+- Knowledge of metrics
+- Practical pipeline design
+
+**Sample Answer:**
+
+"I evaluate RAG at three levels:
+
+**1. Retrieval evaluation**
+- **Precision@K:** What fraction of retrieved docs are relevant?
+- **Recall@K:** What fraction of relevant docs did we find?
+- **MRR:** How high is the first relevant result?
+
+Requires labeled relevance judgments. I create a test set of ~200 queries with known relevant documents.
+
+**2. Generation evaluation (RAGAS)**
+- **Faithfulness:** Is the answer grounded in context? (Detects hallucination)
+- **Answer relevance:** Does it address the question?
+- **Context relevance:** Was retrieved context useful?
+
+These use LLM-as-judge, so no manual labeling needed.
+
+**3. End-to-end evaluation**
+- **Correctness:** Compare to ground truth answers
+- **User satisfaction:** Thumbs up/down, CSAT surveys
+- **Task completion:** Did user achieve their goal?
+
+**My evaluation pipeline:**
+
+```
+Change proposed
+    ↓
+Run golden set (regression detection)
+    ↓
+Run evaluation suite (quality metrics)
+    ↓
+Check quality gates (faithfulness > 0.85, etc.)
+    ↓
+Canary deployment (5% traffic)
+    ↓
+Monitor production metrics
+    ↓
+Full rollout or rollback
+```
+
+The key is automation. Every change runs through this pipeline before reaching users."
+
+---
+
 ## Ensemble Methods Questions
 
 ### Q40: When would you use Self-Consistency vs Best-of-N sampling?
@@ -2064,272 +2343,6 @@ Users perceive streaming responses as 2-3x faster than waiting for complete resp
 - Speculative decoding
 - Cache common queries
 - Pre-compute where possible"
-
----
-
-### Q50: Explain the tradeoffs between different vector database options
-
-**What interviewers look for:**
-- Knowledge of options
-- Decision criteria
-- Operational awareness
-
-**Sample Answer:**
-
-"My decision framework:
-
-| Database | Best For | Tradeoff |
-|----------|----------|----------|
-| **Pinecone** | Managed, quick start | Cost at scale, vendor lock-in |
-| **Qdrant** | Self-host, performance | Operational overhead |
-| **Weaviate** | Hybrid search, multimodal | Complexity |
-| **Chroma** | Local dev, prototyping | Not for production scale |
-| **pgvector** | Already using Postgres | Limited features, slower |
-
-**Decision criteria:**
-
-**Managed vs self-hosted:**
-Pinecone if ops is expensive, Qdrant if you want control
-
-**Scale:**
-Under 1M vectors: pgvector or Chroma sufficient
-1M-100M: Qdrant, Pinecone, Weaviate
-100M+: Need dedicated infrastructure
-
-**Features needed:**
-Hybrid search: Weaviate, Qdrant
-Multi-tenancy: Pinecone namespaces, Qdrant collections
-Filtering: All support, check performance
-
-**My default:** Qdrant for flexibility and performance. Pinecone when team lacks infrastructure resources. pgvector for quick prototypes within existing Postgres."
-
----
-
-### Q51: How do you handle model updates and deprecations from providers?
-
-**What interviewers look for:**
-- Production resilience thinking
-- Abstraction design
-- Testing strategies
-
-**Sample Answer:**
-
-"Model deprecations are inevitable. I design for it:
-
-**Abstraction layer:**
-```python
-class LLMClient:
-    def __init__(self, model_config):
-        self.models = model_config  # Maps logical names to actual models
-    
-    def get_model(self, task_type):
-        return self.models[task_type]
-```
-
-This lets me change models in config without code changes.
-
-**Migration process:**
-1. Pin current model versions explicitly
-2. When new model releases, evaluate on test suite
-3. Shadow test in production (run both, compare)
-4. Gradual rollout with metrics monitoring
-5. Update config, not code
-
-**Evaluation suite:**
-Maintain golden set that runs against any model. Tracks quality, latency, cost. Alerts if new model regresses.
-
-**Multi-provider fallback:**
-```python
-providers = ['openai', 'anthropic']
-for provider in providers:
-    try:
-        return await call_provider(provider, prompt)
-    except ProviderError:
-        continue
-```
-
-If OpenAI deprecates with short notice, I can route to Anthropic. The abstraction makes this possible."
-
----
-
-### Q52: What is DSPy and when would you use it?
-
-**What interviewers look for:**
-- Knowledge of emerging tools
-- Understanding of prompt optimization
-- Practical applicability
-
-**Sample Answer:**
-
-"DSPy treats prompts as parameters to be optimized rather than hand-written strings.
-
-**Traditional approach:**
-Write prompt -> Test -> Tweak -> Repeat -> Hope it works with new model
-
-**DSPy approach:**
-Define task signature -> Define metric -> Let optimizer find best prompts
-
-**Core concepts:**
-- Signatures: Input/output specifications
-- Modules: Composable LLM components
-- Optimizers: Find best prompts for your metric
-
-**When to use DSPy:**
-- Have training data and clear metrics
-- Building multi-step pipelines
-- Need to adapt to model changes automatically
-- Research or experimentation focus
-
-**When to skip:**
-- Simple use cases (direct API is fine)
-- No training data for optimization
-- Need maximum control
-- Team unfamiliar with the paradigm
-
-**My take:** DSPy is valuable for complex pipelines where manual prompt tuning is tedious. For simple Q&A or generation, direct prompting is simpler."
-
----
-
-### Q53: How do you design a feedback loop for continuous improvement?
-
-**What interviewers look for:**
-- System thinking
-- Data collection strategies
-- Practical implementation
-
-**Sample Answer:**
-
-"A good feedback loop has four components:
-
-**1. Signal collection**
-- Explicit: Thumbs up/down, ratings, corrections
-- Implicit: Regenerate clicks, copy actions, time on page
-- Automated: LLM-as-judge on samples
-
-**2. Data pipeline**
-```
-User action -> Event stream -> Aggregate -> Labeling queue -> Training data
-```
-
-**3. Analysis and prioritization**
-- Cluster failure cases by type
-- Identify high-impact improvements
-- Balance quick wins vs systemic fixes
-
-**4. Improvement deployment**
-- Curated examples become few-shot samples
-- Systematic failures inform prompt updates
-- Large enough sets enable fine-tuning
-
-**Practical implementation:**
-
-Log all interactions with unique IDs. When user gives feedback, link it to the interaction. Periodically sample for human review.
-
-Aggregate signals:
-- High negative feedback on specific topics
-- Common regeneration patterns
-- Correlation between retrieval and satisfaction
-
-Use this data to:
-- Add few-shot examples for failure cases
-- Update retrieval or chunking for missed context
-- Fine-tune if systematic pattern emerges
-
-The loop is: Collect -> Analyze -> Improve -> Measure -> Repeat."
-
----
-
-### Q54: Explain token counting and why it matters
-
-**What interviewers look for:**
-- Technical understanding
-- Cost awareness
-- Practical experience
-
-**Sample Answer:**
-
-"Tokens are the atomic units LLMs process. Understanding them matters for:
-
-**Cost:** You pay per token. A 1000-word article might be 1300 tokens, costing differently than word count suggests.
-
-**Limits:** Context windows are in tokens. 128K tokens is roughly 96K words, but varies by content.
-
-**Approximations:**
-- English: ~0.75 words per token, or ~4 characters
-- Code: More tokens per character due to punctuation
-- Non-Latin scripts: Often more tokens per character
-
-**Counting accurately:**
-```python
-import tiktoken
-enc = tiktoken.encoding_for_model('gpt-4o')
-tokens = enc.encode(text)
-count = len(tokens)
-```
-
-**Why it matters in practice:**
-- Estimating costs before calls
-- Staying within context limits
-- Optimizing prompts for efficiency
-
-**Common mistakes:**
-- Assuming word count equals token count
-- Not counting message overhead (role, formatting)
-- Ignoring that different models use different tokenizers
-
-I always use the actual tokenizer for the target model. tiktoken for OpenAI, model-specific for others."
-
----
-
-### Q55: How do you evaluate and compare RAG systems objectively?
-
-**What interviewers look for:**
-- Systematic evaluation approach
-- Knowledge of metrics
-- Practical pipeline design
-
-**Sample Answer:**
-
-"I evaluate RAG at three levels:
-
-**1. Retrieval evaluation**
-- **Precision@K:** What fraction of retrieved docs are relevant?
-- **Recall@K:** What fraction of relevant docs did we find?
-- **MRR:** How high is the first relevant result?
-
-Requires labeled relevance judgments. I create a test set of ~200 queries with known relevant documents.
-
-**2. Generation evaluation (RAGAS)**
-- **Faithfulness:** Is the answer grounded in context? (Detects hallucination)
-- **Answer relevance:** Does it address the question?
-- **Context relevance:** Was retrieved context useful?
-
-These use LLM-as-judge, so no manual labeling needed.
-
-**3. End-to-end evaluation**
-- **Correctness:** Compare to ground truth answers
-- **User satisfaction:** Thumbs up/down, CSAT surveys
-- **Task completion:** Did user achieve their goal?
-
-**My evaluation pipeline:**
-
-```
-Change proposed
-    ↓
-Run golden set (regression detection)
-    ↓
-Run evaluation suite (quality metrics)
-    ↓
-Check quality gates (faithfulness > 0.85, etc.)
-    ↓
-Canary deployment (5% traffic)
-    ↓
-Monitor production metrics
-    ↓
-Full rollout or rollback
-```
-
-The key is automation. Every change runs through this pipeline before reaching users."
 
 ---
 
@@ -3049,16 +3062,16 @@ The key insight: Assume code execution will be exploited. Design so that exploit
 
 ---
 
-### Q66: When would you use Claude 3.7's Extended Thinking mode vs. standard mode, and how do you control costs?
+### Q66: When would you use Claude's extended or adaptive thinking vs. standard mode, and how do you control costs?
 
 **What interviewers look for:**
-- Practical knowledge of the Extended Thinking API
+- Practical knowledge of the thinking APIs
 - Cost/quality tradeoff reasoning
 - Production gate patterns
 
 **Strong answer:**
 
-"Extended Thinking adds an internal reasoning scratchpad before the model produces its final response. It genuinely helps for complex tasks but can add 2–10× cost.
+"Thinking modes add an internal reasoning scratchpad before the model produces its final response. On current Claude models this comes in two flavors: **extended thinking** with an explicit `budget_tokens` cap (Sonnet 4.6, Haiku 4.5) and **adaptive thinking** where the model allocates effort itself (Opus 4.8, Fable 5, with an `effort` parameter that defaults to high on Opus 4.8). Either way it genuinely helps for complex tasks but can add 2-10x cost.
 
 **I enable it for:**
 - Complex code refactoring or debugging spanning multiple files
@@ -3066,15 +3079,15 @@ The key insight: Assume code execution will be exploited. Design so that exploit
 - Security-critical decisions where extra reasoning catches edge cases
 - Architecture design questions with many interdependent constraints
 
-**I disable it for:**
+**I disable it (or set effort low) for:**
 - Simple extraction, summarization, or Q&A (adds latency with no benefit)
 - High-volume chatbot turns (kills cost budget instantly)
 - Format-only tasks like JSON conversion
 
-**API usage:**
+**API usage (budgeted extended thinking):**
 ```python
 response = client.messages.create(
-    model='claude-3-7-sonnet-20250219',
+    model='claude-sonnet-4-6',
     max_tokens=16000,
     thinking={
         'type': 'enabled',
@@ -3084,43 +3097,44 @@ response = client.messages.create(
 )
 ```
 
-**Production cost control pattern:** I run a lightweight complexity classifier (a fine-tuned BERT or even a prompt-based binary classifier) on every incoming query. If complexity score > 0.7, I route to Extended Thinking. Otherwise standard mode. In practice this saves 60–70% on thinking costs while preserving quality where it matters.
+**Production cost control pattern:** I run a lightweight complexity classifier (a fine-tuned BERT or even a prompt-based binary classifier) on every incoming query. If complexity score > 0.7, I route to a thinking-enabled call. Otherwise standard mode. On adaptive-thinking models I set `effort` explicitly instead of accepting the high default. In practice this saves 60-70% on thinking costs while preserving quality where it matters.
 
-**o3 vs. Claude Extended Thinking:** o3 also has configurable reasoning effort (low/medium/high) but never exposes the chain of thought. Claude's thinking block is visible (useful for debugging). For transparency and auditability, Claude wins; for raw benchmark performance on math, o3 high wins."
+**GPT-5.5 reasoning vs. Claude thinking:** GPT-5.5's reasoning effort (low/medium/high) never exposes the chain of thought. Claude's thinking block is visible, which is useful for debugging and compliance review. For transparency and auditability, Claude wins; for some math benchmarks, GPT-5.5 at high effort wins."
 
 ---
 
-### Q67: How does o3's reasoning effort setting work and when would you choose o3 over Claude 3.7?
+### Q67: How does reasoning effort work on GPT-5.5, and when would you choose it over Claude Opus 4.8?
 
 **What interviewers look for:**
-- Up-to-date knowledge of reasoning model distinctions  
-- Benchmark awareness  
+- Up-to-date knowledge of reasoning model distinctions
+- Benchmark awareness
 - Practical selection criteria
 
 **Strong answer:**
 
-"o3 uses OpenAI's compute-scaling approach. You set `reasoning_effort` to `low`, `medium`, or `high`. The model allocates internal compute token budget accordingly.
+"GPT-5.5 uses OpenAI's compute-scaling approach. You set `reasoning_effort` to `low`, `medium`, or `high`. The model allocates internal compute token budget accordingly.
 
 | Effort | Relative cost | When to use |
 |--------|---------------|-------------|
-| low | ~1× | Simple lookups, fast Q&A |
-| medium | ~3–5× | Code generation, analysis |
-| high | ~8–20× | ARC-AGI, AIME math, deep reasoning |
+| low | ~1x | Simple lookups, fast Q&A |
+| medium | ~3-5x | Code generation, analysis |
+| high | ~8-20x | ARC-AGI, AIME math, deep reasoning |
 
-**When I choose o3 over Claude 3.7:**
-- Top-of-class benchmark performance is required (o3 leads ARC-AGI, AIME 2025)
-- Autonomous tool-use at high accuracy - o3's SWE-bench is competitive with Claude Code's backbone
-- I don't need to inspect the reasoning chain (o3 never shows it)
+**When I choose GPT-5.5 over Claude Opus 4.8:**
+- Top-of-class single-shot benchmarks are the bar (GPT-5.5 leads ARC-AGI-2 at 85.0% and SWE-bench Verified at 88.7%)
+- Native omni multimodal in one model
+- I don't need to inspect the reasoning chain (GPT-5.5 never shows it)
 
-**When I choose Claude 3.7 over o3:**
-- I need visible chain-of-thought for debugging or compliance audit
-- The task involves software engineering - Claude 3.7 powers Claude Code and leads SWE-bench Verified
-- I need 200K context (o3 is also 200K, but Claude's reliability at long context is more tested in production)
-- I'm building with MCP tools - Claude's ecosystem is more mature
+**When I choose Claude Opus 4.8 over GPT-5.5:**
+- I need visible thinking for debugging or compliance audit
+- Long-horizon agentic coding: Opus 4.8 powers Claude Code, leads SWE-Bench Pro at 69.2%, and runs Dynamic Workflows with parallel subagents
+- I need the full 1M context at standard pricing with battle-tested recall
+- I'm building with MCP tools and the Claude Agent SDK ecosystem
 
 **Cost reality (always verify on the provider pricing page):**
-- Frontier reasoning tier (GPT-5.5 reasoning, Claude Opus 4.7): $10-$15 / $40-$75 per 1M input/output
-- Production mid-tier (Claude Sonnet 4.6): $3 / $15 per 1M
+- Capability ceiling: Claude Fable 5 at $10 / $50 per 1M
+- Frontier tier: Claude Opus 4.8 at $5 / $25, GPT-5.5 at $5 / $30
+- Production mid-tier: Claude Sonnet 4.6 at $3 / $15
 - For volume workloads, the mid-tier is significantly cheaper at comparable quality for most software engineering tasks."
 
 ---
@@ -3181,24 +3195,24 @@ response = client.messages.create(
 
 **Strong answer:**
 
-"DeepSeek-V3 and DeepSeek-R1 (released early 2025) changed the calculus in three ways:
+"DeepSeek-V3 and DeepSeek-R1 (released early 2025) changed the calculus, and the V4 line (April 2026) pushed it further:
 
-**1. The quality gap closed.** DeepSeek-V3 matches GPT-4o on most benchmarks. DeepSeek-R1 matches o1 on math and code. These are open weights under MIT license.
+**1. The quality gap closed.** DeepSeek-V3 matched the then-frontier on most benchmarks, R1 matched o1 on math and code, and V4 Pro now scores 80.6% on SWE-bench Verified with open weights. All under permissive licenses.
 
-**2. Cost is an order of magnitude lower.** Via Together AI or Fireworks, DeepSeek-V3 API access is ~$0.27/1M blended - compared to $10/1M for GPT-4o. For high-volume workloads, that's a 30–40× cost reduction.
+**2. Cost is an order of magnitude lower.** DeepSeek V4 Flash runs $0.14/$0.28 per 1M with a 1M context window, and V4 Pro is $0.435/$0.87 after the discount was made permanent in May 2026. Against a $5/$25-and-up closed frontier, that is a 10-30x reduction for many workloads.
 
-**3. Self-hosting is now viable at scale.** With the MoE architecture (671B params but only ~21B activated per token), you can run it on a smaller GPU cluster than a dense 70B model would suggest.
+**3. Self-hosting is now viable at scale.** With the MoE architecture (V4 Pro: 1.6T total, 49B active per token), you can run it on a smaller GPU cluster than a dense model of comparable quality would suggest.
 
 **How I update my architecture decisions:**
 
-For price-sensitive, high-volume tasks (classification, extraction, summarization): Evaluate DeepSeek-V3 first. At $0.27/1M it often wins on ROI.
+For price-sensitive, high-volume tasks (classification, extraction, summarization): Evaluate DeepSeek V4 Flash first. At $0.14/1M input it often wins on ROI.
 
-For data-sovereign deployments: Self-hosted DeepSeek-R1 or DeepSeek-V3 on your own H100s. No data leaves the network - critical for healthcare, finance, defense.
+For data-sovereign deployments: Self-hosted DeepSeek V4 or R1 on your own H100s. No data leaves the network - critical for healthcare, finance, defense.
 
-For fine-tuning: Open weights enable full fine-tuning on proprietary datasets. Closed models (GPT-4o, Claude) only allow limited fine-tuning with data going to the provider.
+For fine-tuning: Open weights enable full fine-tuning on proprietary datasets. Closed models (OpenAI, Anthropic) only allow limited fine-tuning with data going to the provider.
 
 **What I still use closed models for:**
-- Tasks requiring the absolute best quality (Claude 3.7 for agentic coding)
+- Tasks requiring the absolute best quality (Claude Opus 4.8 or Fable 5 for agentic coding)
 - Low-latency serving where managed APIs beat self-hosted ops overhead
 - Situations where inference engineering burden outweighs cost savings (< ~500 requests/day)
 
@@ -3305,7 +3319,7 @@ Even good judges have systematic biases (positivity bias, verbosity preference).
 - **Criteria drift**: Judge evaluates criteria other than what you defined. Use strict JSON output format and validate schema.
 - **Context window contamination**: If your judge context is too long, the model loses track of the criteria.
 
-**Mitigation:** Use a stronger model as judge than the model you're evaluating (e.g., use o3 to judge Claude 3.5 Haiku outputs). Use multiple independent judges and take majority vote for high-stakes evaluations."
+**Mitigation:** Use a stronger model as judge than the model you're evaluating (e.g., use Claude Opus 4.8 or GPT-5.5 reasoning to judge Haiku 4.5 outputs). Use multiple independent judges and take majority vote for high-stakes evaluations."
 
 ---
 
@@ -3374,9 +3388,9 @@ Incoming query
     ↓
 Route to appropriate model tier
 
-Tier A (simple): Gemini 2.0 Flash ($0.10/1M) - factual Q&A, extraction
-Tier B (complex): Claude 3.7 Sonnet ($3/1M) - reasoning, code review
-Tier C (reasoning): o3-mini medium ($1.10/1M) - math, logic problems
+Tier A (simple): Gemini 3.1 Flash ($0.10/1M) or DeepSeek V4 Flash ($0.14/1M) - factual Q&A, extraction
+Tier B (complex): Claude Sonnet 4.6 ($3/1M) - reasoning, code review
+Tier C (reasoning): Claude Opus 4.8 ($5/1M) or GPT-5.5 reasoning ($5/1M) - math, logic problems
 ```
 
 **Cluster training:**  
@@ -3461,7 +3475,7 @@ I've seen 40–60% cost reduction using semantic routing vs. always using the fr
 **LiveCodeBench:**
 - Competitive programming problems released *after* model training cutoffs
 - Designed to be contamination-free
-- Much harder scores (o3 gets ~68%, Claude 3.7 gets ~54%, vs SWE-bench where both exceed 70%)
+- Materially harder scores than SWE-bench for the same models
 - Measures: Raw algorithmic reasoning without memorization
 
 **Which matters for production coding agents?**
@@ -3469,7 +3483,7 @@ I've seen 40–60% cost reduction using semantic routing vs. always using the fr
 For real-world software engineering tasks (write a feature, fix a bug, refactor code) use SWE-bench, because:
 - It reflects actual software engineering workflows
 - It tests file navigation, test-driven iteration, and multi-file edits
-- March 2026 leaders: Claude 3.7 Sonnet at ~70%, o3 at ~71%
+- June 2026 published leaders: GPT-5.5 at 88.7%, Claude Opus 4.8 at 88.6% (and 69.2% on the harder SWE-Bench Pro)
 
 For reasoning capability (math-heavy algorithms, competitive programming) use LiveCodeBench:
 - More reliable signal since it's contamination-free
@@ -3540,9 +3554,9 @@ For reasoning capability (math-heavy algorithms, competitive programming) use Li
 Request
     ↓
 [Smart Router]
-    ├── Primary: Claude 3.7 Sonnet (70% traffic)
-    ├── Secondary: GPT-4o (25% traffic, validates primary)
-    └── Fallback: Gemini 2.0 Flash (5%, emergency)
+    ├── Primary: Claude Sonnet 4.6 (70% traffic)
+    ├── Secondary: GPT-5.5 (25% traffic, validates primary)
+    └── Fallback: Gemini 3.1 Flash (5%, emergency)
 
 Health check every 30s:
 - P95 latency > 5s → reduce traffic share
@@ -3552,7 +3566,7 @@ Health check every 30s:
 
 **Challenges with multi-provider:**
 
-1. **Prompt compatibility**: Prompts optimized for Claude may produce worse results on GPT-4o. I maintain provider-specific prompt variants and test each separately.
+1. **Prompt compatibility**: Prompts optimized for Claude may produce worse results on GPT-5.5. I maintain provider-specific prompt variants and test each separately.
 
 2. **Output consistency**: Two providers may format responses differently. I use DSPy or a post-processing normalization layer to standardize output structure.
 
@@ -3712,34 +3726,35 @@ Error analysis is discovery. Automated evals are measurement. Discovery must pre
 
 ## Advanced Questions - May 2026
 
-*New questions surfaced from Glassdoor, Blind, LinkedIn interview write-ups, Latent Space, Anthropic / OpenAI / Sierra / Cursor / Mistral / Perplexity / Forward Deployed loops, and AI-native hiring rubrics published April–May 2026. Themes: GPT-5.5 vs Claude Opus 4.7, the May AI-security inflection (Mythos, Daybreak, MDASH, first AI-built zero-day in the wild), DeepSeek V4 economics, Llama 4 Scout's 10M-context reality, A2A v1.0 vs MCP, computer-use agents, Forward Deployed Engineering, distillation as a budgeted line item, EU AI Act enforcement, and agent-as-judge eval evolution. Designed for senior+ candidates and engineering leaders.*
+*New questions surfaced from Glassdoor, Blind, LinkedIn interview write-ups, Latent Space, Anthropic / OpenAI / Sierra / Cursor / Mistral / Perplexity / Forward Deployed loops, and AI-native hiring rubrics published April-June 2026. Themes: GPT-5.5 vs Claude Opus 4.8, the May AI-security inflection (Mythos, Daybreak, MDASH, first AI-built zero-day in the wild) and its June resolution (Fable 5 brought Mythos-class capability to general availability), DeepSeek V4 economics, Llama 4 Scout's 10M-context reality, A2A v1.0 vs MCP, computer-use agents, Forward Deployed Engineering, distillation as a budgeted line item, EU AI Act enforcement, and agent-as-judge eval evolution. Designed for senior+ candidates and engineering leaders.*
 
 ---
 
-### Q81: Pick a frontier model for a production agentic workload in May 2026 and defend the choice against Claude Opus 4.7, GPT-5.5, Gemini 3.1 Pro, and DeepSeek V4 Pro.
+### Q81: Pick a frontier model for a production agentic workload in June 2026 and defend the choice against Claude Fable 5, Claude Opus 4.8, GPT-5.5, Gemini 3.1 Pro, and DeepSeek V4 Pro.
 
 **What interviewers look for:**
-- Current awareness of the May 2026 frontier (GPT-5.5 launched April 23; Claude Opus 4.7 launched April 16; DeepSeek V4 Pro previewed April 24)
+- Current awareness of the June 2026 frontier (Fable 5 launched June 9; Opus 4.8 launched May 28; GPT-5.5 launched April 23; DeepSeek V4 Pro April 24)
 - Ability to map *workload* to *model*, not just recite benchmarks
-- Awareness that "frontier" is now a 4-way tie on most production workloads
+- Awareness that "frontier" is now a multi-way tie on most production workloads, with a separate capability-ceiling tier above it
 
 **Strong answer:**
 
-"I don't pick a 'best' model - I pick the model that minimizes total cost of risk for a specific workload. My matrix for May 2026:
+"I don't pick a 'best' model - I pick the model that minimizes total cost of risk for a specific workload. My matrix for June 2026:
 
 | Workload | Pick | Why |
 |----------|------|-----|
-| Autonomous coding agent (multi-file, long-horizon) | **Claude Opus 4.7** | Leads SWE-bench Verified (~87.6% Adaptive); deepest MCP/skills ecosystem; native Extended Thinking with visible CoT for audit |
+| Capability-ceiling work (hardest reasoning, vision, longest-horizon autonomy) | **Claude Fable 5** | Mythos-class capability now generally available at $10/$50; reserve it for work where the ceiling pays for the 2x price |
+| Autonomous coding agent (multi-file, long-horizon) | **Claude Opus 4.8** | SWE-bench Verified 88.6%, SWE-Bench Pro 69.2%; Dynamic Workflows runs hundreds of parallel subagents in Claude Code; deepest MCP/skills ecosystem; visible thinking for audit |
 | Customer-facing assistant with computer use | **GPT-5.5** | Native computer-use, 52.5% fewer hallucinations on high-stakes prompts vs GPT-5.3 Instant, $5/$30 per 1M is workable |
-| High-volume RAG / classification at scale | **DeepSeek V4 Flash** or **Gemini 3.1 Flash** | DeepSeek V4 Flash is 13B-active MoE with 1M context; ~$0.28/$0.42 per 1M and 98% cache-hit discount makes it 10–30× cheaper |
+| High-volume RAG / classification at scale | **DeepSeek V4 Flash** or **Gemini 3.1 Flash** | DeepSeek V4 Flash is 13B-active MoE with 1M context at $0.14/$0.28 per 1M; the 98% cache-hit discount makes it 10-30x cheaper |
 | Sovereign / regulated workload | **DeepSeek V4 Pro self-hosted** or **Mistral Medium 3.5** | Open weights for DeepSeek; Mistral hits 77.6% SWE-Bench Verified and is EU-hosted |
-| Maximum reasoning (math, hard science, ARC-AGI) | **GPT-5.5 Pro** | Tops ARC-AGI-2 at 85.0% as of May 13, 2026 |
+| Maximum single-shot reasoning (math, hard science, ARC-AGI) | **GPT-5.5** | Tops ARC-AGI-2 at 85.0% and SWE-bench Verified at 88.7% |
 
-**The interview trap I avoid:** saying 'Claude Opus 4.7 is the best.' Opus is the right default for coding agents. For a chatbot answering FAQs at 50M req/day, it would burn your runway in a week. Always tie the model to the SLO, the cost ceiling, and the risk surface.
+**The interview trap I avoid:** saying any one model 'is the best.' Opus 4.8 is the right default for coding agents; Fable 5 only when the ceiling matters. For a chatbot answering FAQs at 50M req/day, either would burn your runway in a week. Always tie the model to the SLO, the cost ceiling, and the risk surface.
 
-**Cost-of-risk framing:** If a hallucination costs $X (regulator fine, customer churn, a bad merge), I'll pay 10× more for a frontier model. If the worst outcome is a re-try, I'll route 95% of traffic to a cheap model and 5% to a frontier model for hard cases."
+**Cost-of-risk framing:** If a hallucination costs $X (regulator fine, customer churn, a bad merge), I'll pay 10x more for a frontier model. If the worst outcome is a re-try, I'll route 95% of traffic to a cheap model and 5% to a frontier model for hard cases."
 
-**Follow-up to expect:** What changes if Claude Mythos Preview ships to general availability? (Mythos Preview is currently restricted to ~11 partner orgs via 'Project Glasswing' for dual-use cybersecurity concerns; ungating it would put SWE-bench Verified 93.9% on the table and would force a reshuffle.)
+**Follow-up to expect:** The Mythos question resolved itself in June 2026: Anthropic shipped Fable 5 (a Mythos-class model with safeguards, sensitive queries falling back to Opus 4.8) instead of ungating Mythos Preview directly. A strong candidate notes what this teaches: labs can productize a restricted capability tier by wrapping it in classifier-gated routing, so "restricted" models reshape the market sooner than their access lists suggest.
 
 ---
 
@@ -4286,7 +4301,7 @@ Implication: code review for AI-generated patches must include adversarial testi
 "Real numbers from a recent project shape my answer:
 
 **Project frame:**
-- Customer baseline: $50K/month frontier spend (let's say Claude Opus 4.7 for code review)
+- Customer baseline: $50K/month frontier spend (let's say Claude Opus 4.8 for code review)
 - Target: 90% of traffic served by a fine-tuned smaller model, 10% remaining on frontier for hard cases
 
 **One-time costs:**
@@ -4299,7 +4314,7 @@ Implication: code review for AI-generated patches must include adversarial testi
 
 **Run-rate after rollout:**
 - 90% traffic on student model: $2–4K/month inference
-- 10% on Opus 4.7: $5K/month
+- 10% on Opus 4.8: $5K/month
 - **New monthly spend: ~$7–9K, vs $50K baseline → ~$42–43K monthly savings**
 
 **Payback math:**
@@ -4514,7 +4529,7 @@ Implication: code review for AI-generated patches must include adversarial testi
 
 1. **Provider abstraction layer.** Vercel AI SDK, LangChain's `llms` abstraction, or a custom adapter - anything that lets me swap providers behind a flag.
 
-2. **Per-task provider preferences with fallback.** Primary: Claude Opus 4.7. Secondary: GPT-5.5. Tertiary: DeepSeek V4 Pro self-hosted. Routing layer fails-over on rate-limit, outage, OR policy block.
+2. **Per-task provider preferences with fallback.** Primary: Claude Opus 4.8. Secondary: GPT-5.5. Tertiary: DeepSeek V4 Pro self-hosted. Routing layer fails-over on rate-limit, outage, OR policy block.
 
 3. **Track terms-of-service diffs.** GitHub Actions monitoring vendor ToS pages; alert on changes. Sounds paranoid; in 2026 it's prudent.
 
@@ -4853,14 +4868,187 @@ Hallucination is now a P0 incident class, like a security breach. Treat it accor
 
 ---
 
+## Advanced Questions - June 2026
+
+*Fresh questions reflecting the June 2026 landscape: the Claude Fable 5 launch and its safeguard architecture, agentic context engineering becoming standard interview vocabulary, computer-use agents in production, Agent Skills, eval gaming, and cost-aware multi-provider routing. Designed for senior+ candidates.*
+
+### Q111: Claude Fable 5 routes sensitive queries to Claude Opus 4.8 via classifier-gated fallback. Critique this as a system design pattern and describe where you would apply tier routing in your own stack.
+
+**What interviewers look for:**
+- Understanding that model routing serves safety and compliance, not just cost
+- Ability to reason about classifier-gated architectures and their failure modes
+- Awareness of the June 2026 Fable 5 launch mechanics
+
+**Strong answer:**
+
+"Anthropic shipped a production example of a pattern most of us only used for cost: a classifier in front of the model decides per-request which tier serves it. With Fable 5, requests in three categories (offensive cyber, bioweapon-adjacent bio/chem, distillation attempts) fall back to Opus 4.8, the user is told, and Anthropic reports under 5% of sessions trigger it.
+
+**What the pattern buys you:**
+- **Capability without full exposure.** You can ship a stronger model while bounding its risk surface to the categories your classifiers watch.
+- **Graceful degradation instead of refusal.** The fallback serves a real answer from a weaker-but-safe tier rather than a refusal string. Users keep working.
+- **Auditability.** Every fallback event is a logged, explainable decision you can show a regulator.
+
+**Failure modes I would raise:**
+- **Classifier precision.** A conservative gate catches harmless requests (Anthropic admits this). In an enterprise product, false positives translate to support tickets, so I would track fallback rate per tenant and alert on spikes.
+- **Consistency cliffs.** The two tiers differ in capability and sometimes in formatting. A session that silently switches tiers mid-conversation can contradict itself. Surfacing the switch to the user, as Anthropic does, is the right call.
+- **Latency stacking.** The classifier adds a hop on every request. It must be a small fast model or a logit-based check, not another frontier call.
+
+**Where I apply it in my own stack:** compliance tiering (PII-touching queries go to a model deployment with stricter data residency), cost tiering (cheap tier with a confidence gate, escalation on low confidence), and capability tiering (route only ceiling-bound work to Fable-class pricing). The design lesson from June 2026 is that routing is now a first-class safety control, and interviewers increasingly expect you to treat the router as the most important component in the serving path."
+
+**Follow-up to expect:** How do you evaluate the router itself? (Golden set of boundary cases, per-category precision/recall, shadow-mode before enforcement, and a kill switch that fails open to the safe tier.)
+
+### Q112: Your agent performs well on short tasks but degrades badly past 30 minutes of autonomous work. Diagnose and fix it using context engineering.
+
+**What interviewers look for:**
+- Fluency in the agentic context engineering vocabulary (context rot, compaction, just-in-time loading, note-taking, sub-agent isolation)
+- A diagnosis-first approach rather than jumping to a framework
+- Quantified intuition about context budgets
+
+**Strong answer:**
+
+"This is almost always context rot: the window fills with stale tool output, the attention budget stretches across hundreds of thousands of low-signal tokens, and accuracy drops even though nothing 'failed.'
+
+**Diagnosis first.** I instrument the agent loop to log tokens-in-context per turn, split by category: system prompt, tool schemas, conversation, tool results, retrieved data. In degraded sessions you typically find 70-80% of the window is old tool output that no future step reads.
+
+**The fix is a layered context policy:**
+
+1. **Compaction.** At a threshold (say 60% of window), summarize the history into a structured digest that preserves decisions, constraints, and unresolved problems, then reinitialize the loop with the digest plus the most recent artifacts. Tune for recall first, then precision.
+2. **Just-in-time loading.** Stop pre-loading whole files and result sets. Keep lightweight identifiers (paths, IDs, URLs) in context and fetch content through tools when a step needs it.
+3. **Structured note-taking.** Give the agent a scratch file it writes progress to and re-reads after compaction. This is what keeps a 2-hour task coherent across multiple compaction cycles.
+4. **Sub-agent isolation.** Anything that generates bulk intermediate detail (a deep search, a multi-file analysis) runs in a sub-agent with a clean window and returns a 1-2k token summary. The coordinator never sees the raw detail.
+5. **System prompt calibration.** Keep the standing instructions in the minimal high-signal zone; every permanent token in the prompt is rent paid on every single turn.
+
+**The number that matters:** smallest high-signal token set per turn. I set a per-turn context budget and treat exceeding it as a bug, the same way a backend team treats a memory leak. Claude Code's own harness works this way: compaction plus recently-accessed files, with Dynamic Workflows pushing bulk work into parallel subagents."
+
+**Follow-up to expect:** How do you evaluate that compaction is not losing critical facts? (Recall-focused eval: seed sessions with facts that must survive N compactions, then probe for them; track task completion rate by session length before and after.)
+
+### Q113: Your computer-use agent passes demos but fails 30% of real workflows in production. Walk through your reliability engineering plan.
+
+**What interviewers look for:**
+- Knowledge of where vision-action agents actually fail (UI drift, latency, ambiguity)
+- An engineering plan: instrumentation, fallbacks, selective automation
+- Benchmark literacy (OSWorld-Verified) without benchmark worship
+
+**Strong answer:**
+
+"First I stop treating the agent as one system. A computer-use workflow is a chain of perception (screenshot to state), decision (next action), and actuation (click/type), and each link fails differently.
+
+**Instrument before fixing.** I log every step: screenshot hash, chosen action, confidence, retry count, and final outcome, then cluster failures. In practice three buckets dominate:
+
+1. **UI drift.** The app shipped a redesign and selectors or visual anchors moved. Fix: anchor on semantic cues (labels, roles) over pixel positions; add a nightly smoke run against the top 20 workflows so drift pages me before users see it.
+2. **Ambiguous intermediate states.** Modals, spinners, partial loads. Fix: explicit wait-and-verify steps; the agent must confirm the expected state transition happened before proceeding, not just fire actions on a timer.
+3. **Genuinely hard decisions.** A form with ambiguous fields. Fix: human-confirmation gates on irreversible actions and a structured escalation path instead of a guess.
+
+**Architecture changes that move the number:**
+- **Selective automation.** I split workflows into deterministic segments (scripted, no model) and judgment segments (agent). Most 'agent failures' are deterministic steps that never needed a model.
+- **Step budgets and checkpoints.** Hard cap on actions per workflow; checkpoint state so a retry resumes instead of restarting.
+- **Model tier.** Claude Sonnet 4.6 reaches 72.5% on OSWorld-Verified, and that benchmark is the right sanity check, but my production target is per-workflow success rate, which selective automation can push past any raw model score.
+
+**The honest framing for leadership:** computer-use agents in mid-2026 are reliable as supervised co-workers on bounded workflows and unreliable as unsupervised general operators. I scope deployments accordingly and publish the per-workflow success dashboard."
+
+**Follow-up to expect:** When do you choose a computer-use agent over an API integration? (Only when no API exists or the integration cost dwarfs the workflow value; APIs beat screenshots on reliability, latency, and cost every time they are available.)
+
+### Q114: Design a skill system for a fleet of internal agents using Agent Skills. How do skills differ from MCP tools and from fine-tuning?
+
+**What interviewers look for:**
+- Understanding of progressive disclosure and why it matters for context budgets
+- Clear mental model separating knowledge (skills), access (tools), and behavior (weights)
+- Governance thinking: versioning, review, distribution
+
+**Strong answer:**
+
+"Agent Skills are folders of instructions, scripts, and resources an agent loads on demand: a `SKILL.md` with YAML metadata plus optional bundled files. The design that makes them scale is **progressive disclosure**: only the name and description sit in the system prompt; the full skill loads when the agent judges it relevant; referenced files load only as needed. A fleet can carry hundreds of skills while paying a few tokens each until one is actually used.
+
+**The three-layer mental model I use:**
+
+| Layer | Mechanism | Question it answers |
+|-------|-----------|---------------------|
+| Access | MCP tools | What can the agent touch? |
+| Knowledge | Agent Skills | How should the agent do this workflow? |
+| Behavior | Fine-tuning | What should the agent be like on every request? |
+
+MCP gives the agent a database connection; a skill teaches it our runbook for using that database safely; fine-tuning changes the model itself and is the last resort because it is expensive to iterate and opaque to audit.
+
+**Fleet design:**
+- **Repository and registry.** Skills live in a versioned repo with owners, like Terraform modules. Agents resolve skills by name and version range.
+- **Review gate.** A skill is executable organizational knowledge, so it gets code review plus a metadata lint (clear description, scoped permissions on bundled scripts).
+- **Eval per skill.** Each skill ships with a small eval set: given these task prompts, does the agent with the skill outperform the agent without it? That catches skills that sound helpful and measurably are not.
+- **Distribution.** The interesting operational risk is marketplace-style sprawl. OpenClaw's ClawHub showed both the upside (instant capability sharing) and the downside (minimal security oversight). Internally I allow only the curated registry.
+
+**Why this beats prompt sprawl:** before skills, this knowledge lived in ever-growing system prompts, paying full token rent on every request and impossible to version per workflow. Skills make organizational knowledge modular, reviewable, and lazy-loaded."
+
+**Follow-up to expect:** When does a skill graduate to fine-tuning? (When the behavior is needed on virtually every request, is stable for months, and latency or token budgets make even lazy-loaded instructions too expensive.)
+
+### Q115: Your team's eval scores keep improving but production complaints are flat. Diagnose the eval gaming problem and redesign the eval system.
+
+**What interviewers look for:**
+- Recognition of Goodhart's law in eval systems
+- Concrete gaming mechanisms, not just the buzzword
+- A redesign with held-out sets, rotating judges, and outcome linkage
+
+**Strong answer:**
+
+"When the metric improves and reality does not, the metric has become the target. I look for four specific gaming mechanisms:
+
+1. **Overfitting to the golden set.** Engineers iterate prompts against the same 200 examples until the set is memorized in spirit. Fix: split golden into dev and held-out; the held-out set is run by CI only, never inspected during development, and rotates quarterly.
+2. **Judge sycophancy drift.** An LLM judge re-used across iterations starts rewarding the house style instead of correctness. Fix: anchor the judge with rubric-and-examples, calibrate it against a human-labeled sample monthly, and track judge-human agreement as its own dashboard metric. If agreement drops below threshold, the judge is the incident.
+3. **Metric narrowing.** The suite measures what is easy (format validity, faithfulness on short answers) and the team optimizes exactly that while end-to-end task success goes unmeasured. Fix: every eval suite must include at least one outcome-level metric tied to the user journey, even if it is sampled and expensive.
+4. **Selection effects.** Hard cases get quietly excluded as 'out of scope flakes.' Fix: an exclusion log with review; excluded cases count as failures until triaged.
+
+**The redesign:**
+- Dev set (visible, iterate freely) / held-out set (CI-only, rotating) / live sample (weekly human-graded production slice).
+- Judge calibration as a first-class job: binary decisions over Likert scales, position randomization, multiple judges with majority vote for high-stakes gates.
+- Link evals to outcomes: complaint rate, thumbs-down rate, and escalation rate plotted against eval score on one dashboard. Divergence triggers an eval review, not a celebration.
+
+**The cultural piece:** I make 'the eval improved but production did not' a named failure mode in the team vocabulary. Engineers stop gaming metrics when gaming is detectable and socially costly."
+
+**Follow-up to expect:** How do you keep the held-out set representative as the product evolves? (Quarterly refresh sampled from recent production traces, stratified by intent cluster, with the old set archived for longitudinal comparison.)
+
+### Q116: Design cost-aware multi-provider routing for June 2026 prices: Fable 5 at $10/$50, Opus 4.8 at $5/$25, GPT-5.5 at $5/$30, Sonnet 4.6 at $3/$15, DeepSeek V4 Flash at $0.14/$0.28.
+
+**What interviewers look for:**
+- Routing as a policy engine, not an if-else chain
+- Cache economics and provider-specific prompt variants
+- Failure handling: circuit breakers, capacity, and policy blocks
+
+**Strong answer:**
+
+"The price spread is now 70x between the cheapest frontier-class tier and the capability ceiling, so routing policy is the single biggest cost lever in the system.
+
+**Policy engine design:**
+
+```
+Request → Classifier (intent, complexity, risk) → Policy lookup → Provider call
+            ↑                                          |
+            └────────── outcome feedback ──────────────┘
+```
+
+- **Tier 0 (under $0.30/1M):** DeepSeek V4 Flash for classification, extraction, and cache-friendly RAG. The 98% cache-hit discount means shared-prefix workloads are nearly free.
+- **Tier 1 ($3/$15):** Claude Sonnet 4.6 as the production default for generation and tool use.
+- **Tier 2 ($5/$25-30):** Opus 4.8 for long-horizon agentic work, GPT-5.5 for single-shot hard coding and omni multimodal.
+- **Tier 3 ($10/$50):** Fable 5, allow-listed use cases only, with a per-team monthly budget.
+
+**The parts juniors miss:**
+- **Confidence-gated escalation.** The cheap tier answers first with a self-consistency or judge check; only low-confidence requests escalate. This typically keeps 60-80% of traffic on Tier 0-1 with no quality loss.
+- **Provider-specific prompts.** A prompt tuned for Claude underperforms on GPT-5.5. The router selects the prompt variant with the provider; they version together.
+- **Cache-aware placement.** Moving a workload between providers resets its cache economics. For a 100k-token shared prefix, staying on one provider with warm cache can beat a nominally cheaper cold provider.
+- **Circuit breakers per provider** on error rate, p95 latency, and rate-limit headroom, with pre-shift of traffic before hard limits. Policy blocks are a real failure class too: a provider can decline a category your product needs, so the fallback chain must be policy-aware, not just availability-aware.
+- **Data residency constraints** override cost: Mythos-class traffic carries 30-day retention on the Claude side, and some tenants cannot leave approved regions. The policy engine enforces residency before price.
+
+**Reporting:** cost per resolved task by tier, not cost per token. The goal is moving tasks down-tier without moving complaints up."
+
+**Follow-up to expect:** Where does semantic caching fit? (In front of the router: an exact or semantic cache hit costs no provider call at all, and the router only sees cache misses.)
+
+---
+
 ## Key Takeaways
 
 - Practice answers out loud at the level of detail shown here; mumbled hand-waving fails staff-level loops even when the underlying knowledge is correct.
 - Always state the latency, scale, and accuracy assumptions before sketching architecture; interviewers downgrade candidates who design without scope.
 - Strong answers cite a specific tradeoff and a concrete number (latency in ms, cost per token, recall at K); generic answers get scored as junior.
 - The "follow-up to expect" hints under each question are real; prepare a one-paragraph extension for each.
-- The May 2026 section (Q81 onward) reflects what's actually being asked in current loops; older questions test foundational depth, not currency.
-- Pair this bank with the [Answer Frameworks](02-answer-frameworks.md), [Whiteboard Exercises](04-whiteboard-exercises.md), and the [May 2026 Job Market Trends](06-job-market-trends-2026.md).
+- The May and June 2026 sections (Q81 onward) reflect what's actually being asked in current loops; older questions test foundational depth, not currency.
+- Pair this bank with the [Answer Frameworks](02-answer-frameworks.md), [Whiteboard Exercises](04-whiteboard-exercises.md), and the [Job Market Trends](06-job-market-trends-2026.md).
 
 ---
 
@@ -4873,8 +5061,8 @@ Hallucination is now a P0 incident class, like a security breach. Treat it accor
 5. **Consider failure modes** - What can go wrong?
 6. **End with monitoring** - How do you know it works?
 7. **Acknowledge uncertainty** - It is okay to say "I would research this more"
-8. **Cite benchmarks specifically** - SWE-bench Verified (Mythos Preview 93.9%, Opus 4.7 Adaptive 87.6%), ARC-AGI-2 (GPT-5.5 85.0%), AIME 2025, OSWorld, τ²-bench
-9. **Know the May 2026 landscape** - Claude Opus 4.7, GPT-5.5 / GPT-5.5 Instant, Gemini 3.1 Pro, DeepSeek V4 Pro / Flash, Llama 4 Scout / Maverick, Kimi K2.6, Qwen 3.6 Max, Mistral Medium 3.5, Gemma 4. Reference the May AI-security inflection (Mythos, Daybreak, MDASH, first AI-built zero-day in the wild) and EU AI Act enforcement (Aug 2, 2026)
+8. **Cite benchmarks specifically** - SWE-bench Verified (GPT-5.5 88.7%, Opus 4.8 88.6%, Mythos Preview 93.9% pre-Fable), SWE-Bench Pro (Opus 4.8 69.2%), ARC-AGI-2 (GPT-5.5 85.0%), AIME 2025, OSWorld, τ²-bench
+9. **Know the June 2026 landscape** - Claude Fable 5 ($10/$50, Mythos-class with an Opus 4.8 fallback safeguard), Claude Opus 4.8, GPT-5.5 / GPT-5.5 Instant, Gemini 3.1 Pro, DeepSeek V4 Pro / Flash, Llama 4 Scout / Maverick, Kimi K2.6, Qwen 3.6 Max, Mistral Medium 3.5, Gemma 4. Reference the May AI-security inflection (Mythos, Daybreak, MDASH, first AI-built zero-day in the wild), its June resolution via Fable 5, and EU AI Act enforcement (Aug 2, 2026)
 
 ---
 
@@ -4908,3 +5096,4 @@ Hallucination is now a P0 incident class, like a security breach. Treat it accor
 ---
 
 *See also: [Answer Frameworks](02-answer-frameworks.md) | [Common Pitfalls](03-common-pitfalls.md) | [Whiteboard Exercises](04-whiteboard-exercises.md)*
+
