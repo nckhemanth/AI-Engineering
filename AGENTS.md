@@ -1,12 +1,11 @@
 # AGENTS.md
 
-This is Hemanth's public personal AI engineering learning fork.
+This is a public personal AI engineering learning fork.
 
 ## Purpose
 
-- Learn AI/LLM engineering quickly and practically.
-- Prepare for AI system design and GenAI engineering interviews.
-- Add polished notes, mini-labs, interview answers, and project artifacts.
+- Maintain public-safe AI engineering learning/reference material.
+- Add polished notes, mini-labs, examples, and reusable project artifacts.
 - Keep the fork easy to pull from upstream when needed.
 
 ## Rules
@@ -15,14 +14,13 @@ This is Hemanth's public personal AI engineering learning fork.
   `AGENTS.md` and `context/repos/AI-Engineering/` notes before changing this
   repo. Treat that workspace as the primary continuity source.
 - Do not assume changes are intended for the upstream project.
-- Do not create upstream pull requests unless Hemanth explicitly asks.
+- Do not create upstream pull requests unless the repo owner explicitly asks.
 - If the private workspace is available, keep rough notes, private planning,
-  PDFs, job notes, and drafts in
+  drafts, and other private material in
   `workspace/context/repos/AI-Engineering/personal/`.
 - If the private workspace is unavailable, `personal/` in this repo is a
   temporary ignored fallback only.
-- Do not commit secrets, `.env` files, tokens, cookies, or private resume/job
-  material.
+- Do not commit secrets, `.env` files, tokens, cookies, or private material.
 - Prefer small practical additions over large restructuring.
 - Preserve the repo's readable field-guide style.
 
@@ -53,5 +51,5 @@ If continuing another agent's work:
 6. After work, update the workspace changelog if available. Update
    `PROGRESS.md` only when the public next tasks or focus changed.
 
-Do not copy private workspace notes, PDFs, or personal planning details into
-this public repo. Promote only polished, reusable learning material.
+Do not copy private workspace notes or planning details into this public repo.
+Promote only polished, reusable learning material.
