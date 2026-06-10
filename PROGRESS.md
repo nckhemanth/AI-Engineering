@@ -29,9 +29,14 @@ system-design, interview-prep, and project-building spine.
 
 ## Handoff Notes
 
+- Primary continuity lives in the private `nckhemanth0/workspace` hub. If an
+  agent has access, read and update that workspace before relying on this public
+  fallback file.
 - Use `personal/` for rough private notes, drafts, PDFs, and scratch work.
 - Commit only polished public notes, labs, reusable interview prep, and small
   structural improvements.
 - Do not open pull requests against upstream unless Hemanth explicitly asks.
 - For fast-changing model, pricing, benchmark, or framework claims, verify
   before presenting them as current facts.
+- Update this file only when public focus, next tasks, or completed public work
+  changed.
