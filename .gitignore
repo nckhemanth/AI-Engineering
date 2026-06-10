@@ -1,0 +1,12 @@
+# ── Personal local folder (never pushed) ──
+# Your notes, interview prep drafts, bookmarks — not synced to fork/upstream.
+personal/
+
+# ── Secrets ──
+.env
+.env.*
+
+# ── OS / editor ──
+.DS_Store
+.idea/
+*.swp
