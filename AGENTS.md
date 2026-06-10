@@ -16,8 +16,11 @@ This is Hemanth's public personal AI engineering learning fork.
   repo. Treat that workspace as the primary continuity source.
 - Do not assume changes are intended for the upstream project.
 - Do not create upstream pull requests unless Hemanth explicitly asks.
-- Keep rough notes, private planning, PDFs, job notes, and drafts in `personal/`
-  only. `personal/` is intentionally ignored.
+- If the private workspace is available, keep rough notes, private planning,
+  PDFs, job notes, and drafts in
+  `workspace/context/repos/AI-Engineering/personal/`.
+- If the private workspace is unavailable, `personal/` in this repo is a
+  temporary ignored fallback only.
 - Do not commit secrets, `.env` files, tokens, cookies, or private resume/job
   material.
 - Prefer small practical additions over large restructuring.
