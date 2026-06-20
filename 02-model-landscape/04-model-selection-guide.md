@@ -359,4 +359,4 @@ Hidden costs of self-hosting: GPU procurement, engineering time, model updates, 
 
 ---
 
-*Next: [Fine-Tuning Guide](../03-fine-tuning/01-when-to-fine-tune.md)*
+*Next: [Fine-Tuning Guide](../03-training-and-adaptation/02-fine-tuning-strategies.md)*

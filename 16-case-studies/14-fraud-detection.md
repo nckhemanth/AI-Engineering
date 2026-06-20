@@ -190,4 +190,4 @@ A: We track the "insult rate": percentage of legitimate customers blocked. Each 
 
 ---
 
-*Related chapters: [Evaluation and Observability](../14-evaluation-and-observability/), [Reliability Patterns](../15-ai-design-patterns/05-reliability-patterns.md)*
+*Related chapters: [Evaluation and Observability](../14-evaluation-and-observability/), [Reliability Patterns](../13-reliability-and-safety/03-reliability-patterns.md)*

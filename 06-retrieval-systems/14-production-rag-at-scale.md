@@ -1500,4 +1500,4 @@ The fix depends on the root cause, but common interventions are: tune the semant
 
 ---
 
-*Next: [15-rag-evaluation-and-testing.md](15-rag-evaluation-and-testing.md)*
+*Next: [RAG Evaluation Patterns](13-rag-evaluation-patterns.md)*

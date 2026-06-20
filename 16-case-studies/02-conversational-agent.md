@@ -477,4 +477,4 @@ class QualityMonitor:
 
 ---
 
-*Next: [Code Assistant Case Study](03-code-assistant.md)*
+*Next: [Code Assistant Case Study](04-code-assistant.md)*

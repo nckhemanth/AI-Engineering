@@ -252,4 +252,4 @@ As of May 2026, our migration plan: Snowflake, Confluence, and Jira have shipped
 - [Snowflake MCP server reference](https://github.com/modelcontextprotocol/servers)
 - [Atlassian MCP servers](https://github.com/modelcontextprotocol/servers)
 
-Related chapters: [Tool Use and MCP](../07-agentic-systems/03-tool-use-and-mcp.md), [Security and Access](../12-security-and-access/01-authentication.md), [Multi-Tenant RAG Isolation](../12-security-and-access/04-multi-tenant-rag-isolation.md).
+Related chapters: [Tool Use and MCP](../07-agentic-systems/03-tool-use-and-mcp.md), [Security and Access](../12-security-and-access/01-llm-security.md), [Multi-Tenant RAG Isolation](../12-security-and-access/02-access-control.md).
