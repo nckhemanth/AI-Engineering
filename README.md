@@ -2,10 +2,10 @@
 ### The Complete Interview & Production Reference
 
 <p align="center">
-  <a href="https://www.aidaddy.tech"><img src="https://img.shields.io/badge/Read%20the%20Web%20Edition-aidaddy.tech-7C3AED?style=for-the-badge" alt="Read the web edition at aidaddy.tech"></a>
+  <a href="https://www.aidaddy.tech"><img src="https://img.shields.io/badge/Read%20on%20aidaddy.tech-7C3AED?style=for-the-badge" alt="Read the guide on aidaddy.tech"></a>
 </p>
 <p align="center">
-  <sub>🌐 <b><a href="https://www.aidaddy.tech">aidaddy.tech</a></b> is the companion web reader for this guide: the same content with full-text search, cleaner navigation, and a mobile-friendly layout. This repo stays the source of truth, so ⭐ star it to support the work.</sub>
+  <sub>🌐 The same guide with full-text search and cleaner navigation. This repo stays the source of truth, so ⭐ star it to support the work.</sub>
 </p>
 
 <p align="center">
