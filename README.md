@@ -56,6 +56,11 @@ A practical, continuously updated guide to AI system design, RAG architectures, 
 | **Route across models / add a gateway** | [AI Gateways and Model Routing](11-infrastructure-and-mlops/03-ai-gateways-and-model-routing.md) (fallback, rate limits, LiteLLM) |
 | **Control AI cost** | [FinOps and Token Economics](11-infrastructure-and-mlops/04-finops-and-token-economics.md) (caching, batch, attribution, unit economics) |
 | **Meet AI regulations** | [AI Governance and Compliance](13-reliability-and-safety/04-ai-governance-and-compliance.md) (EU AI Act, NIST RMF, what to implement) |
+| **Generate images, video, audio** | [Multimodal Generation](19-multimodal-generation/01-multimodal-generation.md) (pipelines, provenance, evaluation) |
+| **Train a reasoning model** | [RLVR and GRPO](03-training-and-adaptation/08-rlvr-and-reasoning-models.md) (how o-series and R1 are trained) |
+| **Run models locally** | [On-Device and Edge Deployment](04-inference-optimization/09-on-device-and-edge-deployment.md) (Ollama vs vLLM, quantization, hardware) |
+| **Make agents crash-proof** | [Durable Execution](07-agentic-systems/11-durable-execution.md) (replay, exactly-once, Temporal) |
+| **Engineer the data layer** | [Data Engineering for AI](06-retrieval-systems/15-data-engineering-for-ai.md) (ingestion, dedup, PII, decontamination) |
 | **Find the best courses to learn AI** | [Recommended Courses & Learning Paths](COURSES.md) |
 | **Transition from my current role to AI** | [Role Transition Guide](TRANSITION_GUIDE.md) |
 | **Understand the 2026 AI job market** | [Job Market Trends - June 2026](00-interview-prep/06-job-market-trends-2026.md) |
@@ -119,11 +124,11 @@ flowchart TD
 ├── 00-interview-prep/           # Questions (116), frameworks, exercises, job-market trends (June 2026)
 ├── 01-foundations/              # Transformers, attention, embeddings
 ├── 02-model-landscape/          # Claude Fable 5, Claude Opus 4.8, GPT-5.5, Gemini 3.1, DeepSeek V4, Llama 4, Kimi K2.6, Qwen 3.6
-├── 03-training-and-adaptation/  # Fine-tuning, LoRA, DPO, distillation
-├── 04-inference-optimization/   # KV cache, PagedAttention, vLLM
+├── 03-training-and-adaptation/  # Fine-tuning, LoRA, DPO, distillation, RLVR/GRPO
+├── 04-inference-optimization/   # KV cache, PagedAttention, vLLM, diffusion LLMs, on-device
 ├── 05-prompting-and-context/    # Prompt engineering, CoT, Extended Thinking, DSPy, prompt injection
-├── 06-retrieval-systems/        # RAG, chunking, GraphRAG, Agentic RAG, ColBERT, Contextual Retrieval
-├── 07-agentic-systems/          # MCP 2.0, A2A protocol, multi-agent, computer-use
+├── 06-retrieval-systems/        # RAG, chunking, GraphRAG, Agentic RAG, ColBERT, Contextual Retrieval, data engineering
+├── 07-agentic-systems/          # MCP 2.0, A2A protocol, multi-agent, computer-use, durable execution
 ├── 08-memory-and-state/         # L1-L3 memory tiers, Mem0, caching
 ├── 09-frameworks-and-tools/     # LangGraph, DSPy, LlamaIndex, Claude Code, OpenCoder, framework churn
 ├── 10-document-processing/      # Vision-LLM OCR, multimodal parsing
@@ -135,6 +140,7 @@ flowchart TD
 ├── 16-case-studies/             # Real-world architectures with diagrams
 ├── 17-tool-use-and-computer-agents/ # OpenClaw, Computer Use, tool agents, safety
 ├── 18-voice-and-audio-agents/   # Real-time voice agents: VAD, turn-taking, speech-to-speech
+├── 19-multimodal-generation/    # Image/video/audio generation: pipelines, provenance, evaluation
 ├── GLOSSARY.md                  # Every term defined
 │
 ├── ai_evals_comprehensive_study_guide.md      # 🔬 Deep-dive: AI Evals (Phoenix + Langfuse)
@@ -159,6 +165,7 @@ mindmap
       Agentic Systems
       Tool Use and Computer Agents
       Voice and Audio Agents
+      Multimodal Generation
     Operate
       Inference Optimization
       Memory and State
