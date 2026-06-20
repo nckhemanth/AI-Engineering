@@ -201,7 +201,7 @@ Interleaved reasoning and acting:
 Thought → Action → Observation → Thought → Action → Observation → Answer
 ```
 
-See [Agent Architectures](../07-agentic-systems/01-agent-architectures.md) for implementation.
+See [Agent Architectures](../07-agentic-systems/01-agent-fundamentals.md) for implementation.
 
 **When to use:**
 - General-purpose agents

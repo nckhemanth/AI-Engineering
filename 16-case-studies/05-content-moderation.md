@@ -481,4 +481,4 @@ class AdversarialDefense:
 
 ---
 
-*Next: [Appendix A: LLM Pricing Reference](../appendices/a-pricing-reference.md)*
+*Next: [LLM Pricing Reference](../02-model-landscape/03-pricing-and-costs.md)*

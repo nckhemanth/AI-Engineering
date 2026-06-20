@@ -248,4 +248,4 @@ Once per quarter we sample 200 completed tasks across risk tiers and re-execute 
 - [Lakera Guard, prompt-injection patterns](https://www.lakera.ai/blog/prompt-injection)
 - [Langfuse self-hosting docs](https://langfuse.com/docs/self-hosting)
 
-Related chapters: [Tool Use and Computer Agents](../17-tool-use-and-computer-agents/01-tool-use-landscape.md), [Agentic Systems](../07-agentic-systems/01-agent-fundamentals.md), [Security and Access](../12-security-and-access/01-authentication.md).
+Related chapters: [Tool Use and Computer Agents](../17-tool-use-and-computer-agents/01-tool-use-landscape.md), [Agentic Systems](../07-agentic-systems/01-agent-fundamentals.md), [Security and Access](../12-security-and-access/01-llm-security.md).

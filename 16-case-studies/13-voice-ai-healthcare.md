@@ -202,4 +202,4 @@ A: We have a "completeness check" that verifies the note includes all extracted 
 
 ---
 
-*Related chapters: [Multimodal Models](../02-model-landscape/04-multimodal-models.md), [Reliability Patterns](../15-ai-design-patterns/05-reliability-patterns.md)*
+*Related chapters: [Model Taxonomy](../02-model-landscape/01-model-taxonomy.md), [Reliability Patterns](../13-reliability-and-safety/03-reliability-patterns.md)*

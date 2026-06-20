@@ -486,4 +486,4 @@ The key insight is that any single reward signal can be gamed. Ensembles make ga
 
 ---
 
-*Next: [Reliability Patterns Extended](02-reliability-patterns.md)*
+*Next: [Reliability Patterns Extended](03-reliability-patterns.md)*
