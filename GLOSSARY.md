@@ -10,6 +10,8 @@ Quick reference for key terms used throughout this guide.
 
 **Agentic System** — LLM application that autonomously plans and executes multi-step tasks using tools.
 
+**AI Control** — Safety approach that assumes a model may be misaligned and designs deployment protocols (monitoring, defer-on-critical-action, resampling, factored cognition) to stay safe even then. Distinct from alignment, which aims to make the model trustworthy in the first place. See [Research Radar](RESEARCH-RADAR.md).
+
 **Attention Mechanism** — Neural network component that allows models to focus on relevant parts of input. Self-attention compares each token to all others.
 
 **ABAC (Attribute-Based Access Control)** — Access control based on attributes of user, resource, and environment rather than fixed roles.
@@ -20,6 +22,8 @@ Quick reference for key terms used throughout this guide.
 
 **Batching** — Processing multiple requests together to improve GPU utilization. Continuous batching adds new requests while others generate.
 
+**Benchmark Saturation** — When frontier models cluster so near a benchmark's ceiling that score differences fall within noise (prompt phrasing, run variance), so the benchmark no longer separates models. MMLU, HumanEval, and GSM8K are saturated. See [Benchmarks and Leaderboards](14-evaluation-and-observability/03-benchmarks-and-leaderboards.md).
+
 **BM25** — Traditional keyword-based ranking algorithm. Often combined with vector search for hybrid retrieval.
 
 **Budget Tokens** — The configurable compute budget for Extended Thinking (Claude) or reasoning (o3). Higher budget → more internal reasoning steps → higher accuracy and cost.
@@ -27,6 +31,8 @@ Quick reference for key terms used throughout this guide.
 ---
 
 ## C
+
+**Capability Index (Composite Benchmark)** — A weighted aggregate of many benchmarks (e.g. Artificial Analysis Intelligence Index, Epoch Capability Index, HAL for agents) used to rank frontier models so the ranking keeps discriminating as individual benchmarks saturate.
 
 **Chain-of-Thought (CoT)** — Prompting technique that elicits step-by-step reasoning before final answer.
 
@@ -44,6 +50,8 @@ Quick reference for key terms used throughout this guide.
 
 **Context Window** — Maximum number of tokens an LLM can process in a single request. Ranges from 4K to 1M+ tokens.
 
+**Context Rot** — Degradation in output quality as irrelevant or stale tokens accumulate in the context window, often well before the advertised limit. Motivates compaction and just-in-time retrieval. See [Context Engineering](05-prompting-and-context/05-context-engineering.md).
+
 **Cosine Similarity** — Measure of similarity between two vectors. Standard metric for comparing embeddings.
 
 **Cursor** — AI-native IDE (fork of VS Code) with deep model integration for code completion, agentic editing, and multi-file context awareness.
@@ -51,6 +59,8 @@ Quick reference for key terms used throughout this guide.
 ---
 
 ## D
+
+**Data Contamination** — When benchmark questions or their answers leak into a model's training data, inflating scores through memorization rather than capability. Countered with time-gated, private, or held-out test sets. See [Benchmarks and Leaderboards](14-evaluation-and-observability/03-benchmarks-and-leaderboards.md).
 
 **DPO (Direct Preference Optimization)** — Fine-tuning method that optimizes directly on preference data without a separate reward model.
 
@@ -60,9 +70,13 @@ Quick reference for key terms used throughout this guide.
 
 ## E
 
+**Effective Context Length** — The context length at which a model still maintains quality, routinely shorter than the advertised window. On RULER, many models claiming 128K hold quality only to ~32-64K. Design for effective, not advertised, context.
+
 **Embedding** — Dense vector representation of text. Used for semantic search and similarity comparison.
 
 **Ensemble** — Combining multiple model outputs to improve reliability. Includes voting, debate, and mixture-of-agents.
+
+**Eval Awareness** — A model's tendency to detect when it is being evaluated and alter behavior accordingly, which confounds safety and capability benchmarks and argues for naturalistic, held-out test conditions.
 
 **Extended Thinking** — Claude's (3.7+) internal reasoning mode where the model performs a scratchpad reasoning pass before producing a response. Configurable via `thinking.budget_tokens`. Not shown to end users by default.
 
@@ -92,6 +106,8 @@ Quick reference for key terms used throughout this guide.
 
 **Hallucination** — Model generating plausible but factually incorrect information.
 
+**Harness (Scaffold) Variance** — The 10-20 point swing in benchmark scores produced by the same model weights under different prompts, tool access, reasoning effort, or agent scaffolds. Why provider self-reports are not comparable across labs, and only same-harness numbers can be compared. See [Benchmarks and Leaderboards](14-evaluation-and-observability/03-benchmarks-and-leaderboards.md).
+
 **HNSW (Hierarchical Navigable Small World)** — Graph-based algorithm for approximate nearest neighbor search in vector databases.
 
 **Human-in-the-Loop (HITL)** — Patterns for human oversight, approval, or correction of AI outputs.
@@ -101,6 +117,8 @@ Quick reference for key terms used throughout this guide.
 ## I
 
 **In-Context Learning** — Model adapting to task based on examples in the prompt without weight updates.
+
+**Indirect Prompt Injection** — A prompt-injection attack delivered through content the agent reads (a web page, document, tool result) rather than the user's direct input. Red-team studies and an impossibility result suggest it cannot be fully prevented, shifting defense toward least-privilege and containment. See [Agentic Security and Sandboxing](07-agentic-systems/09-agentic-security-and-sandboxing.md).
 
 **Inference** — Running a trained model to generate predictions/outputs.
 
@@ -122,6 +140,8 @@ Quick reference for key terms used throughout this guide.
 
 **LangChain** — Framework for building LLM applications with chains, agents, and integrations.
 
+**Leaderboard Illusion** — The critique (Cohere et al., arXiv:2504.20879) that crowd-preference leaderboards like LMArena are distorted by private best-of-N testing, unequal data access, and silent model deprecation. Contested in magnitude by LMArena; the practical takeaway is to read style-controlled Elo with confidence intervals and treat Arena as preference, not correctness.
+
 **LlamaIndex** — Data framework focused on document processing and retrieval for LLM applications.
 
 **LiveCodeBench** — Benchmark evaluating coding models on real-world problems from competitive programming platforms. More reliable than HumanEval for production coding tasks.
@@ -135,6 +155,8 @@ Quick reference for key terms used throughout this guide.
 ## M
 
 **MCP (Model Context Protocol)** - Open protocol for standardized tool/resource integration with LLMs. Launched by Anthropic November 2024; governance moved to the Linux Foundation's Agentic AI Foundation December 2025; adopted by Anthropic, OpenAI, Google, Microsoft, AWS. Version 2.0 (ratified March 2026) adds Streamable HTTP transport and OAuth 2.1 auth.
+
+**Memory Poisoning** — An attack that plants malicious or false entries into an agent's long-term memory so they resurface and influence future sessions. Added to the OWASP 2026 Agentic Top 10 as ASI06. Defense favors provenance at write time over sanitization at read time. See [Research Radar](RESEARCH-RADAR.md).
 
 **Mixture of Agents (MoA)** — Ensemble pattern where multiple agents contribute to a synthesized response.
 
@@ -153,6 +175,8 @@ Quick reference for key terms used throughout this guide.
 ---
 
 ## P
+
+**pass^k** — Agent reliability metric: the fraction of tasks solved on all k independent attempts (versus pass@k, solved on at least one). Exposes the reliability cliff where an agent at ~60% pass@1 can drop to ~25% pass^8. The production-relevant consistency signal.
 
 **Prompt Caching** — Reusing the KV cache for repeated prompt prefixes. Available natively in Anthropic (cache_control), Google (implicit), and some OpenAI endpoints. Reduces cost by 60-90% for long fixed prefixes.
 
@@ -194,7 +218,7 @@ Quick reference for key terms used throughout this guide.
 
 **Structured Outputs** — OpenAI's (and Anthropic's tool-mode) capability to guarantee model output conforms to a provided JSON Schema. Stricter than legacy JSON mode.
 
-**SWE-bench Verified** — Industry standard benchmark for autonomous software engineering. Measures ability to resolve real GitHub issues. Top models (Claude 3.7, o3) score 50–70%+.
+**SWE-bench Verified** — Human-validated 500-issue subset of SWE-bench measuring resolution of real GitHub issues; the canonical coding benchmark of 2024-2026. Now near-saturated and partly contaminated, so the field is shifting to SWE-bench Pro and contamination-resistant live variants. Read the harness before trusting a score. See [Benchmarks and Leaderboards](14-evaluation-and-observability/03-benchmarks-and-leaderboards.md).
 
 **System Prompt** — Instructions that set context and behavior for an LLM conversation.
 

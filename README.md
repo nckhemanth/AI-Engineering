@@ -42,6 +42,8 @@ A practical, continuously updated guide to AI system design, RAG architectures, 
 | **Autonomous coding agents** | [Claude Code](09-frameworks-and-tools/09-claude-code.md) → [OpenCoder Landscape](09-frameworks-and-tools/10-opencoderguide.md) |
 | **Pick the right model (2026)** | [Model Taxonomy](02-model-landscape/01-model-taxonomy.md) → [Pricing](02-model-landscape/03-pricing-and-costs.md) |
 | **Evaluate AI in production** | [AI Evals Guide (Phoenix/Langfuse)](ai_evals_comprehensive_study_guide.md) → [AI Evals Guide (LangWatch/Langfuse)](ai_evals_complete_guide_langwatch_langfuse.md) |
+| **Read benchmarks the right way** | [Benchmarks & Leaderboards](14-evaluation-and-observability/03-benchmarks-and-leaderboards.md) (saturation, contamination, harness variance) |
+| **Track frontier research (2026)** | [Research Radar](RESEARCH-RADAR.md) (trending papers and what to learn next) |
 | **Find the best courses to learn AI** | [Recommended Courses & Learning Paths](COURSES.md) |
 | **Transition from my current role to AI** | [Role Transition Guide](TRANSITION_GUIDE.md) |
 | **Understand the 2026 AI job market** | [Job Market Trends - June 2026](00-interview-prep/06-job-market-trends-2026.md) |
@@ -116,7 +118,7 @@ flowchart TD
 ├── 11-infrastructure-and-mlops/ # GPU clusters, LLMOps, cost management
 ├── 12-security-and-access/      # RBAC, ABAC, multi-tenant isolation
 ├── 13-reliability-and-safety/   # Guardrails, red-teaming
-├── 14-evaluation-and-observability/ # RAGAS, LangSmith, drift detection
+├── 14-evaluation-and-observability/ # RAGAS, LangSmith, benchmarks & leaderboards, drift detection
 ├── 15-ai-design-patterns/       # Pattern catalog, anti-patterns
 ├── 16-case-studies/             # Real-world architectures with diagrams
 ├── 17-tool-use-and-computer-agents/ # OpenClaw, Computer Use, tool agents, safety
@@ -126,6 +128,7 @@ flowchart TD
 └── ai_evals_complete_guide_langwatch_langfuse.md  # 🔬 Deep-dive: AI Evals (LangWatch + Langfuse)
 └── COURSES.md                   # 🎓 Recommended courses & learning paths
 └── TRANSITION_GUIDE.md          # 🔄 Transition from Backend/QA/PM/EM to AI roles
+└── RESEARCH-RADAR.md            # 🛰️ Frontier research radar: trending papers and what to learn next
 ```
 
 ### Chapters by AI System Lifecycle Stage
