@@ -88,6 +88,8 @@ Quick reference for key terms used throughout this guide.
 
 **Fine-Tuning** — Training a pre-trained model on task-specific data to improve performance.
 
+**Framework Churn** — The rapid, breaking evolution of AI orchestration frameworks (LlamaIndex, LangChain), which reshuffle package layouts and remove abstractions roughly yearly, breaking older tutorials and courses on a fresh install. Survive it by pinning/locking versions and learning primitives over APIs. See [Navigating Framework Churn](09-frameworks-and-tools/12-navigating-framework-churn.md).
+
 **Function Calling** — LLM capability to output structured tool invocations rather than plain text.
 
 ---
@@ -227,6 +229,10 @@ Quick reference for key terms used throughout this guide.
 ## T
 
 **Temperature** — Parameter controlling randomness of LLM outputs. Lower = more deterministic.
+
+**Test-Time Compute (Inference-Time Scaling)** — Spending more compute at inference with the weights **frozen**: long chain-of-thought, best-of-N, self-consistency, search. Ubiquitous in production by 2026, with diminishing (sometimes negative) returns past a point. Contrast with Test-Time Training.
+
+**Test-Time Training (TTT)** — Updating a model's **weights** at inference (often an ephemeral LoRA) on the test input, its augmentations, or retrieved neighbors, then predicting and discarding the update. Distinct from test-time compute, which leaves weights frozen. Research-stage in 2026; strongest on novel tasks like ARC and on long-context efficiency. See [Research Radar](RESEARCH-RADAR.md#12-test-time-training-learning-at-inference).
 
 **Token** — Basic unit of text processing. Roughly 0.75 words or 4 characters in English.
 
