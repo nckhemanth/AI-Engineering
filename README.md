@@ -40,6 +40,7 @@ A practical, continuously updated guide to AI system design, RAG architectures, 
 | **Build agents** | [Agent Fundamentals](07-agentic-systems/01-agent-fundamentals.md) → [MCP & A2A](07-agentic-systems/03-tool-use-and-mcp.md) → [LangGraph](09-frameworks-and-tools/02-langgraph-orchestration.md) |
 | **Tool-use & computer agents** | [Landscape](17-tool-use-and-computer-agents/01-tool-use-landscape.md) → [OpenClaw](17-tool-use-and-computer-agents/03-openclaw-deep-dive.md) → [Safety](17-tool-use-and-computer-agents/07-safety-and-governance.md) |
 | **Autonomous coding agents** | [Claude Code](09-frameworks-and-tools/09-claude-code.md) → [OpenCoder Landscape](09-frameworks-and-tools/10-opencoderguide.md) |
+| **Survive framework version churn** | [Navigating Framework Churn](09-frameworks-and-tools/12-navigating-framework-churn.md) (stale tutorials, version pinning, what to actually learn) |
 | **Pick the right model (2026)** | [Model Taxonomy](02-model-landscape/01-model-taxonomy.md) → [Pricing](02-model-landscape/03-pricing-and-costs.md) |
 | **Evaluate AI in production** | [AI Evals Guide (Phoenix/Langfuse)](ai_evals_comprehensive_study_guide.md) → [AI Evals Guide (LangWatch/Langfuse)](ai_evals_complete_guide_langwatch_langfuse.md) |
 | **Read benchmarks the right way** | [Benchmarks & Leaderboards](14-evaluation-and-observability/03-benchmarks-and-leaderboards.md) (saturation, contamination, harness variance) |
@@ -113,7 +114,7 @@ flowchart TD
 ├── 06-retrieval-systems/        # RAG, chunking, GraphRAG, Agentic RAG, ColBERT, Contextual Retrieval
 ├── 07-agentic-systems/          # MCP 2.0, A2A protocol, multi-agent, computer-use
 ├── 08-memory-and-state/         # L1-L3 memory tiers, Mem0, caching
-├── 09-frameworks-and-tools/     # LangGraph, DSPy, LlamaIndex, Claude Code, OpenCoder
+├── 09-frameworks-and-tools/     # LangGraph, DSPy, LlamaIndex, Claude Code, OpenCoder, framework churn
 ├── 10-document-processing/      # Vision-LLM OCR, multimodal parsing
 ├── 11-infrastructure-and-mlops/ # GPU clusters, LLMOps, cost management
 ├── 12-security-and-access/      # RBAC, ABAC, multi-tenant isolation

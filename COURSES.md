@@ -2,6 +2,8 @@
 
 A curated list of **reliable, trusted, and up-to-date** online courses for AI engineers, ML practitioners, and product teams. Every course here is verified as of **May 2026**, no fluff, no outdated MOOCs.
 
+> **Note on code staleness:** these courses are curated for their *concepts*. The framework APIs they use (LlamaIndex, LangChain) churn fast, so notebook code in any recorded course drifts out of date and can fail on a fresh install. Before copy-pasting, run the 30-second currency check in [Navigating Framework Churn](09-frameworks-and-tools/12-navigating-framework-churn.md), and learn the primitives, not the import paths.
+
 ---
 
 ## Table of Contents
