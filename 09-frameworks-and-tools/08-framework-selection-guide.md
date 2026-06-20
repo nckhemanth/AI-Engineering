@@ -138,4 +138,4 @@ The key is to **separate the orchestration layer from the model layer**. I use a
 
 ---
 
-*New Chapter: [Section 10: Document Processing](../10-document-processing/01-ocr-and-layout.md)*
+*Next: [Navigating Framework Churn](12-navigating-framework-churn.md)*
