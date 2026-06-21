@@ -53,6 +53,7 @@ flowchart LR
 | [08-human-in-the-loop-patterns.md](08-human-in-the-loop-patterns.md) | Confirmation gates, escalation, supervised autonomy. |
 | [09-agentic-security-and-sandboxing.md](09-agentic-security-and-sandboxing.md) | Code execution sandboxes, capability gating, prompt injection in agents. |
 | [10-evaluating-agentic-systems.md](10-evaluating-agentic-systems.md) | Trajectory evals, Agent-as-judge, Process Reward Models, agent benchmarks. |
+| [11-durable-execution.md](11-durable-execution.md) | Surviving crashes in long-running agents: event history, replay, exactly-once side effects, Temporal. |
 
 ## Companion Chapters
 

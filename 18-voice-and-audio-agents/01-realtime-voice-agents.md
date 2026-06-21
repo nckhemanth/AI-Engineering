@@ -137,4 +137,4 @@ Cascaded for anything needing auditability, compliance, provider flexibility, de
 
 ---
 
-*Previous: [Safety and Governance](../17-tool-use-and-computer-agents/07-safety-and-governance.md)*
+*Previous: [Safety and Governance](../17-tool-use-and-computer-agents/07-safety-and-governance.md) · Next: [Multimodal Generation](../19-multimodal-generation/01-multimodal-generation.md)*

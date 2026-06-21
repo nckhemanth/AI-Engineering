@@ -34,6 +34,8 @@ Quick reference for key terms used throughout this guide.
 
 ## C
 
+**C2PA (Content Credentials)** — An open standard that cryptographically binds provenance metadata (who made this, whether AI was involved, what edits) to a media asset, with tamper-evident hard bindings and watermark-based soft bindings that survive re-encoding. The provenance layer behind AI-content labeling laws; removable, so layer it with watermarking and detection. See [Multimodal Generation](19-multimodal-generation/01-multimodal-generation.md).
+
 **Capability Index (Composite Benchmark)** — A weighted aggregate of many benchmarks (e.g. Artificial Analysis Intelligence Index, Epoch Capability Index, HAL for agents) used to rank frontier models so the ranking keeps discriminating as individual benchmarks saturate.
 
 **Chain-of-Thought (CoT)** — Prompting technique that elicits step-by-step reasoning before final answer.
@@ -64,9 +66,13 @@ Quick reference for key terms used throughout this guide.
 
 **Data Contamination** — When benchmark questions or their answers leak into a model's training data, inflating scores through memorization rather than capability. Countered with time-gated, private, or held-out test sets. See [Benchmarks and Leaderboards](14-evaluation-and-observability/03-benchmarks-and-leaderboards.md).
 
+**Diffusion Language Model** — A non-autoregressive LLM that generates text by iteratively denoising a masked sequence in parallel rather than left to right, trading some quality for much higher throughput (reported 1,000+ tokens/sec). Strong on code and infilling; early-stage in 2026. See [Diffusion Language Models](04-inference-optimization/08-diffusion-llms.md).
+
 **DPO (Direct Preference Optimization)** — Fine-tuning method that optimizes directly on preference data without a separate reward model.
 
 **DSPy** — Framework for programming LLMs through optimizable modules rather than manual prompts.
+
+**Durable Execution** — An execution model (Temporal, Restate, DBOS) that makes long-running agents survive crashes and restarts via an append-only event history and deterministic replay, giving exactly-once side effects, durable timers, and pauses that outlive deploys. See [Durable Execution](07-agentic-systems/11-durable-execution.md).
 
 ---
 
@@ -104,11 +110,15 @@ Quick reference for key terms used throughout this guide.
 
 ## G
 
+**GGUF** — The quantized model file format used by llama.cpp, Ollama, and LM Studio for local inference. Quant levels trade quality for size; Q4_K_M is the practical sweet spot. See [On-Device and Edge Deployment](04-inference-optimization/09-on-device-and-edge-deployment.md).
+
 **Guardrails** — Input/output validation to prevent harmful or off-topic responses.
 
 **Grounding** — Connecting LLM responses to factual sources to reduce hallucination.
 
 **Grok 4.3** - xAI's frontier reasoning model. Competitive with GPT-5.5, Claude Opus 4.7, and Gemini 3.1 Pro on reasoning benchmarks. Available via xAI API and inside X.
+
+**GRPO (Group Relative Policy Optimization)** — The RL algorithm behind DeepSeek-R1: drops PPO's value/critic network and computes advantage from the reward spread within a sampled group of completions. Cheaper than PPO; variants (Dr.GRPO, DAPO, GSPO) fix its length bias and zero-variance collapse. See [Training Reasoning Models](03-training-and-adaptation/08-rlvr-and-reasoning-models.md).
 
 ---
 
@@ -217,6 +227,8 @@ Quick reference for key terms used throughout this guide.
 **Reranking** — Second-stage scoring to improve retrieval precision. Cross-encoders provide higher accuracy than bi-encoders.
 
 **RLHF (Reinforcement Learning from Human Feedback)** — Training method using human preferences to align model behavior.
+
+**RLVR (RL with Verifiable Rewards)** — The dominant post-training recipe for reasoning models: reward the policy with a programmatic verifier (math, code, or logic with a checkable answer) instead of a learned reward model, which largely sidesteps reward-model hacking. See [Training Reasoning Models](03-training-and-adaptation/08-rlvr-and-reasoning-models.md).
 
 ---
 

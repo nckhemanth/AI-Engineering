@@ -96,4 +96,4 @@ GPTQ is a "Layer-wise" quantization method that minimizes the mean squared error
 
 ---
 
-*Next: [Inference Fundamentals](../04-inference-optimization/01-inference-fundamentals.md)*
+*Next: [Training Reasoning Models: RLVR and GRPO](08-rlvr-and-reasoning-models.md)*
