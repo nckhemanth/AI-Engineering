@@ -60,7 +60,7 @@ The shared first-pass quality gate:
 - **Unicode normalization** (NFC/NFKC) so visually identical strings compare equal, a prerequisite for dedup and matching to work at all.
 - **Language filtering** below a confidence threshold.
 
-A counterintuitive caveat worth teaching: **more filtering is not strictly better.** FineWeb's ablations found many heuristics had low or even negative impact, and standard heuristic filtering removed roughly 18% of high-quality tokens. Filters must be ablated against a downstream eval, not assumed.
+A counterintuitive caveat worth teaching: **more filtering is not strictly better.** FineWeb's ablations found many heuristics had low or marginal impact (it dropped most candidate filters for too little gain), and Nemotron-CC (arXiv:2412.02595) reports that aggressive heuristic filtering can discard roughly 18% of the tokens its own quality classifier rates high-quality. Filters must be ablated against a downstream eval, not assumed.
 
 ---
 
@@ -81,7 +81,7 @@ The production pattern composes them, MinHash first, then SemDeDup. State the th
 
 **PII detection and redaction.** Microsoft Presidio (MIT) is the open standard: an Analyzer that detects entities via NER plus regex, checksums, and context words, and an Anonymizer that redacts, replaces, masks, hashes, or encrypts, across text, images (with OCR), and structured data, deployable at corpus scale. Because dedup reduces duplication-driven memorization, privacy and dedup are linked.
 
-**Consent, licensing, and provenance** are now a regulatory requirement, not just hygiene. Under the EU AI Act, general-purpose-model providers must keep a copyright policy and publish a "sufficiently detailed summary" of training content using the AI Office's mandatory template, including data sources and respect for copyright opt-outs. Output-marking obligations follow. The governance implication for the pipeline: every record carries source, license, consent status, and timestamp as metadata from ingestion onward, which is exactly what lineage (below) provides. Governance is not a final gate; it is metadata threaded through every stage. See [AI Governance and Compliance](../13-reliability-and-safety/04-ai-governance-and-compliance.md).
+**Consent, licensing, and provenance** are now a regulatory requirement, not just hygiene. Under the EU AI Act, general-purpose-model providers must keep a copyright policy and publish a "sufficiently detailed summary" of training content using the AI Office's mandatory template, including data sources and respect for copyright opt-outs (this summary duty has applied to new general-purpose models since August 2025, with models already on the market given until August 2027). Output-marking obligations follow. The governance implication for the pipeline: every record carries source, license, consent status, and timestamp as metadata from ingestion onward, which is exactly what lineage (below) provides. Governance is not a final gate; it is metadata threaded through every stage. See [AI Governance and Compliance](../13-reliability-and-safety/04-ai-governance-and-compliance.md).
 
 ---
 
@@ -123,7 +123,7 @@ The tail that diverges from RAG:
 3. **Extracting from pre-stripped HTML** (boilerplate pollution; extract from raw with a content-extraction tool).
 4. **Skipping Unicode normalization** (exact dedup and matching silently miss duplicates).
 5. **Dedup at the wrong tier** (MinHash alone misses paraphrases; cascade exact, then fuzzy, then semantic).
-6. **Over-aggressive heuristic filtering** (FineWeb removed ~18% of high-quality tokens; ablate every filter).
+6. **Over-aggressive heuristic filtering** (Nemotron-CC reports it can discard ~18% of high-quality tokens; ablate every filter).
 7. **Trusting a quality classifier on reputation** (the data-quality illusion; validate downstream).
 8. **No PII redaction before training** (memorized and regurgitated PII, worse with duplication).
 9. **No license, consent, or provenance metadata** (an un-auditable corpus that cannot meet training-content-summary obligations).

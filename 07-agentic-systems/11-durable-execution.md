@@ -37,7 +37,7 @@ The building blocks:
 - **Activities** are the only place side effects and nondeterminism live; each is independently retried.
 - **Exactly-once activities** use idempotency keys, often derived from the workflow and step IDs, so a retried tool call does not double-execute.
 - **Durable timers** are persisted and survive worker restarts and deploys, so a workflow can wait days without holding a process open.
-- **Signals** push external events (an approval, a cancellation) into a running workflow. While a workflow awaits a signal or timer, the worker idles and consumes no compute until the event arrives, when it replays the history and resumes.
+- **Signals** push external events (an approval, a cancellation) into a running workflow; paired **queries** read its current state without mutating it (status, monitoring). While a workflow awaits a signal or timer, the worker idles and consumes no compute until the event arrives, when it replays the history and resumes.
 
 The cost of replay-based determinism is **versioning**: because long-running workflows replay old histories, changing workflow code can break replay and cause incidents unless versioned carefully. This is the single most-cited operational hazard.
 
@@ -113,6 +113,7 @@ It is overkill when the agent has no irreversible side effects, runs short enoug
 - Resonate, ["From where do deterministic constraints come?"](https://journal.resonatehq.io/p/from-where-do-deterministic-constraints)
 - Restate, ["What is durable execution?"](https://www.restate.dev/what-is-durable-execution)
 - Temporal, [OpenAI Agents SDK integration](https://temporal.io/blog/announcing-openai-agents-sdk-integration) and [Series D announcement](https://temporal.io/news/temporal-raises-300M-to-make-agentic-ai-real-for-companies)
+- Temporal, [prototype to production-ready agentic AI: a Grid Dynamics case study](https://temporal.io/blog/prototype-to-prod-ready-agentic-ai-grid-dynamics)
 - Google ADK, [Temporal integration](https://adk.dev/integrations/temporal/)
 - LangChain, [durable execution in LangGraph](https://docs.langchain.com/oss/python/langgraph/durable-execution)
 - Diagrid, ["Checkpoints are not durable execution"](https://www.diagrid.io/blog/checkpoints-are-not-durable-execution-why-langgraph-crewai-google-adk-and-others-fall-short-for-production-agent-workflows)

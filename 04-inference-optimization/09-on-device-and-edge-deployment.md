@@ -49,7 +49,7 @@ The takeaway is not "vLLM is tuned better." It is structural: Ollama and LM Stud
 **Lean local or edge when:**
 - **Privacy or regulated data** that cannot leave the box (HIPAA, GDPR, contractual residency). A caveat to teach: the major API providers now offer zero-data-retention enterprise tiers, so "privacy" alone no longer automatically decides for local.
 - **Offline or air-gapped** operation (field devices, critical infrastructure).
-- **A latency floor**: on-device can hit sub-50ms with no network round trip.
+- **A latency floor**: on-device removes the network round trip (often 50-200ms), which matters for tight interactive loops; total response latency still depends on the model and hardware.
 - **Cost at steady, high volume**: a reserved GPU is reported to break even against frontier APIs somewhere around a few million tokens per day, above which owning hardware wins because you stop paying per token. The exact break-even is workload-dependent.
 
 **Stay on cloud APIs when** you need frontier quality, have spiky or unpredictable demand (you would pay for idle GPUs; batch endpoints at ~50% off often beat local at medium volume), run low-to-moderate volume (below break-even, total cost favors APIs), or lack the ops capacity to run vLLM with autoscaling and monitoring. The 2026 consensus is usually a **hybrid**: small, private, offline, or cost-sensitive paths local, heavy or frontier or spiky paths to the cloud, within one product.
@@ -65,10 +65,10 @@ Quantization is what makes local serving viable; the [Quantization Deep Dive](..
 The **VRAM rule of thumb**:
 
 ```
-VRAM (GB) ≈ (params in billions × bits per weight) / 8 + ~0.5 GB overhead
+VRAM (GB) ≈ (params in billions × bits per weight) / 8   # model weights only
 ```
 
-then add the KV cache, which grows with context length times concurrent requests. So a 7B model is roughly 14GB at FP16, ~7.7GB at Q8_0, and ~4.5GB at Q4_K_M. The operating rule everyone repeats: **use the highest-quality quant that fits with about 10% headroom** for KV cache and context.
+then add the KV cache (it grows with context length times concurrent requests) plus roughly 10-20% runtime overhead. So a 7B model's weights are roughly 14GB at FP16, ~7.7GB at Q8_0, and ~4.5GB at Q4_K_M, before that overhead. The operating rule everyone repeats: **use the highest-quality quant that fits with 10-20% headroom** for KV cache, activations, and context.
 
 ---
 
@@ -87,7 +87,7 @@ A model-size-to-hardware guide (Q4 quant assumed; planning guidance, not guarant
 
 Notes:
 - **Consumer GPUs** top out at 24-32 GB of VRAM, which is the binding constraint on local model size.
-- **Apple Silicon** shares one memory pool between CPU and GPU, so system RAM doubles as VRAM, letting a large-RAM Mac hold models a same-priced discrete GPU cannot. Apple's MLX path keeps improving (recent Ollama-on-Apple benchmarks report large prefill and decode gains using a 4-bit floating-point format).
+- **Apple Silicon** shares one memory pool between CPU and GPU, so system RAM doubles as VRAM, letting a large-RAM Mac hold models a same-priced discrete GPU cannot. Apple's MLX path keeps improving: Ollama's MLX backend (preview) reports sizable prefill and decode gains on Apple Silicon from exploiting unified memory, and a separate update adds NVFP4, NVIDIA's 4-bit floating-point format (not Apple's), reported around 20% faster than Q4_K_M.
 - **NPUs** in phones and AI PCs advertise high TOPS, but a teaching nuance: TOPS alone does not predict LLM speed, because limited operator support and memory bandwidth gate real performance. NPUs suit lightweight, battery-efficient tasks; discrete GPUs still win for heavy local inference.
 - **Mobile** is bandwidth-bound and memory-constrained: realistic on-phone models are sub-1B to about 3B, available app RAM is often under 4 GB even on flagships, and mobile memory bandwidth is 30-50x below a datacenter GPU. The on-device standard is 4-bit quantization.
 
@@ -116,7 +116,7 @@ Ollama is the wrong tool for a shared endpoint. It serves with limited paralleli
 ### Q: When would you choose local or on-device inference over a cloud API?
 
 **Strong answer:**
-When data cannot leave the box for privacy or residency reasons, when the system must work offline or air-gapped, when I need a hard sub-50ms latency floor, or when I have steady high volume where a reserved GPU beats per-token pricing, which is reported to break even around a few million tokens a day. I would stay on an API for frontier quality, spiky demand where idle GPUs waste money, low volume below break-even, or when the team lacks the ops capacity to run a serving stack. In practice it is usually a hybrid: small, private, or offline paths run local on quantized models, and heavy or frontier or bursty paths go to the cloud. On phones specifically, I would plan for sub-1B-to-3B models, since mobile is memory and bandwidth constrained.
+When data cannot leave the box for privacy or residency reasons, when the system must work offline or air-gapped, when I need the lowest possible latency by cutting the network round trip, or when I have steady high volume where a reserved GPU beats per-token pricing, which is reported to break even around a few million tokens a day. I would stay on an API for frontier quality, spiky demand where idle GPUs waste money, low volume below break-even, or when the team lacks the ops capacity to run a serving stack. In practice it is usually a hybrid: small, private, or offline paths run local on quantized models, and heavy or frontier or bursty paths go to the cloud. On phones specifically, I would plan for sub-1B-to-3B models, since mobile is memory and bandwidth constrained.
 
 ---
 

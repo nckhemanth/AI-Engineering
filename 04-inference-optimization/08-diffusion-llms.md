@@ -24,7 +24,7 @@ The canonical reference is **LLaDA** (arXiv:2502.09992). The mechanism, at a tea
 - **Reverse process:** a Transformer (a "mask predictor") is trained to predict the original token at every masked position simultaneously, optimizing a likelihood *lower bound* (not the exact likelihood AR models use).
 - **Sampling:** begin fully masked and denoise from `t=1` to `0`. At each step the model predicts all masked tokens, and an **unmasking schedule** decides how many of the highest-confidence predictions to commit and how many to re-mask for the next step. Fewer steps means faster and lower quality; one token per step approaches AR quality but forfeits the speed.
 
-Parallel decoding and bidirectional context fall out of this directly, and they give diffusion a notable trick: LLaDA reports beating a strong AR model on a reversal task (completing a poem backwards), because the objective is not locked to left-to-right order.
+Parallel decoding and bidirectional context fall out of this directly, and they give diffusion a notable trick: LLaDA reports beating GPT-4o on a reversal task (completing a poem backwards), because the objective is not locked to left-to-right order.
 
 The cleanest mental model is not "AR vs diffusion" but an **interpolation** between them, established by Block Diffusion (BD3-LMs, arXiv:2503.09573): split the sequence into blocks, go AR across blocks and diffusion within a block. This recovers two things pure diffusion struggles with, KV caching and variable-length output, and the block size is the knob (block size 1 is AR, block size equals the whole sequence is pure diffusion). Almost every fast 2026 system ships some block or semi-AR variant.
 
@@ -34,7 +34,7 @@ The cleanest mental model is not "AR vs diffusion" but an **interpolation** betw
 
 The speedup comes from one place: **tokens committed per forward pass.** AR emits one; diffusion commits many over a few steps, so wall-clock throughput rises when the model can confidently unmask several positions at once. It is a latency and throughput win, not inherently a quality win.
 
-Reported throughput (all vendor or benchmark claims, conditions vary): commercial diffusion models report on the order of 700 to 1,500 tokens per second on a single datacenter GPU, which their makers frame as several times to roughly 10x faster than speed-optimized AR baselines. Independent measurement of one commercial model put it near 1,200 tokens per second.
+Reported throughput (all vendor or benchmark claims, conditions vary): commercial diffusion models report on the order of 700 to 1,500 tokens per second on a single datacenter GPU, which their makers frame as several times faster than speed-optimized AR baselines (up to ~10x for the best-case code-completion path, closer to ~5x for reasoning workloads). Independent measurement of one commercial model put it around 1,100 tokens per second.
 
 The tradeoff is intrinsic to the unmasking schedule: committing more tokens per step is faster but can produce locally incoherent output, so the practical best quality comes from unmasking fewer tokens per step, which slows things down. Where the quality gap stands in 2026, as reported:
 - **On code, the gap is small.** Diffusion models roughly match similar-tier AR models on code-completion benchmarks; code is the consensus sweet spot.
