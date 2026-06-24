@@ -87,4 +87,4 @@ Asymmetric retrieval refers to the fact that user queries are usually short (3-1
 
 ---
 
-*Next: [Agentic Systems](../07-agentic-systems/01-agents-fundamentals.md)*
+*Next: [Agentic Systems](../07-agentic-systems/01-agent-fundamentals.md)*

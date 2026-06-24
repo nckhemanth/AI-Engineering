@@ -257,4 +257,4 @@ When we move a customer's traffic to a distilled student, we tell them. The cust
 - [DeepSpeed for training](https://www.deepspeed.ai/training/)
 - [Together AI distillation case study](https://www.together.ai/blog/distillation)
 
-Related chapters: [Fine-Tuning and Distillation](../03-training-and-adaptation/03-distillation.md), [Inference Optimization](../04-inference-optimization/01-inference-fundamentals.md), [Cost Management](../11-infrastructure-and-mlops/05-cost-management.md).
+Related chapters: [Fine-Tuning and Distillation](../03-training-and-adaptation/05-knowledge-distillation.md), [Inference Optimization](../04-inference-optimization/01-inference-fundamentals.md), [Cost Management](../04-inference-optimization/07-cost-optimization-playbook.md).

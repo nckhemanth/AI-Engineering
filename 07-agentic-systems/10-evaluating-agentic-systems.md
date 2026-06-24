@@ -95,4 +95,4 @@ Meandering leads to three failures: 1) **Cost**: Every step is an LLM call; 2) *
 
 ---
 
-*Next: [Memory Architectures](../08-memory-and-state/01-memory-architectures.md)*
+*Next: [Durable Execution for Long-Running Agents](11-durable-execution.md)*
