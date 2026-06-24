@@ -1,0 +1,59 @@
+name: Temporary upstream sync
+
+on:
+  push:
+    branches:
+      - sync/upstream-action-2026-06-24
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout sync branch
+        uses: actions/checkout@v4
+        with:
+          ref: sync/upstream-action-2026-06-24
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Configure git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Fetch upstream and origin main
+        run: |
+          git remote add upstream https://github.com/ombharatiya/ai-system-design-guide.git || true
+          git fetch upstream main
+          git fetch origin main
+
+      - name: Merge upstream while preserving fork-local files
+        run: |
+          set -e
+          git merge --no-ff upstream/main -m "Merge upstream AI system design guide updates" || true
+
+          # Preserve fork-local files from origin/main when conflicts or overwrites occur.
+          git checkout origin/main -- AGENTS.md PROGRESS.md .github/workflows/rebuild-docs-hub.yml .gitignore || true
+          git checkout origin/main -- 10-document-processing/02-multimodal-parsing.md || true
+          git checkout origin/main -- 12-security-and-access/04-multi-tenant-rag-isolation.md || true
+
+          # Prefer upstream navigation/index files after merge.
+          git checkout upstream/main -- README.md GLOSSARY.md COURSES.md || true
+
+          # Remove this temporary workflow so it does not land on main.
+          git rm -f .github/workflows/temp-sync-upstream.yml || true
+
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No sync changes to commit."
+          else
+            git commit -m "Sync upstream guide updates while preserving fork local files"
+          fi
+
+      - name: Push synced branch
+        run: |
+          git push origin HEAD:sync/upstream-action-2026-06-24
