@@ -483,4 +483,4 @@ The key principle: never store raw keys, support rotation, implement least privi
 
 ---
 
-*Previous: [Security Fundamentals](01-security-fundamentals.md)*
+*Previous: [Security Fundamentals](01-llm-security.md)*

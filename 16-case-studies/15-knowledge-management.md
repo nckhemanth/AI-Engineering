@@ -211,4 +211,4 @@ A: We never include unauthorized content in the LLM context, even to say "I cann
 
 ---
 
-*Related chapters: [RAG Fundamentals](../06-retrieval-systems/01-rag-fundamentals.md), [Multi-Tenant Isolation](../12-security-and-access/04-multi-tenant-rag-isolation.md)*
+*Related chapters: [RAG Fundamentals](../06-retrieval-systems/01-rag-fundamentals.md), [Multi-Tenant Isolation](../12-security-and-access/02-access-control.md)*

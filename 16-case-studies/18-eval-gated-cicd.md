@@ -251,4 +251,4 @@ The temptation is to roll all axes into one number and gate on it. We do not. A 
 - [Argilla annotation platform](https://docs.argilla.io/)
 - [pytest-html report integration](https://pytest-html.readthedocs.io/)
 
-Related chapters: [Evaluation and Observability](../14-evaluation-and-observability/01-evaluation-fundamentals.md), [Reliability and Safety](../13-reliability-and-safety/01-reliability-fundamentals.md), [AI Evals Comprehensive Guide](../ai_evals_comprehensive_study_guide.md).
+Related chapters: [Evaluation and Observability](../14-evaluation-and-observability/01-llm-evaluation.md), [Reliability and Safety](../13-reliability-and-safety/01-guardrails.md), [AI Evals Comprehensive Guide](../ai_evals_comprehensive_study_guide.md).

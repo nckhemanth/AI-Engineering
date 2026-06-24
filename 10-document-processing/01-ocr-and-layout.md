@@ -84,7 +84,3 @@ This reduces the processing time from 30 minutes (sequential) to under 20 second
 - Google DeepMind. "Gemini 2.0: Understanding Multi-column Documents" (2025)
 - OpenAI. "Vision Models for Document Understanding" (2025)
 - Tesseract v6. "The Integration of Hybrid Transformer OCR" (2025)
-
----
-
-*Next: [Multimodal Parsing and Markdown Conversion](02-multimodal-parsing.md)*

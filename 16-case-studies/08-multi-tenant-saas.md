@@ -173,4 +173,4 @@ A: This is a real risk. We mitigate by: (1) Using only retrieval-grounded genera
 
 ---
 
-*Related chapters: [Multi-Tenant RAG Isolation](../12-security-and-access/04-multi-tenant-rag-isolation.md), [RBAC for AI Systems](../12-security-and-access/02-rbac-for-ai-systems.md)*
+*Related chapters: [LLM Security](../12-security-and-access/01-llm-security.md), [Access Control & Multi-Tenant Isolation](../12-security-and-access/02-access-control.md)*

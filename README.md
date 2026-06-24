@@ -2,6 +2,13 @@
 ### The Complete Interview & Production Reference
 
 <p align="center">
+  <a href="https://www.aidaddy.tech"><img src="https://img.shields.io/badge/Read%20it%20online%20%E2%86%92-7C3AED?style=for-the-badge&logo=bookstack&logoColor=white" alt="Read the guide online at aidaddy.tech"></a>
+</p>
+<p align="center">
+  <sub>🌐 Instant search, linked chapters, and a cleaner reader at <b><a href="https://www.aidaddy.tech">aidaddy.tech</a></b>. ⭐ Star the repo to support the work.</sub>
+</p>
+
+<p align="center">
   <a href="https://github.com/ombharatiya"><img src="https://img.shields.io/badge/Follow%20on%20GitHub-ombharatiya-181717?style=for-the-badge&logo=github" alt="Follow on GitHub"></a>
   <a href="https://x.com/ombharatiya"><img src="https://img.shields.io/badge/Follow%20on%20Twitter-@ombharatiya-1DA1F2?style=for-the-badge&logo=x" alt="Follow on Twitter"></a>
   <a href="https://linkedin.com/in/ombharatiya"><img src="https://img.shields.io/badge/Connect%20on%20LinkedIn-ombharatiya-0A66C2?style=for-the-badge&logo=linkedin" alt="Connect on LinkedIn"></a>
@@ -36,12 +43,24 @@ A practical, continuously updated guide to AI system design, RAG architectures, 
 | **Learn AI systems fast** | [LLM Internals](01-foundations/01-llm-internals.md) → [RAG Fundamentals](06-retrieval-systems/01-rag-fundamentals.md) |
 | **Build production RAG** | [Chunking](06-retrieval-systems/02-chunking-strategies.md) → [Vector DBs](06-retrieval-systems/04-vector-databases.md) → [Reranking](06-retrieval-systems/06-reranking-strategies.md) → [Production RAG](06-retrieval-systems/14-production-rag-at-scale.md) |
 | **Advanced retrieval** | [Contextual Retrieval](06-retrieval-systems/10-contextual-retrieval.md) → [ColBERT](06-retrieval-systems/11-late-interaction-colbert.md) → [Multi-modal RAG](06-retrieval-systems/12-multimodal-rag.md) |
-| **Design multi-tenant AI** | [Isolation Patterns](12-security-and-access/04-multi-tenant-rag-isolation.md) → [Case Study](16-case-studies/08-multi-tenant-saas.md) |
+| **Design multi-tenant AI** | [Access Control](12-security-and-access/02-access-control.md) → [Case Study](16-case-studies/08-multi-tenant-saas.md) |
 | **Build agents** | [Agent Fundamentals](07-agentic-systems/01-agent-fundamentals.md) → [MCP & A2A](07-agentic-systems/03-tool-use-and-mcp.md) → [LangGraph](09-frameworks-and-tools/02-langgraph-orchestration.md) |
 | **Tool-use & computer agents** | [Landscape](17-tool-use-and-computer-agents/01-tool-use-landscape.md) → [OpenClaw](17-tool-use-and-computer-agents/03-openclaw-deep-dive.md) → [Safety](17-tool-use-and-computer-agents/07-safety-and-governance.md) |
 | **Autonomous coding agents** | [Claude Code](09-frameworks-and-tools/09-claude-code.md) → [OpenCoder Landscape](09-frameworks-and-tools/10-opencoderguide.md) |
+| **Survive framework version churn** | [Navigating Framework Churn](09-frameworks-and-tools/12-navigating-framework-churn.md) (stale tutorials, version pinning, what to actually learn) |
 | **Pick the right model (2026)** | [Model Taxonomy](02-model-landscape/01-model-taxonomy.md) → [Pricing](02-model-landscape/03-pricing-and-costs.md) |
 | **Evaluate AI in production** | [AI Evals Guide (Phoenix/Langfuse)](ai_evals_comprehensive_study_guide.md) → [AI Evals Guide (LangWatch/Langfuse)](ai_evals_complete_guide_langwatch_langfuse.md) |
+| **Read benchmarks the right way** | [Benchmarks & Leaderboards](14-evaluation-and-observability/03-benchmarks-and-leaderboards.md) (saturation, contamination, harness variance) |
+| **Track frontier research (2026)** | [Research Radar](RESEARCH-RADAR.md) (trending papers and what to learn next) |
+| **Build a voice agent** | [Real-Time Voice Agents](18-voice-and-audio-agents/01-realtime-voice-agents.md) (cascade vs speech-to-speech, latency budgets, the stack) |
+| **Route across models / add a gateway** | [AI Gateways and Model Routing](11-infrastructure-and-mlops/03-ai-gateways-and-model-routing.md) (fallback, rate limits, LiteLLM) |
+| **Control AI cost** | [FinOps and Token Economics](11-infrastructure-and-mlops/04-finops-and-token-economics.md) (caching, batch, attribution, unit economics) |
+| **Meet AI regulations** | [AI Governance and Compliance](13-reliability-and-safety/04-ai-governance-and-compliance.md) (EU AI Act, NIST RMF, what to implement) |
+| **Generate images, video, audio** | [Multimodal Generation](19-multimodal-generation/01-multimodal-generation.md) (pipelines, provenance, evaluation) |
+| **Train a reasoning model** | [RLVR and GRPO](03-training-and-adaptation/08-rlvr-and-reasoning-models.md) (how o-series and R1 are trained) |
+| **Run models locally** | [On-Device and Edge Deployment](04-inference-optimization/09-on-device-and-edge-deployment.md) (Ollama vs vLLM, quantization, hardware) |
+| **Make agents crash-proof** | [Durable Execution](07-agentic-systems/11-durable-execution.md) (replay, exactly-once, Temporal) |
+| **Engineer the data layer** | [Data Engineering for AI](06-retrieval-systems/15-data-engineering-for-ai.md) (ingestion, dedup, PII, decontamination) |
 | **Find the best courses to learn AI** | [Recommended Courses & Learning Paths](COURSES.md) |
 | **Transition from my current role to AI** | [Role Transition Guide](TRANSITION_GUIDE.md) |
 | **Understand the 2026 AI job market** | [Job Market Trends - June 2026](00-interview-prep/06-job-market-trends-2026.md) |
@@ -105,27 +124,30 @@ flowchart TD
 ├── 00-interview-prep/           # Questions (116), frameworks, exercises, job-market trends (June 2026)
 ├── 01-foundations/              # Transformers, attention, embeddings
 ├── 02-model-landscape/          # Claude Fable 5, Claude Opus 4.8, GPT-5.5, Gemini 3.1, DeepSeek V4, Llama 4, Kimi K2.6, Qwen 3.6
-├── 03-training-and-adaptation/  # Fine-tuning, LoRA, DPO, distillation
-├── 04-inference-optimization/   # KV cache, PagedAttention, vLLM
+├── 03-training-and-adaptation/  # Fine-tuning, LoRA, DPO, distillation, RLVR/GRPO
+├── 04-inference-optimization/   # KV cache, PagedAttention, vLLM, diffusion LLMs, on-device
 ├── 05-prompting-and-context/    # Prompt engineering, CoT, Extended Thinking, DSPy, prompt injection
-├── 06-retrieval-systems/        # RAG, chunking, GraphRAG, Agentic RAG, ColBERT, Contextual Retrieval
-├── 07-agentic-systems/          # MCP 2.0, A2A protocol, multi-agent, computer-use
+├── 06-retrieval-systems/        # RAG, chunking, GraphRAG, Agentic RAG, ColBERT, Contextual Retrieval, data engineering
+├── 07-agentic-systems/          # MCP 2.0, A2A protocol, multi-agent, computer-use, durable execution
 ├── 08-memory-and-state/         # L1-L3 memory tiers, Mem0, caching
-├── 09-frameworks-and-tools/     # LangGraph, DSPy, LlamaIndex, Claude Code, OpenCoder
+├── 09-frameworks-and-tools/     # LangGraph, DSPy, LlamaIndex, Claude Code, OpenCoder, framework churn
 ├── 10-document-processing/      # Vision-LLM OCR, multimodal parsing
-├── 11-infrastructure-and-mlops/ # GPU clusters, LLMOps, cost management
+├── 11-infrastructure-and-mlops/ # GPU clusters, LLMOps, AI gateways, FinOps and cost
 ├── 12-security-and-access/      # RBAC, ABAC, multi-tenant isolation
-├── 13-reliability-and-safety/   # Guardrails, red-teaming
-├── 14-evaluation-and-observability/ # RAGAS, LangSmith, drift detection
+├── 13-reliability-and-safety/   # Guardrails, red-teaming, AI governance and compliance
+├── 14-evaluation-and-observability/ # RAGAS, LangSmith, benchmarks & leaderboards, drift detection
 ├── 15-ai-design-patterns/       # Pattern catalog, anti-patterns
 ├── 16-case-studies/             # Real-world architectures with diagrams
 ├── 17-tool-use-and-computer-agents/ # OpenClaw, Computer Use, tool agents, safety
+├── 18-voice-and-audio-agents/   # Real-time voice agents: VAD, turn-taking, speech-to-speech
+├── 19-multimodal-generation/    # Image/video/audio generation: pipelines, provenance, evaluation
 ├── GLOSSARY.md                  # Every term defined
 │
 ├── ai_evals_comprehensive_study_guide.md      # 🔬 Deep-dive: AI Evals (Phoenix + Langfuse)
 └── ai_evals_complete_guide_langwatch_langfuse.md  # 🔬 Deep-dive: AI Evals (LangWatch + Langfuse)
 └── COURSES.md                   # 🎓 Recommended courses & learning paths
 └── TRANSITION_GUIDE.md          # 🔄 Transition from Backend/QA/PM/EM to AI roles
+└── RESEARCH-RADAR.md            # 🛰️ Frontier research radar: trending papers and what to learn next
 ```
 
 ### Chapters by AI System Lifecycle Stage
@@ -142,6 +164,8 @@ mindmap
       Retrieval Systems
       Agentic Systems
       Tool Use and Computer Agents
+      Voice and Audio Agents
+      Multimodal Generation
     Operate
       Inference Optimization
       Memory and State
@@ -238,13 +262,13 @@ AI agents are LLM-driven systems that plan, call tools, and act over multiple st
 MCP is an open protocol that lets LLMs discover and call external tools and data sources in a standardized way. A2A (Agent-to-Agent) is a complementary protocol for inter-agent communication. They solve different layers: MCP is the tool boundary, A2A is the agent boundary. See [Tool Use and MCP](07-agentic-systems/03-tool-use-and-mcp.md).
 
 ### Which LLM should I use in production: Claude, GPT, Gemini, or open-source?
-It depends on latency budget, context length, cost per million tokens, tool-use quality, and data residency. The [Model Taxonomy](02-model-landscape/01-model-taxonomy.md) and [Pricing](02-model-landscape/03-pricing-and-costs.md) chapters give a head-to-head for Claude Opus 4.7, GPT-5.5, Gemini 3.1 Pro, DeepSeek V4, Llama 4, and others as of May 2026.
+It depends on latency budget, context length, cost per million tokens, tool-use quality, and data residency. The [Model Taxonomy](02-model-landscape/01-model-taxonomy.md) and [Pricing](02-model-landscape/03-pricing-and-costs.md) chapters give a head-to-head for Claude Opus 4.8, GPT-5.5, Gemini 3.1 Pro, DeepSeek V4, Llama 4, and others as of June 2026.
 
 ### How do I evaluate an LLM or RAG system in production?
 Combine offline evals (LLM-as-a-judge with ground-truth calibration), online metrics (faithfulness, context recall, answer relevance), and continuous tracing. The companion deep-dives [AI Evals: Phoenix + Langfuse](ai_evals_comprehensive_study_guide.md) and [AI Evals: LangWatch + Langfuse](ai_evals_complete_guide_langwatch_langfuse.md) walk through this end-to-end.
 
 ### How do I build a multi-tenant RAG system safely?
-Use defense-in-depth: per-tenant indexes or namespaces, query-time access checks, and prompt-layer guards. The [Multi-Tenant RAG Isolation](12-security-and-access/04-multi-tenant-rag-isolation.md) chapter and [Multi-Tenant SaaS Case Study](16-case-studies/08-multi-tenant-saas.md) cover the patterns that hold up in interviews and production.
+Use defense-in-depth: per-tenant indexes or namespaces, query-time access checks, and prompt-layer guards. The [Access Control](12-security-and-access/02-access-control.md) chapter and [Multi-Tenant SaaS Case Study](16-case-studies/08-multi-tenant-saas.md) cover the patterns that hold up in interviews and production.
 
 ### What is agentic RAG?
 Agentic RAG combines retrieval with an agent loop that can decide what to search, when to re-query, and when to escalate, instead of running a single fixed retrieve-then-generate pass. See [Agentic RAG](06-retrieval-systems/08-agentic-rag.md) for the architectures and tradeoffs.
@@ -253,7 +277,7 @@ Agentic RAG combines retrieval with an agent loop that can decide what to search
 Yes, MIT-licensed and free. PRs are welcome; see [Contributing Guide](CONTRIBUTING.md). If you have production failure modes, new model benchmarks, or interview questions to add, open a PR.
 
 ### How often is this guide updated?
-Continuously. New model releases, protocol changes (MCP, A2A), and emerging patterns are added as they ship. Recent additions include [Tool-Use and Computer Agents](17-tool-use-and-computer-agents/01-tool-use-landscape.md) and the [May 2026 Job Market Trends](00-interview-prep/06-job-market-trends-2026.md).
+Continuously. New model releases, protocol changes (MCP, A2A), and emerging patterns are added as they ship. Recent additions include [Tool-Use and Computer Agents](17-tool-use-and-computer-agents/01-tool-use-landscape.md) and the [June 2026 Job Market Trends](00-interview-prep/06-job-market-trends-2026.md).
 
 ### Can I use this guide if I am transitioning from backend, QA, PM, or EM into AI?
 Yes. The [Role Transition Guide](TRANSITION_GUIDE.md) maps existing skills to AI engineering, MLE, and AI architect tracks, with reading paths per role. Pair it with [COURSES.md](COURSES.md) for curated learning resources.
@@ -283,6 +307,7 @@ See [Contributing Guide](CONTRIBUTING.md).
 
 If this guide helps you, the easiest way to support it is to follow along where new chapters and refreshes get announced first:
 
+- **Website:** [aidaddy.tech](https://www.aidaddy.tech) - read the full guide with search, clean navigation, and a mobile-friendly layout.
 - **GitHub:** [@ombharatiya](https://github.com/ombharatiya) - follow for the repo, star the project, and watch for new releases.
 - **X / Twitter:** [@ombharatiya](https://x.com/ombharatiya) - short takes on model releases, MCP, agents, and interviews.
 - **LinkedIn:** [ombharatiya](https://linkedin.com/in/ombharatiya) - deeper writeups and interview prep tips for senior AI roles.

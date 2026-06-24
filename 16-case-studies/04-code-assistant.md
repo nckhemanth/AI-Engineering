@@ -522,4 +522,4 @@ class CompletionCache:
 
 ---
 
-*Next: [Content Moderation Case Study](04-content-moderation.md)*
+*Next: [Content Moderation Case Study](05-content-moderation.md)*

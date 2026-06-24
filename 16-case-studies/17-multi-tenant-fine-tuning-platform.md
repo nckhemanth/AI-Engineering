@@ -250,4 +250,4 @@ We hold SOC 2 Type II and are certified for ISO 27001. Customer audit packs incl
 - [SGLang adapter swapping](https://github.com/sgl-project/sglang)
 - [Kubernetes Multi-Tenancy WG patterns](https://github.com/kubernetes-sigs/multi-tenancy)
 
-Related chapters: [LoRA and Fine-Tuning](../03-training-and-adaptation/02-lora-and-peft.md), [Multi-Tenant Isolation](../12-security-and-access/04-multi-tenant-rag-isolation.md), [Inference Optimization](../04-inference-optimization/01-inference-fundamentals.md).
+Related chapters: [LoRA and Fine-Tuning](../03-training-and-adaptation/03-lora-qlora-peft.md), [Multi-Tenant Isolation](../12-security-and-access/02-access-control.md), [Inference Optimization](../04-inference-optimization/01-inference-fundamentals.md).
